@@ -1,0 +1,124 @@
+{% extends 'base-pos.html' %}
+{% load humanize %}
+{% block contents %}
+<!-- Modal -->
+<div class="modal fade" id="modalBarang" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="staticBackdropLabel">Tambah Barang [{{jml_barang|intcomma}}]</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><input type="text" placeholder="cari barang..." style="z-index: -4;" autofocus class="border border-secondary form-control search-barang"></p>
+        <div style="min-height: 300px;max-height: 300px;" class="overflow-auto p-2 border rounded shadow">
+            <table class="table" id="tableMasterBarang">
+                <tbody>
+                    {% for bar in barang %}
+                        <tr>
+                            <td>{{bar.nama|title}} ({{bar.satuan}})</td>
+                            <td><a href="{% url 'tambah_barang'%}?nota={{nota}}&id={{bar.id}}" class="btn btn-success">+Tambah</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if user.is_authenticated %}
+    <div>
+        {% if nota %}
+        <div class="py-2"><span class="fw-bold fs-6">ID: <span class="fs-">{{nota}}</span></span></div>
+        {% endif %}
+        <table class="table">
+            <thead  class="border-bottom border-secondary">
+                    <td colspan="3" class=" border rounded border-dark">
+                        <input type="text" name="" class="search form-control border-secondary" placeholder="cari nama barang" id="">
+                    </td>
+                    <td class="border border-dark fw-bold text-center">
+                        {{jumlah_item|intcomma}} Item
+                    </td>
+                    <td class="text-center border rounded-end border-dark">
+                        <a href="" class="btn text-white" style="background-color: purple;" data-bs-toggle="modal" data-bs-target="#modalBarang">+Tambah</a>
+                    </td>
+                    
+            </head>
+        </table>
+        <table class="table" id="tableBarang">
+            <thead>
+                <th>No.</th>
+                <th>Nama Barang</th>
+                <th class="text-center">Jumlah</th>
+                <th class="text-end">Harga</th>
+                <!-- <th class="text-end">Total</th> -->
+            </thead>
+            <tbody>
+                
+                {% for jual in penjualandetail %}
+                    <tr class="">
+                        <td class="text-start ps-2 fw-bold" style="font-size: 15px;">{{forloop.counter}}</td>
+                        <td class="fw-bold" style="font-size: 15px;">{{jual.barang.nama|title}} ({{jual.barang.satuan}})</td>
+                        <td >
+                            <div class="d-flex justify-content-center align-items-center">
+                                <!-- <a class="btn btn-primary m-2" href="{% url 'kurangi_items'%}?nota={{nota}}&id={{jual.barang.id}}">-</a> -->
+                                <form class="justify-content-center d-flex" action="{% url 'ubah_items'%}?nota={{nota}}&id={{jual.barang.id}}" method="post">
+                                    {% csrf_token %}
+                                    <input type="number" name="jumlah" id="" class="rounded text-center border-secondary form-control" value="{{jual.jumlah}}" min="0" >
+                                    <button type="submit"class="btn btn-sm btn-secondary d-block d-lg-none d-xl-none d-md-none"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                                </form>
+                                <!-- <a class="btn btn-success m-2" href="{% url 'tambah_items'%}?nota={{nota}}&id={{jual.barang.id}}">+</a> -->
+                            </div>
+
+                        </td>
+                        <td class="fw-bold text-end" style="font-size: 15px;">Rp. {{jual.harga|intcomma}}.00</td>
+                        <!-- <td class="fw-bold text-end" style="font-size: 15px;">Rp. {{jual.total|intcomma}}.00</td> -->
+                    </tr>
+                    <tr class="border-bottom border-secondary">
+                        <td style="background-color: lightgrey;"></td>
+                        <td class="fs-6 fw-bold text-start" style="background-color: lightgrey;">
+                            Sub Total:
+                        </td>
+                        <td class="fs-6 fw-bold text-end" colspan="2" style="background-color: lightgrey;">
+                            Rp. {{jual.total|intcomma}}.00
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endif %}
+<script>
+$(document).ready(function(){
+    $('.search').on('keyup',function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#tableBarang tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+    $('.search-barang').on('keyup',function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#tableMasterBarang tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

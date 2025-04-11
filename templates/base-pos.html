@@ -1,0 +1,113 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.0/css/font-awesome.css" integrity="sha512-CB+XYxRC7cXZqO/8cP3V+ve2+6g6ynOnvJD6p4E4y3+wwkScH9qEOla+BTHzcwB4xKgvWn816Iv0io5l3rAOBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS-MI [{% if user.is_authenticated %}{{user}}{% else %}login{% endif %}]</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .orbitron {
+              font-family: "Orbitron", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <div class=" container fixed-top text-center rounded-top rounded-4  mb-4 py-3" style="background-color: rgb(38,75,93);height: 110px;">
+        <div class="row d-flex justify-content-between px-2">
+            
+            <div class="d-none d-xl-block d-lg-block col-12 col-xl-3 col-lg-3 col-md-3 border rounded border-white p-2" style="height: 90px; background-color: rgb(65,118,144);">
+                <div class="text-white fw-bold fs-5  align-items-center d-flex justify-content-center pt-2">
+                    {{toko}}
+                </div>
+                <div class="text-white fs-6">
+                    {{user.userprofile.cabang.nama}}
+                </div>
+            </div> 
+            <div class="col-12 col-xl-6 col-lg-6 col-md-12">
+                <div class="text-center text-white">
+                    Total Belanja:
+                </div>
+                <div class="orbitron fw-bold fs-1 pb-2  text-white fw-bold">
+                    Rp. {{total|intcomma}}
+                </div>
+            </div>
+            <div class="d-none d-xl-block d-lg-block  col-12 col-xl-3 col-lg-3 col-md-3  text-white border border-white rounded" style="height: 90px;padding-top: 3px;background-color: rgb(65,118,144)">
+                <div class="text-white  fs-6  align-items-center d-flex justify-content-center">
+                    user: {{user.username}} [{% if user.is_superuser %}administrator{% else %}kasir{% endif %}]
+                </div>
+                <div class="text-white fs-6">
+                    {{tanggal|date:"d M Y"}}
+                </div>
+                <div>
+                    <a href="{% url 'logoutkan'%}" class="btn btn-sm btn-primary " >logout</a>
+                </div>
+            </div>
+        </div>
+        <!-- <p class="text-center fw-bold pb-2 border-bottom border-white fs-4 fw-bold text-white">{{toko}}</p>
+        <p class=""></p>
+        <p class="text-center text-white text-normal">
+            <span class="py-2"></span>
+            <span style="margin-left: 20px;"><a href="{% url 'logoutkan'%}" class="btn btn-secondary">logout</a></span>
+        </p> -->
+        
+    </div>
+    {% endif %}
+    <div class="fixed-top rounded-bottom pb-3 container py-2" {% if user.is_authenticated %}style="margin-top: 110px;background-color: rgb(38,75,93)"{% else %}style="margin-top: 110px;background-color: white;border:1px solid grey;border-radius:5px;box-shadow:5px 5px 5px lightgrey"{%endif%}>
+        <form method="post" action="{% url 'index_pos'%}?nota={{nota}}">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+                <div class="row">
+                    <div class="col-12"><input type="text" name="kode" placeholder="SCAN BARCODE/ KETIK BARCODE" autofocus id="kode" class="form-control"></div>
+                    <!-- <div class="col-1"><button class="btn btn-success" type="submit">+</button></div> -->
+                </div>
+            {% else %}
+                <div class="text-center fw-bold mb-3 fs-2">{{toko}}</div>
+                <div class="fst-italic text-center mb-3">
+                    Silakan Login terlebih dahulu untuk bisa melakukan penjualan
+                </div>
+                <div class="text-center">
+                    <a href="{% url 'loginkan'%}" class="btn btn-primary">login</a>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+    <div style="margin-top: 180px; margin-bottom: 110px;">
+            <div class="container my-2">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert text-center p-2 alert-primary" role="alert">
+                            {{message}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="container">
+                {% block contents %}
+                {% endblock %}
+            </div>
+    </div>
+    <div class=" bg-white py-3 px-2 text-center border-top border-secondary">
+        <span class="fw-bold fs-5">POS-MI APP versi 1</span> <br>
+        <span class="fw-bold">&COPY; 2025 - by: Leopard Inc.</span>
+    </div>
+    
+</body>
+</html>

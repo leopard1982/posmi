@@ -1,0 +1,23 @@
+{% extends 'base.html'%}
+{% block contents %}
+<div class=" justify-content-center d-flex" style="margin-top:100px">
+    <div style="width: 300px;height: 200px; " class="p-2 border rounded border-secondary shadow" >
+        <div class="text-center fw-bold fs-4 text-primary">
+            {{toko}}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="my-2">
+                <input type="text" name="username" class="form-control" placeholder="Username" id="">
+            </div>
+            <div class="my-2">
+                <input type="password" name="password" class="form-control" placeholder="Password" id="">
+            </div>
+            <div class="my-2 text-center">
+                <button type="submit" class="btn btn-primary">login</button>
+            </div>    
+        </form>
+        
+    </div>
+</div>
+{% endblock %}
