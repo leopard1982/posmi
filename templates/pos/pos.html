@@ -1,7 +1,54 @@
 {% extends 'base-pos.html' %}
 {% load humanize %}
 {% block contents %}
-<!-- Modal -->
+<!-- Modal Memilih Barang-->
+<div class="modal fade" id="daftarTransaksi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticDaftarTransaksi" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        {% if jumlah_penjualan_pending > 0 %}<h5 class="modal-title fw-bold" id="staticDaftarTransaksi">Pending Transaksi [{{jumlah_penjualan_pending|intcomma}}]</h5>{%endif%}
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if jumlah_penjualan_pending > 0 %}
+            <p><input type="text" placeholder="nomor transaksi...." style="z-index: -4;" autofocus class="border border-secondary form-control search-pending"></p>
+        {% endif %}
+        <div style="min-height: 300px;max-height: 300px;" class="overflow-auto p-2 border rounded shadow">
+            {% if jumlah_penjualan_pending > 0 %}
+                <table class="table" id="tablePendingTransaksi">
+                    <tbody>
+                        {% for penjualan in penjualan_pending %}
+                            <tr>
+                                <td class="fw-bold">
+                                    <div>
+                                        <span>ID: {{penjualan.nota}}</span><br>
+                                        <span style="font-size: 12px;">dibuat: <i>{{penjualan.created_at|date:"d M Y"}}</i></span><br>
+                                        <span style="font-size: 12px;">{{penjualan.items|intcomma}} barang, Total Rp.{{penjualan.total|intcomma}}</span>
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'index_pos'%}?nota={{penjualan.nota}}" class="btn btn-sm m-1 btn-success">proses</a>
+                                        <a href="{% url 'hapus_transaksi'%}?nota={{penjualan.nota}}" class="btn btn-sm btn-danger m-1">hapus</a>
+                                    </div>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="text-center fst-italic">
+                    Belum Ada Pending Transaksi...
+                </div>
+            {% endif %}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Memilih Barang-->
 <div class="modal fade" id="modalBarang" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -35,7 +82,19 @@
 {% if user.is_authenticated %}
     <div>
         {% if nota %}
-        <div class="py-2"><span class="fw-bold fs-6">ID: <span class="fs-">{{nota}}</span></span></div>
+        <div class="p-2 d-flex justify-content-between my-2 border rounded rounded-3">
+            <div class="p-2">
+                <span class="fw-bold fs-6">ID: <span class="fs-">{{nota}}</span></span>
+            </div>
+            <div class="text-end">
+                <a href="{% url 'index_pos'%}" class="btn-sm btn-info btn">+Transaksi Baru</a><br>
+                <a href="#" class="btn-sm btn-warning btn mt-2"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr; Pending Transaksi</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-end my-2">
+            <a href="#" class="btn-sm btn-warning btn mt-2" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr; Pending Transaksi</a>
+        </div>
         {% endif %}
         <table class="table">
             <thead  class="border-bottom border-secondary">
@@ -46,7 +105,7 @@
                         {{jumlah_item|intcomma}} Item
                     </td>
                     <td class="text-center border rounded-end border-dark">
-                        <a href="" class="btn text-white" style="background-color: purple;" data-bs-toggle="modal" data-bs-target="#modalBarang">+Tambah</a>
+                        <a href="" class="btn btn-sm text-white" style="background-color: purple;" data-bs-toggle="modal" data-bs-target="#modalBarang">+Tambah Barang</a>
                     </td>
                     
             </head>
@@ -83,7 +142,7 @@
                     <tr class="border-bottom border-secondary">
                         <td style="background-color: lightgrey;"></td>
                         <td class="fs-6 fw-bold text-start" style="background-color: lightgrey;">
-                            Sub Total:
+                            {{jual.jumlah|intcomma}} x @Rp.{{jual.harga|intcomma}}.00
                         </td>
                         <td class="fs-6 fw-bold text-end" colspan="2" style="background-color: lightgrey;">
                             Rp. {{jual.total|intcomma}}.00
@@ -111,6 +170,17 @@ $(document).ready(function(){
     $('.search-barang').on('keyup',function(){
         var searchTerm = $(this).val().toLowerCase();
         $('#tableMasterBarang tbody tr').each(function(){
+            var lineStr = $(this).text().toLowerCase();
+            if(lineStr.indexOf(searchTerm) === -1){
+                $(this).hide();
+            }else{
+                $(this).show();
+            }
+        });
+    });
+    $('.search-pending').on('keyup',function(){
+        var searchTerm = $(this).val().toLowerCase();
+        $('#tablePendingTransaksi tbody tr').each(function(){
             var lineStr = $(this).text().toLowerCase();
             if(lineStr.indexOf(searchTerm) === -1){
                 $(this).hide();
