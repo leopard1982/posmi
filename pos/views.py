@@ -30,6 +30,7 @@ def index(request):
                 penjualan.cabang=cabang
                 penjualan.user=user
                 penjualan.save()
+                nota=penjualan.nota
             try:
                 print(kode)
                 if(kode):
@@ -51,6 +52,7 @@ def index(request):
             except Exception as ex:
                 if (kode):
                     messages.add_message(request,messages.SUCCESS,"Maaf barang dengan kode tersebut belum ada.")
+            return HttpResponseRedirect(f'/?nota={nota}')
     else:
         user=None
 
@@ -156,6 +158,7 @@ def tambahItems(request):
                 penjualandetail.jumlah += 1
                 penjualandetail.save()    
                 messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah ditambah 1.')
+                return HttpResponseRedirect(f"{page}?nota={nota}")
             except:
                 messages.add_message(request,messages.SUCCESS,'Kode Barang atau Nomor Nota tidak sesuai.')
             return HttpResponseRedirect(page)    
