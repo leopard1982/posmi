@@ -68,7 +68,7 @@ def index(request):
             penjualan = Penjualan.objects.get(nota=nota)
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
             nota = penjualan.nota
-            total = penjualan.total
+            total = int(penjualan.total)
             jumlah_item = penjualan.items
         else:
             penjualandetail=None
