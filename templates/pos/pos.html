@@ -79,6 +79,47 @@
   </div>
 </div>
 
+<!-- Modal Payment-->
+<div class="modal fade" id="modalPayment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropPayment" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="staticBackdropPayment">Pembayaran</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{% url 'bayar_transaksi'%}?nota={{nota}}" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div>
+                <label style="min-width: 130px;">Total Belanja:</label> <strong>Rp.{{total|intcomma}}</strong>
+            </div>
+            <div class="mt-3">
+                <span >
+                    <label for="metode" style="min-width: 130px;">Pembayaran:</label>
+                </span>
+                <select name="metode" id="metode" required>
+                    <option value="">--------</option>
+                    <option value="0">Cash</option>
+                    <option value="1">Transfer</option>
+                </select>
+            </div>
+            <div class="mt-3">
+                <span >
+                    <label for="pembeli" style="min-width: 130px;" >Pembeli:</label>
+                </span>
+                <input type="text" name="pembeli" id="pembeli" required>
+            </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-success mx-2" >Bayar</button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% if user.is_authenticated %}
     <div>
         {% if nota %}
@@ -87,13 +128,15 @@
                 <span class="fw-bold fs-6">ID: <span class="fs-">{{nota}}</span></span>
             </div>
             <div class="text-end">
-                <a href="{% url 'index_pos'%}" class="btn-sm btn-info btn">+Transaksi Baru</a><br>
-                <a href="#" class="btn-sm btn-warning btn mt-2"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr; Pending Transaksi</a>
+                <a href="{% url 'index_pos'%}" class="btn-sm btn-info btn mx-1 mt-2">+Baru</a>
+                <a href="#" class="btn-sm btn-warning btn mt-2 mx-1"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
+                {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">&rarr; CMS</a>{% endif%}
             </div>
         </div>
         {% else %}
         <div class="text-end my-2">
-            <a href="#" class="btn-sm btn-warning btn mt-2" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr; Pending Transaksi</a>
+            <a href="#" class="btn-sm btn-warning btn mt-2 mx-1" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
+            {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">&rarr; CMS</a>{% endif%}
         </div>
         {% endif %}
         <table class="table">
@@ -110,6 +153,7 @@
                     
             </head>
         </table>
+        {% if nota %}
         <table class="table" id="tableBarang">
             <thead>
                 <th>No.</th>
@@ -150,8 +194,19 @@
                     </tr>
                 {% endfor %}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <div class="d-flex justify-content-center pt-3">
+                            <a href="{% url 'hapus_transaksi'%}?nota={{nota}}" class="btn btn-sm btn-danger rounded-pill px-4 mx-4">Hapus Transaksi</a>
+                            <a href="#" class="btn btn-sm btn-success px-4 mx-4 rounded-pill" data-bs-toggle="modal" data-bs-target="#modalPayment">Pembayaran</a>
+                        </div>
+                        
+                    </td>
+                </tr>
+            </tfoot>
         </table>
-
+    {% endif %}
     </div>
 {% endif %}
 <script>

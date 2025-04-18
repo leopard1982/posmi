@@ -285,7 +285,7 @@ def hapusTransaksi(request):
         try:
             nota = request.GET['nota']
             try:
-                Penjualan.objects.all().filter(nota=nota).delete()
+                Penjualan.objects.get(Q(nota=nota) & Q(user=request.user)).delete()
                 messages.add_message(request,messages.SUCCESS,f'Nota Penjualan dengan id {nota} berhasil dihapus...')
                 return HttpResponseRedirect(page)
             except Exception as ex:
@@ -323,3 +323,25 @@ def loginkan(request):
 def logoutkan(request):
     logout(request)
     return HttpResponseRedirect('/login')
+
+def bayarTransaksi(request):
+    print(request.GET)
+    try:
+        nota = request.GET['nota']
+        try:
+            penjualan = Penjualan.objects.get(nota=nota)
+            messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil..")
+        except Exception as ex:
+            # print(ex)
+            messages.add_message(request,messages.SUCCESS,"Nomor nota tidak diketemukan.")    
+            nota=None
+    except Exception as ex:
+        # print(ex)
+        nota=None
+        messages.add_message(request,messages.SUCCESS,"Nomor nota kosong.")
+    
+    if nota:
+        if request.method=="POST":
+            print(request.POST)
+        
+    return HttpResponseRedirect('/')
