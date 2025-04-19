@@ -336,7 +336,6 @@ def bayarTransaksi(request):
                     penjualan.customer=request.POST['pembeli']
                     penjualan.tgl_bayar = datetime.datetime.now()
                     penjualan.save()
-                    messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil.")
                     return HttpResponseRedirect(f'/print/{nota}')
                 except Exception as ex:
                     print(ex)
@@ -378,6 +377,9 @@ def printTransaksi(request,nota):
             'bayar':bayar,
             'total':total
         }
+        messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil.")
         return render(request,'pos/print.html',context)
-    except:
+    except Exception as ex:
+        print('error print')
+        print(ex)
         return HttpResponseRedirect('/')
