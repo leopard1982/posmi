@@ -21,6 +21,7 @@ def index(request):
                 nota=""
 
             kode = request.POST['kode']
+            print(kode)
                 
             if nota:
                 penjualan= Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
@@ -37,7 +38,7 @@ def index(request):
                     barang = Barang.objects.get(barcode=kode)
                     messages.add_message(request,messages.SUCCESS,f"{barang.nama} berhasil ditambahkan.")
                     try:
-                        penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang) & Q(is_paid=False))
+                        penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
                         penjualandetail.jumlah=penjualandetail.jumlah+1
                         penjualandetail.save()
                     except Exception as ex:
