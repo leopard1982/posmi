@@ -6,6 +6,11 @@ from django.db.models import Q, Sum, Count
 from django.utils import timezone
 import datetime
 
+METODE_BAYAR = [
+    (0,'cash'),
+    (1,'transfer')
+]
+
 class TotalPenjualan(models.Model):
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT)
     tanggal = models.DateField(null=True,blank=True)
@@ -29,6 +34,10 @@ class Penjualan(models.Model):
     total = models.DecimalField(max_digits=12,decimal_places=2,default=0)
     items = models.IntegerField(default=0)
     is_paid = models.BooleanField(default=False)
+    metode = models.IntegerField(choices=METODE_BAYAR,default=0)
+    customer = models.CharField(max_length=200,default="",blank=True,null=True)
+    tgl_bayar = models.DateTimeField(null=True,blank=True)
+    reprint_nota = models.IntegerField(default=0)
 
     # def save(self,*args,**kwargs):
         # tanggalnya = datetime.date(datetime.datetime.now().year,datetime.datetime.now().month,datetime.datetime.now().day)

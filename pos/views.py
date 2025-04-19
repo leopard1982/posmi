@@ -23,7 +23,7 @@ def index(request):
             kode = request.POST['kode']
                 
             if nota:
-                penjualan= Penjualan.objects.get(nota=nota)
+                penjualan= Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
             else:
                 cabang = request.user.userprofile.cabang
                 penjualan=Penjualan()
@@ -37,7 +37,7 @@ def index(request):
                     barang = Barang.objects.get(barcode=kode)
                     messages.add_message(request,messages.SUCCESS,f"{barang.nama} berhasil ditambahkan.")
                     try:
-                        penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
+                        penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang) & Q(is_paid=False))
                         penjualandetail.jumlah=penjualandetail.jumlah+1
                         penjualandetail.save()
                     except Exception as ex:
@@ -65,7 +65,7 @@ def index(request):
             nota=""
         print(nota)
         if(nota):
-            penjualan = Penjualan.objects.get(nota=nota)
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
             nota = penjualan.nota
             total = int(penjualan.total)
@@ -112,7 +112,7 @@ def kurangiItems(request):
             nota = request.GET['nota']
             id_barang = request.GET['id']
             try:
-                penjualan = Penjualan.objects.get(nota=nota)
+                penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
                 barang = Barang.objects.get(id=int(id_barang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
                 if penjualandetail.jumlah==1:
@@ -154,7 +154,7 @@ def tambahItems(request):
             try:
                 penjualan = Penjualan.objects.get(nota=nota)
                 barang = Barang.objects.get(id=int(id_barang))
-                penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
+                penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang) & Q(is_paid=False))
                 penjualandetail.jumlah += 1
                 penjualandetail.save()    
                 messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah ditambah 1.')
@@ -182,7 +182,7 @@ def ubahItems(request):
             id_barang = int(request.GET['id'])
             jumlah = int(request.POST['jumlah'])
             try:
-                penjualan = Penjualan.objects.get(nota=nota)
+                penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
                 barang = Barang.objects.get(id=int(id_barang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
                 if(int(jumlah)==0):
@@ -238,7 +238,7 @@ def tambahBarang(request):
         
         if(nota):
             try:
-                penjualan = Penjualan.objects.get(nota=nota)
+                penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
                 try:
                     barang = Barang.objects.get(id=int(id_barang))
                 except:
@@ -285,7 +285,7 @@ def hapusTransaksi(request):
         try:
             nota = request.GET['nota']
             try:
-                Penjualan.objects.get(Q(nota=nota) & Q(user=request.user)).delete()
+                Penjualan.objects.get(Q(nota=nota) & Q(user=request.user) & Q(is_paid=False)).delete()
                 messages.add_message(request,messages.SUCCESS,f'Nota Penjualan dengan id {nota} berhasil dihapus...')
                 return HttpResponseRedirect(page)
             except Exception as ex:
@@ -325,12 +325,22 @@ def logoutkan(request):
     return HttpResponseRedirect('/login')
 
 def bayarTransaksi(request):
-    print(request.GET)
     try:
         nota = request.GET['nota']
         try:
-            penjualan = Penjualan.objects.get(nota=nota)
-            messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil..")
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
+            if request.method=="POST":
+                try:
+                    penjualan.is_paid=True
+                    penjualan.metode=int(request.POST['metode'])
+                    penjualan.customer=request.POST['pembeli']
+                    penjualan.tgl_bayar = datetime.datetime.now()
+                    penjualan.save()
+                    messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil.")
+                    return HttpResponseRedirect(f'/print/{nota}')
+                except Exception as ex:
+                    print(ex)
+                    messages.add_message(request,messages.SUCCESS,'Pembayaran Gagal Dilakukan.')
         except Exception as ex:
             # print(ex)
             messages.add_message(request,messages.SUCCESS,"Nomor nota tidak diketemukan.")    
@@ -345,3 +355,29 @@ def bayarTransaksi(request):
             print(request.POST)
         
     return HttpResponseRedirect('/')
+
+def printTransaksi(request,nota):
+    try:
+        penjualan = Penjualan.objects.get(nota=nota)
+        penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+        nama_toko = settings.NAMA_TOKO
+        alamat_toko = settings.ALAMAT_TOKO
+        telpon_toko = settings.TELPON_TOKO
+        total = int(penjualan.total)
+        
+        if penjualan.metode==0:
+            bayar="cash"
+        else:
+            bayar="transfer"
+        context = {
+            'penjualan':penjualan,
+            'penjualandetail':penjualandetail,
+            'nama_toko':nama_toko,
+            'alamat_toko':alamat_toko,
+            'telpon_toko':telpon_toko,
+            'bayar':bayar,
+            'total':total
+        }
+        return render(request,'pos/print.html',context)
+    except:
+        return HttpResponseRedirect('/')

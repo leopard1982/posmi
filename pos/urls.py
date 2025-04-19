@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import index,kurangiItems,tambahItems,ubahItems,tambahBarang,loginkan,logoutkan,hapusTransaksi
-from .views import bayarTransaksi
+from .views import bayarTransaksi,printTransaksi
 
 urlpatterns = [
     path('', index,name='index_pos'),
@@ -11,5 +11,6 @@ urlpatterns = [
     path('tambah2/',tambahBarang,name='tambah_barang'),
     path('login/',loginkan,name="loginkan"),
     path('logout/',logoutkan,name='logoutkan'),
-    path('bayar/',bayarTransaksi,name="bayar_transaksi")
+    path('bayar/',bayarTransaksi,name="bayar_transaksi"),
+    path('print/<str:nota>/',printTransaksi,name="print_transaksi")
 ]

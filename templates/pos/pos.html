@@ -129,13 +129,17 @@
             </div>
             <div class="text-end">
                 <a href="{% url 'index_pos'%}" class="btn-sm btn-info btn mx-1 mt-2">+Baru</a>
-                <a href="#" class="btn-sm btn-warning btn mt-2 mx-1"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
+                {% if jumlah_penjualan_pending > 0 %}
+                    <a href="#" class="btn-sm btn-warning btn mt-2 mx-1"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
+                {% endif %}
                 {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">&rarr; CMS</a>{% endif%}
             </div>
         </div>
         {% else %}
         <div class="text-end my-2">
-            <a href="#" class="btn-sm btn-warning btn mt-2 mx-1" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
+            {% if jumlah_penjualan_pending > 0 %}
+                <a href="#" class="btn-sm btn-warning btn mt-2 mx-1" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
+            {% endif%}
             {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">&rarr; CMS</a>{% endif%}
         </div>
         {% endif %}

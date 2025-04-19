@@ -1,0 +1,122 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota</title>
+    <style>
+        @media print {
+            @page {
+                size: portrait;
+                margin:0%;
+            }
+            body {
+                font-family: "Poppins",sans-serif;
+                font-size: 12px;
+                color: black;
+                background-color: white;
+                min-width: 6cm;
+                max-width: 6cm;
+                margin-top: 1cm !important;
+                margin:0;
+                margin-bottom: 2cm;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            /* avoid breaking inside element */
+            .keep-together {
+                break-inside: avoid;
+            }
+
+            .break-before {
+                break-before: always;
+            }
+
+            .break-after {
+                break-after: always;
+            }
+
+            table {
+                break-inside: avoid;
+            }
+        }
+        .area-print {
+                min-width: 6cm;
+                max-width: 6cm;
+                padding-left:2mm;
+                padding-right:2mm;
+            }
+    </style>
+</head>
+<body onload="printme()">
+    <div class="area-print">
+        <div class="text-center">
+            <span class="fw-bold fs-6">{{nama_toko}}</span><br>
+            <span>{{alamat_toko}}</span><br>
+            <span>{{telpon_toko}}</span><br>
+            <span class="fw-bold">------------------------------</span>
+            <div class="d-flex justify-content-between px-1" style="font-size: 11px;">
+                <span>kasir: <span class="fw-bold">{{penjualan.user.username}}</span></span>
+                <span>{{penjualan.tgl_bayar|date:"d/m/Y h:m"}}</span>
+            </div>
+            <div style="font-size: 11px;text-align: left;" class="px-1">
+                pembeli: <span class="fw-bold">{{penjualan.customer|title|truncatechars:"20"}}</span>
+            </div>
+        </div>
+        <div>
+            <div class="fw-bold text-center pt-2 border-top border-dark"></div>
+            {% for detail in penjualandetail %}
+            <div style="font-size: 11px;font-weight: bold;" class="my-2">
+                <div style="font-size: 12px;">{{detail.barang.nama|title}}</div>
+                <div class="d-flex justify-content-between">
+                    <span>{{detail.jumlah|intcomma}}xRp.{{detail.harga|intcomma}}</span>
+                    <span>Rp.{{detail.total|intcomma}}</span>
+                </div>
+            </div>
+            {% endfor %}
+            <div style="font-size: 11px;font-weight: bold;" class="d-flex justify-content-between pt-2 border-top border-dark">
+                <span>{{bayar}}</span>
+                <span style="font-size: 12px;">Rp.{{total|intcomma}}</span>
+            </div>
+        </div>
+        <div class="text-center">
+            <span class="fw-bold">------------------------------</span><br>
+            <span style="font-size: 12px;font-weight: bold;">Terima Kasih,</span><br>
+            <span style="font-size: 12px;font-weight: bold;">Sudah Berbelanja.</span>
+        </div>
+        <div class="fw-bold text-center">
+            *****
+        </div>
+        <div style="font-size:11px" class="text-center">
+            <span class="fw-bold">Nomor Transaksi:</span><br>
+            <span class="fw-bold">{{penjualan.nota}}</span>
+        </div>
+        <div class="fw-bold text-center mb-5">
+            ***** <br>
+            <br>
+            <span class="fw-bold">------------------------------</span>
+        </div>
+        <hr>
+        <hr>
+        <hr>
+    </div>
+    <script>
+        function printme() {
+            window.print();
+            window.onafterprint = function(event) {
+                window.location.href="/";
+            }
+        }
+        
+    </script>
+</body>
+</html>
