@@ -83,8 +83,12 @@ def index(request):
         print(ex)
         total=0
         jumlah_item=0
-
-    barang = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
+    try:
+        barang = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
+        jml_barang = barang.count()
+    except:
+        barang = None
+        jml_barang=0
 
     penjualan_pending = Penjualan.objects.all().filter(Q(is_paid=False) & Q(user=user)).order_by('-created_at')
     jumlah_penjualan_pending = penjualan_pending.count()
@@ -95,7 +99,7 @@ def index(request):
         'total':total,
         'jumlah_item':jumlah_item,
         'barang':barang,
-        'jml_barang':barang.count(),
+        'jml_barang':jml_barang,
         'toko':toko,
         'tanggal':tanggal,
         'penjualan_pending':penjualan_pending,
