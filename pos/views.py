@@ -36,7 +36,7 @@ def index(request):
             try:
                 print(kode)
                 if(kode):
-                    barang = Barang.objects.get(barcode=kode)
+                    barang = Barang.objects.get(Q(barcode=kode) & Q(cabang=request.user.userprofile.cabang))
                     messages.add_message(request,messages.SUCCESS,f"{barang.nama} berhasil ditambahkan.")
                     try:
                         penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
@@ -84,7 +84,7 @@ def index(request):
         total=0
         jumlah_item=0
 
-    barang = Barang.objects.all()
+    barang = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
 
     penjualan_pending = Penjualan.objects.all().filter(Q(is_paid=False) & Q(user=user)).order_by('-created_at')
     jumlah_penjualan_pending = penjualan_pending.count()
@@ -115,7 +115,7 @@ def kurangiItems(request):
             id_barang = request.GET['id']
             try:
                 penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
-                barang = Barang.objects.get(id=int(id_barang))
+                barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang=request.user.userprofile.cabang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
                 if penjualandetail.jumlah==1:
                     penjualandetail.delete()
@@ -155,7 +155,7 @@ def tambahItems(request):
             id_barang = request.GET['id']
             try:
                 penjualan = Penjualan.objects.get(nota=nota)
-                barang = Barang.objects.get(id=int(id_barang))
+                barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang=request.user.userprofile.cabang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang) & Q(is_paid=False))
                 penjualandetail.jumlah += 1
                 penjualandetail.save()    
@@ -185,7 +185,7 @@ def ubahItems(request):
             jumlah = int(request.POST['jumlah'])
             try:
                 penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
-                barang = Barang.objects.get(id=int(id_barang))
+                barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang=request.user.userprofile.cabang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
                 if(int(jumlah)==0):
                     penjualandetail.delete()
@@ -242,7 +242,7 @@ def tambahBarang(request):
             try:
                 penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
                 try:
-                    barang = Barang.objects.get(id=int(id_barang))
+                    barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang = request.user.userprofile.cabang))
                 except:
                     messages.add_message(request,messages.SUCCESS,'Kode Barang tidak ditemukan.')
                     return HttpResponseRedirect(f"/?nota={nota}")   
@@ -266,7 +266,7 @@ def tambahBarang(request):
             penjualan.cabang=cabang
             penjualan.user=user
             penjualan.save()
-            barang = Barang.objects.get(id=int(id_barang))
+            barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang=request.user.userprofile.cabang))
             penjualandetail = PenjualanDetail()
             penjualandetail.penjualan=penjualan
             penjualandetail.jumlah=1

@@ -11,6 +11,7 @@ SATUAN = [
 
 class Cabang(models.Model):
     nama_toko = models.CharField(max_length=20,default="Nama Toko")
+    token = models.UUIDField(auto_created=True,editable=True,default=uuid.uuid4)
     nama_cabang = models.CharField(max_length=15,default="Cabang1")
     alamat_toko = models.CharField(max_length=30,default="Jalan...")
     telpon = models.CharField(max_length=15,default="081234567890")
@@ -20,7 +21,7 @@ class Cabang(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nama_toko} - {self.telpon}"
+        return f"{self.nama_toko} - {self.nama_cabang}"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.RESTRICT)
@@ -47,6 +48,7 @@ class Customer(models.Model):
         unique_together = ['nama','handphone']
 
 class Barang(models.Model):
+    cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,null=True,blank=True,related_name="cabang_toko")
     barcode = models.CharField(max_length=100,default="0")
     nama = models.CharField(max_length=200)
     satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS")
@@ -62,4 +64,4 @@ class Barang(models.Model):
         return f"{self.barcode} - {self.nama} - {self.satuan}"
 
     class Meta:
-        unique_together = ['barcode','nama']
+        unique_together = ['cabang','barcode','nama']
