@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate,login,logout
 
 # Create your views here.
 def index(request):
+    toko = None
     tanggal = datetime.datetime.now()
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
