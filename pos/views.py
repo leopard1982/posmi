@@ -10,10 +10,10 @@ from django.contrib.auth import authenticate,login,logout
 
 # Create your views here.
 def index(request):
-    toko = settings.NAMA_TOKO
     tanggal = datetime.datetime.now()
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
+        toko = request.user.userprofile.cabang.nama_toko
         if request.method=="POST":
             try:
                 nota = request.GET['nota']
@@ -357,30 +357,33 @@ def bayarTransaksi(request):
     return HttpResponseRedirect('/')
 
 def printTransaksi(request,nota):
-    try:
-        penjualan = Penjualan.objects.get(nota=nota)
-        penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-        nama_toko = settings.NAMA_TOKO
-        alamat_toko = settings.ALAMAT_TOKO
-        telpon_toko = settings.TELPON_TOKO
-        total = int(penjualan.total)
-        
-        if penjualan.metode==0:
-            bayar="cash"
-        else:
-            bayar="transfer"
-        context = {
-            'penjualan':penjualan,
-            'penjualandetail':penjualandetail,
-            'nama_toko':nama_toko,
-            'alamat_toko':alamat_toko,
-            'telpon_toko':telpon_toko,
-            'bayar':bayar,
-            'total':total
-        }
-        messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil.")
-        return render(request,'pos/print.html',context)
-    except Exception as ex:
-        print('error print')
-        print(ex)
+    if request.user.is_authenticated:
+        try:
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user))
+            penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+            nama_toko = request.user.userprofile.cabang.nama_toko
+            alamat_toko = request.user.userprofile.cabang.alamat_toko
+            telpon_toko = request.user.userprofile.cabang.telpon
+            total = int(penjualan.total)
+            
+            if penjualan.metode==0:
+                bayar="cash"
+            else:
+                bayar="transfer"
+            context = {
+                'penjualan':penjualan,
+                'penjualandetail':penjualandetail,
+                'nama_toko':nama_toko,
+                'alamat_toko':alamat_toko,
+                'telpon_toko':telpon_toko,
+                'bayar':bayar,
+                'total':total
+            }
+            messages.add_message(request,messages.SUCCESS,"Pembayaran Berhasil.")
+            return render(request,'pos/print.html',context)
+        except Exception as ex:
+            messages.add_message(request,messages.SUCCESS,'Nota yang akan dicetak tidak diketemukan..')
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login untuk bisa mencetak transaksi.")
         return HttpResponseRedirect('/')

@@ -10,13 +10,17 @@ SATUAN = [
 
 
 class Cabang(models.Model):
-    nama = models.CharField(max_length=200,default="")
+    nama_toko = models.CharField(max_length=20,default="Nama Toko")
+    nama_cabang = models.CharField(max_length=15,default="Cabang1")
+    alamat_toko = models.CharField(max_length=30,default="Jalan...")
+    telpon = models.CharField(max_length=15,default="081234567890")
     keterangan = models.CharField(max_length=200,default="")
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nama} - {self.keterangan}"
+        return f"{self.nama_toko} - {self.telpon}"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.RESTRICT)
