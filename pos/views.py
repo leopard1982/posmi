@@ -320,7 +320,10 @@ def loginkan(request):
                 return HttpResponseRedirect('/')
             else:
                 messages.add_message(request,messages.SUCCESS,f"Username dan Password tidak sesuai, silakan ulangi kembali.")
-        toko = settings.NAMA_TOKO
+        try:
+            toko = request.user.userprofile.cabang.nama_toko
+        except:
+            toko=""
         context = {
             'toko':toko
         }

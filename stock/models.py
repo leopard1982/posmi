@@ -65,3 +65,8 @@ class Barang(models.Model):
 
     class Meta:
         unique_together = ['cabang','barcode','nama']
+
+class UploadBarang(models.Model):
+    file = models.FileField(upload_to="file_barang")
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User,on_delete=models.RESTRICT,null=True,blank=True)
