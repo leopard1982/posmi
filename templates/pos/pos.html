@@ -132,7 +132,7 @@
                 {% if jumlah_penjualan_pending > 0 %}
                     <a href="#" class="btn-sm btn-warning btn mt-2 mx-1"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
                 {% endif %}
-                {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">&rarr; CMS</a>{% endif%}
+                {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">Admin&rarr;</a>{% endif%}
             </div>
         </div>
         {% else %}
@@ -140,7 +140,7 @@
             {% if jumlah_penjualan_pending > 0 %}
                 <a href="#" class="btn-sm btn-warning btn mt-2 mx-1" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">&rarr;Pending</a>
             {% endif%}
-            {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">&rarr; CMS</a>{% endif%}
+            {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">Admin&rarr;</a>{% endif%}
         </div>
         {% endif %}
         <table class="table">
