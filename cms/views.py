@@ -248,7 +248,7 @@ def editBarang(request):
                 except Exception as ex:
                     print(ex)
                     messages.add_message(request,messages.SUCCESS,"Update Barang Gagal.")
-                return HttpResponseRedirect('/cms/')
+                # return HttpResponseRedirect('/cms/')
             try:
                 id_barang = request.GET['id']
                 barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))
