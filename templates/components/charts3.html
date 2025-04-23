@@ -1,0 +1,31 @@
+<div>   
+    <canvas id="myChart3" style="width:100%;"></canvas>
+</div>
+<script>
+    const xValues_don = {{nama_kasir|safe}};
+        const yValues_don = {{jumlah_transaksi|safe}};
+        const barColors_don = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+
+    new Chart("myChart3", {
+    type: "doughnut",
+    data: {
+        labels: xValues_don,
+        datasets: [{
+        backgroundColor: barColors_don,
+        data: yValues_don
+        }]
+    },
+    options: {
+        title: {
+        display: true,
+        text: "Liga Transaksi Kasir {{bulan}} {{tahun}}"
+        }
+    }
+    });
+</script>
