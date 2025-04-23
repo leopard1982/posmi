@@ -4,7 +4,7 @@ from pos.models import Penjualan, Barang
 from django.db.models import Q,Sum,Count
 import datetime
 from django.contrib.auth.models import User
-from .forms import FormInfoToko
+from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
 from stock.models import Cabang
 
 def bulannya(bulannya):
@@ -210,4 +210,60 @@ def transaksiBulanLain(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+
+def profilSaya(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                print(request.POST)
+            formuserprofile = FormUserProfile()
+            formuser = FormUser()
+            context = {
+                'formprofile':formuserprofile,
+                'formuser':formuser
+            }
+            return render(request,'administrator/components/profile.html',context)
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
     
+def editBarang(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                try:
+                    id_barang = request.GET['id']
+                    barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))
+                    barang.barcode=request.POST['barcode']
+                    barang.nama=request.POST['nama']
+                    barang.satuan=request.POST['satuan']
+                    barang.stok = int(request.POST['stok'])
+                    barang.harga_ecer=int(request.POST['harga_ecer'])
+                    barang.harga_grosir=int(request.POST['harga_grosir'])
+                    barang.save()
+                    messages.add_message(request,messages.SUCCESS,f"Update Informasi '{barang.nama}' Berhasil.")
+                except Exception as ex:
+                    print(ex)
+                    messages.add_message(request,messages.SUCCESS,"Update Barang Gagal.")
+                return HttpResponseRedirect('/cms/')
+            try:
+                id_barang = request.GET['id']
+                barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))
+                form = FormBarang(instance=barang)
+                context = {
+                    'form':form,
+                    'id_barang':id_barang
+                }
+                return render(request,'administrator/components/edit_barang.html',context)
+            except Exception as ex:
+                print(ex)
+                return HttpResponseRedirect('/cms/')
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')

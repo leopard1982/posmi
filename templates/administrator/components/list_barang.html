@@ -17,6 +17,7 @@
                 <th>Harga Grosir</th>
                 <th>Terjual</th>
                 <th>Tgl.Update</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,10 @@
                 <td>Rp.{{barang.harga_grosir|intcomma}}.00</td>
                 <td class="text-center">{{barang.jumlah_dibeli|intcomma}}</td>
                 <td >{{barang.updated_at|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{barang.updated_at|date:"h:m:s"}}</span></td>
+                <td>
+                    <a href="#" class="bth btn-sm btn-danger m-1 text-white"><i class="fa fa-trash text-white" aria-hidden="true"></i></a>
+                    <a hx-get="{% url 'edit_barang'%}?id={{barang.id}}" hx-target="#mainpage" href="#" class="bth btn-sm btn-info m-1"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                </td>
             </tr>
             {% endfor%}
         </tbody>

@@ -1,0 +1,15 @@
+<div>
+    <div class="mt-3 h2 fw-bold">
+        Daftar Barang
+    </div>
+    <div class="mb-5 fs-6">
+        Barang &rarr; Daftar Barang &rarr; Edit Barang
+    </div>
+    <form action="{% url 'edit_barang'%}?id={{id_barang}}" method="post">
+        {{form.as_div}}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary px-3 rounded-pill">
+            Ubah Informasi
+        </button>
+    </form>
+</div>
