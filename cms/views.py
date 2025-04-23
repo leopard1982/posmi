@@ -6,6 +6,7 @@ import datetime
 from django.contrib.auth.models import User
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
 from stock.models import Cabang
+from django.urls import reverse
 
 def bulannya(bulannya):
     if bulannya==1:
@@ -248,7 +249,7 @@ def editBarang(request):
                 except Exception as ex:
                     print(ex)
                     messages.add_message(request,messages.SUCCESS,"Update Barang Gagal.")
-                # return HttpResponseRedirect('/cms/')
+                return HttpResponseRedirect(reverse('daftar_barang'))
             try:
                 id_barang = request.GET['id']
                 barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))

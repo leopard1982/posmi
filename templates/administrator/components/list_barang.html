@@ -6,6 +6,18 @@
     <div class="mb-5 fs-6">
         Barang &rarr; Daftar Barang
     </div>
+    <div class="container my-2">
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-primary alert-dismissible fade show " role="alert">
+                                        <button type="button" class=" btn" data-bs-dismiss="alert" aria-label="Close">X</button>    
+                                        <span>{{message}}</span>
+                                            
+                                    </div>
+                                    
+                                    {% endfor %}
+                                {% endif %}
+    </div>
     <table id="datasetBarang"  >
         <thead>
             <tr>
