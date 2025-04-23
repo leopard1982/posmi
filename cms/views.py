@@ -4,7 +4,8 @@ from pos.models import Penjualan, Barang
 from django.db.models import Q,Sum,Count
 import datetime
 from django.contrib.auth.models import User
-
+from .forms import FormInfoToko
+from stock.models import Cabang
 
 def bulannya(bulannya):
     if bulannya==1:
@@ -136,3 +137,59 @@ def index(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+    
+def infoToko(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if(request.method=="POST"):
+                cabang = Cabang.objects.get(id=request.user.userprofile.cabang.id)
+                cabang.nama_toko = request.POST['nama_toko']
+                cabang.nama_cabang = request.POST['nama_cabang']
+                cabang.alamat_toko = request.POST['alamat_toko']
+                cabang.telpon = request.POST['telpon']
+                cabang.keterangan = request.POST['keterangan']
+                cabang.save()
+                messages.add_message(request,messages.SUCCESS,"Data Informasi Toko Berhasil Diubah.")
+                return HttpResponseRedirect('/cms/')
+            
+            forminfotoko = FormInfoToko(instance=request.user.userprofile.cabang)
+            context = {
+                'forms':forminfotoko
+            }
+            return render(request,'administrator/components/info_toko.html',context)
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+
+def daftarBarang(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
+            context = {
+                'barangs':barangs
+            }
+            return render(request,'administrator/components/list_barang.html',context)
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+'''
+cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,null=True,blank=True,related_name="cabang_toko")
+    barcode = models.CharField(max_length=100,default="0")
+    nama = models.CharField(max_length=200)
+    satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS")
+    stok = models.IntegerField(default=0)
+    harga_ecer = models.IntegerField(default=0)
+    harga_grosir = models.IntegerField(default=0)
+    min_beli_grosir = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User,on_delete=models.RESTRICT,blank=True,null=True)
+    jumlah_dibeli = models.BigIntegerField(default=0)
+'''

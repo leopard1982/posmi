@@ -1,0 +1,9 @@
+<div>
+    <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
+        {{forms.as_div}}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary px-3 rounded-pill">
+            Ubah Informasi
+        </button>
+    </form>
+</div>

@@ -4,15 +4,16 @@
 <html lang="en">
 
 <head>
-    <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js" integrity="sha512-2kIcAizYXhIn8TzUvqzEDZNuDZ+aW7yE/+f1HJHXFjQcGNfv1kqzJSTBRBSlOgp6B/KZsz1K0a3ZTqP9dnxioQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
     <title>POSMI-Admin [{{user.username}}]</title>
 
     <!-- Custom fonts for this template-->
@@ -71,13 +72,14 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-fw fa-cog"></i>
-                    <span>Master Toko</span>
+                    <span>Toko Saya</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="buttons.html">Buttons</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
+                        <h6 class="collapse-header">Informasi Detail Toko</h6>
+                        <a class="collapse-item"
+                            hx-get="{% url 'info_toko'%}"
+                            hx-target="#mainpage" href="#">Informasi Toko</a>
                     </div>
                 </div>
             </li>
@@ -87,16 +89,14 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilities</span>
+                    <span>Barang</span>
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Colors</a>
-                        <a class="collapse-item" href="utilities-border.html">Borders</a>
-                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a>
+                        <h6 class="collapse-header">Pengaturan Barang</h6>
+                        <a class="collapse-item" href="#" hx-get="{% url 'daftar_barang'%}" hx-target="#mainpage">Daftar Barang</a>
+                        <a class="collapse-item" href="#">Tambah Barang</a>
                     </div>
                 </div>
             </li>
@@ -152,12 +152,12 @@
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
 
-            <!-- Sidebar Message -->
+            <!-- Sidebar Message
             <div class="sidebar-card d-none d-lg-flex">
                 <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
                 <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
                 <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
-            </div>
+            </div> -->
 
         </ul>
         <!-- End of Sidebar -->
@@ -389,109 +389,111 @@
                                 {% endblock %}
                             </div>
                     </div>
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <div class="h3 mb-0 text-gray-800">
-                            {{user.userprofile.cabang.nama_toko}} (<i>{{user.userprofile.cabang.nama_cabang}}</i>)<br>
-                            <span style="font-size: 15px;font-weight: bold;">{{user.userprofile.cabang.alamat_toko}}</span>
+                    <div id="mainpage">
+                        <!-- Page Heading -->
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <div class="h3 mb-0 text-gray-800">
+                                {{user.userprofile.cabang.nama_toko}} (<i>{{user.userprofile.cabang.nama_cabang}}</i>)<br>
+                                <span style="font-size: 15px;font-weight: bold;">{{user.userprofile.cabang.alamat_toko}}</span>
+                            </div>
+                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                    class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                         </div>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
-                    </div>
 
-                    <!-- Content Row -->
-                    <div class="row">
+                        <!-- Content Row -->
+                        <div class="row">
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Total Penjualan<br>({{bulan}} {{tahun}})</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.{{total_penjualan_sebulan|intcomma}}.00</div>
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Total Penjualan<br>({{bulan}} {{tahun}})</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.{{total_penjualan_sebulan|intcomma}}.00</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                            </div>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                    Total Penjualan<br>({{tahun}})</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.{{total_penjualan_setahun|intcomma}}.00</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                    Jumlah Pembeli<br>({{bulan}} {{tahun}})</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_penjualan|intcomma}}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <!-- Pending Requests Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                    Pending Transaksi<br>({{bulan}} {{tahun}})</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{pending_penjualan|intcomma}}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Total Penjualan<br>({{tahun}})</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp.{{total_penjualan_setahun|intcomma}}.00</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- untuk cart -->
+                        <div class="row px-2 my-2">
+                            <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
+                                {% include 'components/charts.html'%}
+                            </div>
+                            <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
+                                {% include 'components/charts2.html'%}
                             </div>
                         </div>
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Jumlah Pembeli<br>({{bulan}} {{tahun}})</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{jumlah_penjualan|intcomma}}</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                        <!-- untuk cart -->
+                        <div class="row px-2 my-2">
+                            <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
+                                {% include 'components/charts3.html'%}
                             </div>
-                            
-                        </div>
-
-                        <!-- Pending Requests Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Pending Transaksi<br>({{bulan}} {{tahun}})</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{pending_penjualan|intcomma}}</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
+                                {% include 'components/charts4.html'%}
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- untuk cart -->
-                    <div class="row px-2 my-2">
-                        <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
-                            {% include 'components/charts.html'%}
-                        </div>
-                        <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
-                            {% include 'components/charts2.html'%}
-                        </div>
-                    </div>
-                    <!-- untuk cart -->
-                    <div class="row px-2 my-2">
-                        <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
-                            {% include 'components/charts3.html'%}
-                        </div>
-                        <div class="col-12 col-xxl-6 col-xl-6 col-lg-6 my-3">
-                            {% include 'components/charts4.html'%}
                         </div>
                     </div>
             </div>

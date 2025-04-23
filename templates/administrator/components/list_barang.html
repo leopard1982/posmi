@@ -1,0 +1,50 @@
+<div>
+    <div class="mt-3 h2 fw-bold">
+        Daftar Barang
+    </div>
+    <div class="mb-5 fs-6">
+        Barang &rarr; Daftar Barang
+    </div>
+    <table id="datasetBarang" >
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Barcode</th>
+                <th>Nama Barang</th>
+                <th>Satuan</th>
+                <th>Harga Ecer</th>
+                <th>Min.Grosir</th>
+                <th>Harga Grosir</th>
+                <th>Tgl.Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for barang in barangs %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{barang.barcode}}</td>
+                <td>{{barang.nama}}</td>
+                <td>{{barang.satuan}}</td>
+                <td>{{barang.harga_ecer}}</td>
+                <td>{{barang.min_beli_grosir}}</td>
+                <td>{{barang.harga_grosir}}</td>
+                <td>{{barang.updated_at|date:"d/m/Y h:m:s"}}</td>
+            </tr>
+            {% endfor%}
+        </tbody>
+        <!-- <tfoot>
+            <tr>
+                {% for headers in df_headers %}
+                <th>{{headers}}</th>
+                {% endfor %}
+            </tr>
+        </tfoot> -->
+    </table>
+    <script>
+        new DataTable('#datasetBarang',{
+            language: {
+                search: "Pencarian Data: ",
+            }
+        });
+    </script>
+</div>
