@@ -59,6 +59,7 @@ class Barang(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User,on_delete=models.RESTRICT,blank=True,null=True)
+    jumlah_dibeli = models.BigIntegerField(default=0)
 
     def __str__(self):
         return f"{self.barcode} - {self.nama} - {self.satuan}"

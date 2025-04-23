@@ -345,6 +345,14 @@ def bayarTransaksi(request):
                     penjualan.customer=request.POST['pembeli']
                     penjualan.tgl_bayar = datetime.datetime.now()
                     penjualan.save()
+
+                    penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+                    for barang in penjualandetail:
+                        id_barang = barang.barang.id
+                        jumlah=barang.jumlah
+                        barangnya = Barang.objects.get(id=id_barang)
+                        barangnya.jumlah_dibeli+=jumlah
+                        barangnya.save()
                     return HttpResponseRedirect(f'/print/{nota}')
                 except Exception as ex:
                     print(ex)
