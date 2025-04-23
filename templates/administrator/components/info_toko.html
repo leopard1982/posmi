@@ -1,4 +1,10 @@
 <div>
+    <div class="mt-3 h2 fw-bold">
+        Informasi Toko Saya
+    </div>
+    <div class="mb-5 fs-6">
+        Toko Saya &rarr; Informasi Toko
+    </div>
     <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
         {{forms.as_div}}
         {% csrf_token %}
