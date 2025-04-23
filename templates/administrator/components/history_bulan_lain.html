@@ -1,0 +1,49 @@
+{% load humanize %}
+{% if transaksi %}
+<div>
+    <table id="datasetTrxBulanLain"  >
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Nota</th>
+                <th>Items</th>
+                <th>Jumlah</th>
+                <th>Customer</th>
+                <th>Kasir</th>
+                <th>Tanggal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trx in transaksi %}
+            <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
+                <td>{{forloop.counter}}</td>
+                <td>{{trx.nota}}</td>
+                <td>{{trx.items}}</td>
+                <td>Rp.{{trx.total|intcomma}}.00</td>
+                <td>{{trx.customer}}</td>
+                <td>{{trx.user.username}}</td>
+                <td >{{trx.tgl_bayar|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{trx.tgl_bayar|date:"h:m:s"}}</span></td>
+            </tr>
+            {% endfor%}
+        </tbody>
+        <!-- <tfoot>
+            <tr>
+                {% for headers in df_headers %}
+                <th>{{headers}}</th>
+                {% endfor %}
+            </tr>
+        </tfoot> -->
+    </table>
+    <script>
+        new DataTable('#datasetTrxBulanLain',{
+            language: {
+                search: "Pencarian Data: ",
+            }
+        });
+    </script>
+</div>
+{% else %}
+<div class=" fst-italic mt-3">
+        Tidak ada penjualan di bulan yang Anda cari.
+</div>
+{% endif %}

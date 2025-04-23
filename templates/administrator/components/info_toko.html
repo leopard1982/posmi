@@ -2,8 +2,9 @@
     <div class="mt-3 h2 fw-bold">
         Informasi Toko Saya
     </div>
-    <div class="mb-5 fs-6">
-        Toko Saya &rarr; Informasi Toko
+    <div class="mb-5  d-flex justify-content-between">
+        <span class="fs-6">Toko Saya &rarr; Informasi Toko</span>
+        <span style="font-size: 13px;font-weight: bold;">Update Terakhir: {{user.userprofile.cabang.updated_at|date:"d/m/y"}}</span>
     </div>
     <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
         {{forms.as_div}}

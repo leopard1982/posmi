@@ -39,11 +39,13 @@
                 <div class="sidebar-brand-text  fs-bold">
                     <img src="{% static 'images/posmi-logo.png'%}" style="width: 180px;height: 70px; margin-top: 10px;border-radius: 10px;box-shadow: 5px 5px 5px lightgrey;" alt="">
                 </div>
-                
             </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0  mt-4">
+            <div class="mt-4 mb-3">
+                    <div class="text-center" >
+                        <span style="font-size: 14px; color: white;" class=" fw-bold">&copy;2025
+                        <span style="font-size: 14px; color:white;" class=" fw-bold">- Leopard, Inc.</span>
+                    </div>
+            </div>
 
             <!-- Nav Item - Dashboard -->
             
@@ -64,7 +66,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Interface
+                Master Data
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -106,7 +108,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Addons
+                Transaksi
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -114,13 +116,13 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
-                    <span>Pages</span>
+                    <span>Histori</span>
                 </a>
                 <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Login Screens:</h6>
-                        <a class="collapse-item" href="login.html">Login</a>
-                        <a class="collapse-item" href="register.html">Register</a>
+                        <h6 class="collapse-header">Histori Transaksi</h6>
+                        <a class="collapse-item" href="#" hx-get="{% url 'transaksi_bulan_berjalan'%}" hx-target="#mainpage">Transaksi Bulan {{bulan}}</a>
+                        <a class="collapse-item" href="#" hx-get="{% url 'transaksi_bulan_lain'%}" hx-target="#mainpage">Histori Transaksi</a>
                         <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
                         <div class="collapse-divider"></div>
                         <h6 class="collapse-header">Other Pages:</h6>
@@ -151,7 +153,7 @@
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
-
+           
             <!-- Sidebar Message
             <div class="sidebar-card d-none d-lg-flex">
                 <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
@@ -163,7 +165,7 @@
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content-wrapper" class="d-flex flex-column mb-5">
 
             <!-- Main Content -->
             <div id="content">
@@ -499,17 +501,7 @@
             </div>
             <!-- End of Main Content -->
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white" style="margin-top: 50px;">
-                <hr>
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span style="font-size: 14px;" class=" fw-bold">Copyright &copy;2025 - POSMI versi 1.0 </span><br>
-                        <span style="font-size: 14px;" class=" fw-bold">By: Leopard, Inc.</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+           
 
         </div>
         <!-- End of Content Wrapper -->

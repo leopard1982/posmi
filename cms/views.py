@@ -178,18 +178,36 @@ def daftarBarang(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+
+def transaksiBulanBerjalan(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=4) & Q(updated_at__year=datetime.datetime.now().year))
+            context = {
+                'transaksi':transaksi
+            }
+            return render(request,'administrator/components/history_bulan_berjalan.html',context)
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+
+def transaksiBulanLain(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=int(request.POST['bulan'])) & Q(updated_at__year=int(request.POST['tahun'])))
+                context = {
+                    'transaksi':transaksi
+                }
+                return render(request,'administrator/components/history_bulan_lain.html',context)
+            return render(request,'administrator/components/filter_history.html')
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
     
-'''
-cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,null=True,blank=True,related_name="cabang_toko")
-    barcode = models.CharField(max_length=100,default="0")
-    nama = models.CharField(max_length=200)
-    satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS")
-    stok = models.IntegerField(default=0)
-    harga_ecer = models.IntegerField(default=0)
-    harga_grosir = models.IntegerField(default=0)
-    min_beli_grosir = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User,on_delete=models.RESTRICT,blank=True,null=True)
-    jumlah_dibeli = models.BigIntegerField(default=0)
-'''
