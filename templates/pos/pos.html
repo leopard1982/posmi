@@ -159,6 +159,7 @@
                     
             </head>
         </table>
+
         {% if nota %}
         <table class="table" id="tableBarang">
             <thead>
@@ -212,6 +213,14 @@
                 </tr>
             </tfoot>
         </table>
+    {% else %}
+        <div class="fst-italic mt-5 text-center" style="font-size: 15px;">
+            Belum ada barang dalam penjualan, silakan <b>{{user.username}}</b> tekan tombol <b>pending</b> untuk melihat transaksi yang belum dilakukan pembayaran, atau tekan tombol <b>tambah barang</b> untuk menambah barang secara manual, atau arahkan barcode scanner untuk mulai penjualan. 
+            <br><br>
+            {% if user.is_superuser %}
+            Silakan tekan tombol <b>Admin</b> untuk melakukan administrasi data.
+            {% endif %}
+        </div>
     {% endif %}
     </div>
 {% endif %}
