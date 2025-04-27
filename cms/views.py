@@ -456,7 +456,7 @@ def downloadBarang(request):
                 barcode.append(barang.barcode)
                 nama.append(barang.nama)
                 satuan.append(barang.satuan)
-                stok.append(barang.satuan)
+                stok.append(barang.stok)
                 harga_ecer.append(barang.harga_ecer)
                 harga_grosir.append(barang.harga_grosir)
                 min_beli_grosir.append(barang.min_beli_grosir)
