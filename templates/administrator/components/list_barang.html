@@ -6,7 +6,6 @@
     <div class="mb-5 fs-6">
         Barang &rarr; Daftar Barang
     </div>
-
     <div class="container my-2">
                                 {% if messages %}
                                     {% for message in messages %}
@@ -18,6 +17,9 @@
                                     
                                     {% endfor %}
                                 {% endif %}
+    </div>
+    <div class="fs-6 fw-bold">
+        Total Barang: {{jumlah_barang|intcomma}}
     </div>
     <table id="datasetBarang"  >
         <thead>

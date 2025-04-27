@@ -176,7 +176,8 @@ def daftarBarang(request):
         if request.user.is_superuser:
             barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
             context = {
-                'barangs':barangs
+                'barangs':barangs,
+                'jumlah_barang':barangs.count()
             }
             return render(request,'administrator/components/list_barang.html',context)
         else:
@@ -399,7 +400,8 @@ def konfirmasiUpload(request):
                 uploadbarang.delete()
                 barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
                 context = {
-                    'barangs':barangs
+                    'barangs':barangs,
+                    'jumlah_barang':barangs.count()
                 }
                 messages.add_message(request,messages.SUCCESS,"Update data barang sudah berhasil. Silakan cek data barang.")
                 return render(request,'administrator/components/list_barang.html',context)
@@ -427,7 +429,8 @@ def hapusBarang(request):
                 messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan hapus barang, barang yang sudah pernah dijual tidak dapat dihapus.")
             barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
             context = {
-                    'barangs':barangs
+                    'barangs':barangs,
+                    'jumlah_barang':barangs.count()
                 }
             return render(request,'administrator/components/list_barang.html',context)
         else:
