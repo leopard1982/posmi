@@ -439,3 +439,49 @@ def hapusBarang(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+    
+def downloadBarang(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            barcode=[]
+            nama=[]
+            satuan=[]
+            stok=[]
+            harga_ecer=[]
+            harga_grosir=[]
+            min_beli_grosir=[]
+
+            barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang).order_by('nama')
+            for barang in barangs:
+                barcode.append(barang.barcode)
+                nama.append(barang.nama)
+                satuan.append(barang.satuan)
+                stok.append(barang.satuan)
+                harga_ecer.append(barang.harga_ecer)
+                harga_grosir.append(barang.harga_grosir)
+                min_beli_grosir.append(barang.min_beli_grosir)
+
+            df = pandas.DataFrame({
+                'barcode':barcode,
+                'nama':nama,
+                'satuan':satuan,
+                'stok':stok,
+                'harga_ecer':harga_ecer,
+                'harga_grosir':harga_grosir,
+                'min_beli_grosir':min_beli_grosir
+            })
+
+            lokasi_file = os.path.join(settings.BASE_DIR,f'media/download/barang/{request.user.userprofile.cabang.token}.xlsx')
+
+            df.to_excel(lokasi_file,index=False)
+
+            file = open(lokasi_file,'rb')
+
+            response = FileResponse(file,as_attachment=True,filename=f"{request.user.userprofile.cabang.nama_toko}.xlsx")
+            return response
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')

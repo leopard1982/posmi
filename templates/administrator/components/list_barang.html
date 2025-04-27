@@ -18,8 +18,11 @@
                                     {% endfor %}
                                 {% endif %}
     </div>
-    <div class="fs-6 fw-bold">
-        Total Barang: {{jumlah_barang|intcomma}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div style="padding-left: 20px;border-left: 5px solid lightgrey;" class="fs-5 fw-bold ">
+            Total: {{jumlah_barang|intcomma}} barang
+        </div>
+        <a href="{% url 'download_barang'%}"  class="btn btn-info rounded-pill" style="padding-left: 20px;padding-right: 20px;">Download</a>
     </div>
     <table id="datasetBarang"  >
         <thead>
