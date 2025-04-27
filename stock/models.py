@@ -65,9 +65,20 @@ class Barang(models.Model):
         return f"{self.barcode} - {self.nama} - {self.satuan}"
 
     class Meta:
-        unique_together = ['cabang','barcode','nama']
+        unique_together = ['cabang','barcode']
 
 class UploadBarang(models.Model):
-    file = models.FileField(upload_to="file_barang")
+    id_upload = models.UUIDField(auto_created=True,editable=False,default=uuid.uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User,on_delete=models.RESTRICT,null=True,blank=True)
+    user= models.ForeignKey(User,on_delete=models.RESTRICT)
+    cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,related_name="cabang")
+
+class UploadBarangList(models.Model):
+    upload_barang = models.ForeignKey(UploadBarang,on_delete=models.CASCADE)
+    barcode = models.CharField(max_length=100,default="0")
+    nama = models.CharField(max_length=200)
+    satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS")
+    stok = models.IntegerField(default=0)
+    harga_ecer = models.IntegerField(default=0)
+    harga_grosir = models.IntegerField(default=0)
+    min_beli_grosir = models.IntegerField(default=0)

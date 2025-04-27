@@ -6,6 +6,7 @@
     <div class="mb-5 fs-6">
         Barang &rarr; Daftar Barang
     </div>
+
     <div class="container my-2">
                                 {% if messages %}
                                     {% for message in messages %}
@@ -24,6 +25,7 @@
                 <th>No.</th>
                 <th>Nama Barang</th>
                 <th class="text-center">Satuan</th>
+                <th class="text-center">Stok</th>
                 <th>Harga Ecer</th>
                 <th>Min. Grosir</th>
                 <th>Harga Grosir</th>
@@ -38,14 +40,15 @@
                 <td>{{forloop.counter}}</td>
                 <td>{{barang.nama}}<br><span style="font-size: 12px;font-weight: bold;">({{barang.barcode}})</span></td>
                 <td class="text-center">{{barang.satuan}}</td>
+                <td class="text-center">{{barang.stok|intcomma}}</td>
                 <td>Rp.{{barang.harga_ecer|intcomma}}.00</td>
                 <td class="text-center">{{barang.min_beli_grosir}}</td>
                 <td>Rp.{{barang.harga_grosir|intcomma}}.00</td>
                 <td class="text-center">{{barang.jumlah_dibeli|intcomma}}</td>
                 <td >{{barang.updated_at|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{barang.updated_at|date:"h:m:s"}}</span></td>
                 <td>
-                    <a href="#" class="bth btn-sm btn-danger m-1 text-white"><i class="fa fa-trash text-white" aria-hidden="true"></i></a>
-                    <a hx-get="{% url 'edit_barang'%}?id={{barang.id}}" hx-target="#mainpage" href="#" class="bth btn-sm btn-info m-1"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    <button hx-get="{% url 'hapus_barang'%}?id={{barang.id}}" hx-target="#mainpage" href="#" class="bth btn-sm btn-danger m-1 text-white"><i class="fa fa-trash text-white" aria-hidden="true"></i></button>
+                    <button hx-get="{% url 'edit_barang'%}?id={{barang.id}}" hx-target="#mainpage" href="#" class="bth btn-sm btn-info m-1"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                 </td>
             </tr>
             {% endfor%}

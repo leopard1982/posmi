@@ -7,6 +7,12 @@ from django.contrib.auth.models import User
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
 from stock.models import Cabang
 from django.urls import reverse
+from django.http import FileResponse
+from django.conf import settings
+import os
+import pandas
+from stock.models import UploadBarang,UploadBarangList
+import uuid
 
 def bulannya(bulannya):
     if bulannya==1:
@@ -262,6 +268,168 @@ def editBarang(request):
             except Exception as ex:
                 print(ex)
                 return HttpResponseRedirect('/cms/')
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+def tambahBarang(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                print(request.POST)
+                print(request.FILES)
+                tanggal_upload=datetime.datetime.now()
+                df = pandas.read_excel(request.FILES['file'])
+                list_informasi=[]
+                uploadbarang = UploadBarang()
+                uploadbarang.cabang = request.user.userprofile.cabang
+                uploadbarang.user = request.user
+                uploadbarang.save()
+                for index,data in df.iterrows():
+                    try:
+                        barcode = int(data['barcode'])
+                        nama = data['nama']
+                        satuan = str(data['satuan']).upper()
+                        try:
+                            stok=int(data['stok'])
+                        except:
+                            stok=0
+                        try:
+                            harga_ecer = int(data['harga_ecer'])
+                        except:
+                            harga_ecer=0
+                        try:
+                            harga_grosir=int(data['harga_grosir'])
+                        except:
+                            harga_grosir=0
+                        try:
+                            min_beli_grosir=int(data['min_beli_grosir'])
+                        except:
+                            min_beli_grosir=0
+                        informasi = {
+                            'barcode':barcode,
+                            'nama':nama,
+                            'satuan':satuan,
+                            'stok':stok,
+                            'harga_ecer':harga_ecer,
+                            'harga_grosir':harga_grosir,
+                            'min_beli_grosir':min_beli_grosir
+                        }
+                        list_informasi.append(informasi)
+                        uploadbaranglist = UploadBarangList()
+                        uploadbaranglist.upload_barang=uploadbarang
+                        uploadbaranglist.barcode=barcode
+                        uploadbaranglist.nama=nama
+                        uploadbaranglist.satuan = satuan
+                        uploadbaranglist.stok=stok
+                        uploadbaranglist.harga_ecer=harga_ecer
+                        uploadbaranglist.harga_grosir=harga_grosir
+                        uploadbaranglist.min_beli_grosir=min_beli_grosir
+                        uploadbaranglist.save()
+
+                    except Exception as ex:
+                        print(ex)
+                        barcode = None
+                    if(barcode):
+                        print(barcode)
+
+                # print(header)
+                jumlah_barang = len(list_informasi)
+                messages.add_message(request,messages.SUCCESS,"Silakan Cek terlebih dahulu barang yang masuk daftar upload.")
+                context = {
+                    'tanggal_upload':tanggal_upload,
+                    'total_barang':jumlah_barang,
+                    'list_informasi':list_informasi,
+                    'id_uploadbarang':str(uploadbarang.id_upload)
+                }
+                return render(request,'administrator/components/tambah_barang_list.html',context)
+            context={}
+            return render(request,'administrator/components/tambah_barang.html',context)
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+
+def downloadTemplate(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            lokasi_template = os.path.join(settings.BASE_DIR,'static/template/template.xlsx')
+            file = open(lokasi_template,'rb')
+            response = FileResponse(file,as_attachment=True,filename="template_barang_upload.xlsx")
+            return response
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+def konfirmasiUpload(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            try:
+                id = request.GET['id']
+                uploadbarang = UploadBarang.objects.get(id_upload=id)
+                uploadbaranglist = UploadBarangList.objects.all().filter(upload_barang=uploadbarang)
+                for baranglist in uploadbaranglist:
+                    try:
+                        barang = Barang.objects.get(Q(cabang = request.user.userprofile.cabang) & Q(barcode=baranglist.barcode))
+                        barang.satuan=baranglist.satuan
+                        barang.stok=baranglist.stok
+                        barang.harga_ecer = baranglist.harga_ecer
+                        barang.harga_grosir = baranglist.harga_grosir
+                        barang.min_beli_grosir = baranglist.min_beli_grosir
+                        barang.save()
+                    except:
+                        barang = Barang()
+                        barang.nama = baranglist.nama
+                        barang.barcode = baranglist.barcode
+                        barang.cabang=request.user.userprofile.cabang
+                        barang.satuan=baranglist.satuan
+                        barang.stok=baranglist.stok
+                        barang.harga_ecer = baranglist.harga_ecer
+                        barang.harga_grosir = baranglist.harga_grosir
+                        barang.min_beli_grosir = baranglist.min_beli_grosir
+                        barang.save()
+                uploadbarang.delete()
+                barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
+                context = {
+                    'barangs':barangs
+                }
+                messages.add_message(request,messages.SUCCESS,"Update data barang sudah berhasil. Silakan cek data barang.")
+                return render(request,'administrator/components/list_barang.html',context)
+            except Exception as ex:
+                print(ex)
+                messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan upload barang, silakan coba lagi...")
+                context={}
+                return render(request,'administrator/components/tambah_barang.html',context)
+        else:
+                messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+                return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+def hapusBarang(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            try:
+                id=request.GET['id']
+                Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(id=id)).delete()
+                messages.add_message(request,messages.SUCCESS,"Barang Berhasil Dihapus.")
+            except Exception as ex:
+                print(ex)
+                messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan hapus barang, barang yang sudah pernah dijual tidak dapat dihapus.")
+            barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
+            context = {
+                    'barangs':barangs
+                }
+            return render(request,'administrator/components/list_barang.html',context)
         else:
                 messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
                 return HttpResponseRedirect('/')

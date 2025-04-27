@@ -2,11 +2,6 @@ from django import forms
 from stock.models import UploadBarang, Cabang, UserProfile,Barang
 from django.contrib.auth.models import User
 
-class FormUploadBarang(forms.ModelForm):
-    class Meta:
-        model = UploadBarang
-        fields = ['file']
-
 class FormInfoToko(forms.ModelForm):
     class Meta:
         model = Cabang
