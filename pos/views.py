@@ -352,6 +352,7 @@ def bayarTransaksi(request):
                         jumlah=barang.jumlah
                         barangnya = Barang.objects.get(id=id_barang)
                         barangnya.jumlah_dibeli+=jumlah
+                        barangnya.stok -= jumlah
                         barangnya.save()
                     return HttpResponseRedirect(f'/print/{nota}')
                 except Exception as ex:
