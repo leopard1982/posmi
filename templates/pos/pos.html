@@ -64,7 +64,7 @@
                     {% for bar in barang %}
                         <tr>
                             <td>{{bar.nama|title}} ({{bar.satuan}})</td>
-                            <td><a href="{% url 'tambah_barang'%}?nota={{nota}}&id={{bar.id}}" class="btn btn-success">+Tambah</a></td>
+                            <td><a href="{% url 'tambah_barang_pos'%}?nota={{nota}}&id={{bar.id}}" class="btn btn-success">+Tambah</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
