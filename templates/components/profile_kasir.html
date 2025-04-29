@@ -1,0 +1,34 @@
+{% load static %}
+<!-- Modal -->
+<div class="modal fade" id="staticProfile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticProfileLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticProfileLabel">Profil Saya</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if user.userprofile.foto %}
+                                <img class="img-profile rounded-circle"
+                                    src="{{user.userprofile.foto.url}}">
+                                {% else %}
+                                <img class="img-profile rounded-circle"
+                                    src="{% static 'img/undraw_profile.svg'%}">
+        {% endif %}
+        <div>
+            Username: {{user.username}}
+        </div>
+        <div>
+            Nama Lengkap: {{user.userprofile.nama_lengkap}}
+        </div>
+        <div>
+            Login Terakhir: {{user.last_login|date:"d/M/Y h:j:s"}}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>

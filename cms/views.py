@@ -11,7 +11,7 @@ from django.http import FileResponse
 from django.conf import settings
 import os
 import pandas
-from stock.models import UploadBarang,UploadBarangList
+from stock.models import UploadBarang,UploadBarangList,LogTransaksi
 import uuid
 
 def bulannya(bulannya):
@@ -39,6 +39,24 @@ def bulannya(bulannya):
         return "November"
     elif bulannya==12:
         return "Desember"
+    
+def addLog(user,cabang,transaksi,keterangan):
+    try:
+        if(user):
+            logtransaksi = LogTransaksi()
+            logtransaksi.user=user
+            logtransaksi.cabang=cabang
+            logtransaksi.transaksi=transaksi
+            logtransaksi.keterangan=keterangan
+            logtransaksi.save()
+        else:
+            logtransaksi = LogTransaksi()
+            logtransaksi.transaksi=transaksi
+            logtransaksi.keterangan=keterangan
+            logtransaksi.save()
+        return True
+    except:
+        return False
     
 def cekTotal(data):
     if data==None:
@@ -256,9 +274,11 @@ def editBarang(request):
                     barang.harga_ecer=int(request.POST['harga_ecer'])
                     barang.harga_grosir=int(request.POST['harga_grosir'])
                     barang.save()
+                    addLog(request.user,request.user.userprofile.cabang,"edit barang",f"Edit Barang {barang.nama} ({barang.id})Berhasil")
                     messages.add_message(request,messages.SUCCESS,f"Update Informasi '{barang.nama}' Berhasil.")
                 except Exception as ex:
                     print(ex)
+                    addLog(request.user,request.user.userprofile.cabang,"edit barang",f"Edit Barang {barang.nama} ({barang.id}) Gagal")
                     messages.add_message(request,messages.SUCCESS,"Update Barang Gagal.")
                 return HttpResponseRedirect(reverse('daftar_barang'))
             try:
@@ -381,6 +401,7 @@ def konfirmasiUpload(request):
                 id = request.GET['id']
                 uploadbarang = UploadBarang.objects.get(id_upload=id)
                 uploadbaranglist = UploadBarangList.objects.all().filter(upload_barang=uploadbarang)
+                
                 for baranglist in uploadbaranglist:
                     try:
                         barang = Barang.objects.get(Q(cabang = request.user.userprofile.cabang) & Q(barcode=baranglist.barcode))
@@ -401,6 +422,7 @@ def konfirmasiUpload(request):
                         barang.harga_grosir = baranglist.harga_grosir
                         barang.min_beli_grosir = baranglist.min_beli_grosir
                         barang.save()
+                addLog(request.user,request.user.userprofile.cabang,"tambah barang",f"Menambahkan  {len(uploadbaranglist)} Barang Berhasil.")
                 uploadbarang.delete()
                 barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
                 context = {
@@ -411,6 +433,7 @@ def konfirmasiUpload(request):
                 return render(request,'administrator/components/list_barang.html',context)
             except Exception as ex:
                 print(ex)
+                addLog(request.user,request.user.userprofile.cabang,"tambah barang",f"Menambahkan   Barang Gagal.")
                 messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan upload barang, silakan coba lagi...")
                 context={}
                 return render(request,'administrator/components/tambah_barang.html',context)
@@ -426,10 +449,13 @@ def hapusBarang(request):
         if request.user.is_superuser:
             try:
                 id=request.GET['id']
-                Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(id=id)).delete()
+                barang=Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(id=id))
+                barang.delete()
                 messages.add_message(request,messages.SUCCESS,"Barang Berhasil Dihapus.")
+                addLog(request.user,request.user.userprofile.cabang,"hapus barang",f"Hapus Barang {barang.nama} ({barang.id}) Berhasil.")
             except Exception as ex:
                 print(ex)
+                addLog(request.user,request.user.userprofile.cabang,"hapus barang",f"Hapus Barang {barang.nama} ({barang.id}) Gagal.")
                 messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan hapus barang, barang yang sudah pernah dijual tidak dapat dihapus.")
             barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
             context = {
@@ -480,9 +506,24 @@ def downloadBarang(request):
             df.to_excel(lokasi_file,index=False)
 
             file = open(lokasi_file,'rb')
-
+            addLog(request.user,request.user.userprofile.cabang,"download barang",f"Download daftar Barang Berhasil.")
             response = FileResponse(file,as_attachment=True,filename=f"{request.user.userprofile.cabang.nama_toko}.xlsx")
             return response
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+
+def viewLog(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            log_list = LogTransaksi.objects.all().filter(cabang=request.user.userprofile.cabang).order_by('-created_at')
+            context = {
+                'log_list':log_list
+            }
+            return render(request,'administrator/components/log.html',context)
         else:
             messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
             return HttpResponseRedirect('/')

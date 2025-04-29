@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.conf import settings
 import datetime
 from django.contrib.auth import authenticate,login,logout
+from cms.views import addLog
 
 # Create your views here.
 def index(request):
@@ -311,14 +312,16 @@ def loginkan(request):
         return HttpResponseRedirect('/')
     else:
         if request.method=="POST":
-            username = request.POST['username']
+            username = str(request.POST['username']).lower()
             password = request.POST['password']
             user = authenticate(username=username,password=password)
             if(user):
                 login(request,user)
                 messages.add_message(request,messages.SUCCESS,f"Selamat datang {username}")
+                addLog(user,user.userprofile.cabang,"login",f"login berhasil")
                 return HttpResponseRedirect('/')
             else:
+                addLog("","","login",f"login dengan user {username} dan password {password} gagal")
                 messages.add_message(request,messages.SUCCESS,f"Username dan Password tidak sesuai, silakan ulangi kembali.")
         try:
             toko = request.user.userprofile.cabang.nama_toko
@@ -330,8 +333,9 @@ def loginkan(request):
         return render(request,'pos/login.html',context)
     
 def logoutkan(request):
+    addLog(request.user,request.user.userprofile.cabang,"logout",f"logout berhasil")
     logout(request)
-    return HttpResponseRedirect('/login')
+    return HttpResponseRedirect('/')
 
 def bayarTransaksi(request):
     try:
@@ -354,6 +358,7 @@ def bayarTransaksi(request):
                         barangnya.jumlah_dibeli+=jumlah
                         barangnya.stok -= jumlah
                         barangnya.save()
+                    addLog(request.user,request.user.userprofile.cabang,"pembayaran",f"Melakukan Pembayaran no. transaksi: {penjualan.nota}")
                     return HttpResponseRedirect(f'/print/{nota}')
                 except Exception as ex:
                     print(ex)
