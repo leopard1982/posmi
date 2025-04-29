@@ -72,6 +72,9 @@ def index(request):
             desember = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=12) & Q(updated_at__year=datetime.datetime.now().year)).aggregate(total=Sum('total'))
             
             # mengisi top 5 barang terjual
+            
+            jumlah_barang = Barang.objects.all().filter(cabang=request.user.userprofile.cabang).count()
+
             barang = Barang.objects.all().filter(cabang=request.user.userprofile.cabang).order_by('-jumlah_dibeli','updated_at')[:5]
             list_nama_barang = []
             list_jumlah_barang = []
@@ -136,7 +139,7 @@ def index(request):
                 'nama_kasir':nama_kasir,
                 'jumlah_transaksi':jumlah_transaksi,
                 'jumlah_metode':jumlah_metode,
-                'jumlah_barang':barang.count()
+                'jumlah_barang':jumlah_barang
             }
             return render(request,'administrator/index.html',context)
         else:
