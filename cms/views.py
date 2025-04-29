@@ -304,10 +304,11 @@ def tambahBarang(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             if request.method=="POST":
-                print(request.POST)
-                print(request.FILES)
+                # print(request.POST)
+                # print(request.FILES)
                 tanggal_upload=datetime.datetime.now()
                 df = pandas.read_excel(request.FILES['file'])
+                # print(df)
                 list_informasi=[]
                 uploadbarang = UploadBarang()
                 uploadbarang.cabang = request.user.userprofile.cabang
@@ -320,19 +321,23 @@ def tambahBarang(request):
                         satuan = str(data['satuan']).upper()
                         try:
                             stok=int(data['stok'])
-                        except:
+                        except Exception as ex:
+                            # print(ex)
                             stok=0
                         try:
                             harga_ecer = int(data['harga_ecer'])
-                        except:
+                        except Exception as ex:
+                            # print(ex)
                             harga_ecer=0
                         try:
                             harga_grosir=int(data['harga_grosir'])
-                        except:
+                        except Exception as ex:
+                            # print(ex)
                             harga_grosir=0
                         try:
                             min_beli_grosir=int(data['min_beli_grosir'])
-                        except:
+                        except Exception as ex:
+                            # print(ex)
                             min_beli_grosir=0
                         informasi = {
                             'barcode':barcode,
@@ -343,6 +348,7 @@ def tambahBarang(request):
                             'harga_grosir':harga_grosir,
                             'min_beli_grosir':min_beli_grosir
                         }
+                        # print(informasi)
                         list_informasi.append(informasi)
                         uploadbaranglist = UploadBarangList()
                         uploadbaranglist.upload_barang=uploadbarang
@@ -358,8 +364,8 @@ def tambahBarang(request):
                     except Exception as ex:
                         print(ex)
                         barcode = None
-                    if(barcode):
-                        print(barcode)
+                    # if(barcode):
+                    #     print(barcode)
 
                 # print(header)
                 jumlah_barang = len(list_informasi)
@@ -411,7 +417,8 @@ def konfirmasiUpload(request):
                         barang.harga_grosir = baranglist.harga_grosir
                         barang.min_beli_grosir = baranglist.min_beli_grosir
                         barang.save()
-                    except:
+                    except Exception as ex:
+                        print(ex)
                         barang = Barang()
                         barang.nama = baranglist.nama
                         barang.barcode = baranglist.barcode
