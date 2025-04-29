@@ -56,7 +56,7 @@ def index(request):
             tahun = datetime.datetime.now().year
             pending_penjualan = Penjualan.objects.all().filter(Q(is_paid=False) & Q(cabang=request.user.userprofile.cabang) & Q(created_at__month=datetime.datetime.now().month) & Q(created_at__year=datetime.datetime.now().year)).aggregate(jumlah=Count('total'))
             jumlah_penjualan = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year)).aggregate(jumlah=Count('total'))
-            
+        
             # mengisi grafik penjualan
             april = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=4) & Q(updated_at__year=datetime.datetime.now().year)).aggregate(total=Sum('total'))
             januari = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=1) & Q(updated_at__year=datetime.datetime.now().year)).aggregate(total=Sum('total'))
@@ -135,7 +135,8 @@ def index(request):
                 'list_jumlah_barang':list_jumlah_barang,
                 'nama_kasir':nama_kasir,
                 'jumlah_transaksi':jumlah_transaksi,
-                'jumlah_metode':jumlah_metode
+                'jumlah_metode':jumlah_metode,
+                'jumlah_barang':barang.count()
             }
             return render(request,'administrator/index.html',context)
         else:
