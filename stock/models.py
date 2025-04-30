@@ -66,18 +66,26 @@ class PaketCabang(models.Model):
 
 class Pembayaran(models.Model):
     user = models.ForeignKey(User,on_delete=models.RESTRICT)
+    midtrans_token = models.CharField(max_length=100,null=True,blank=True)
     paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT)
     harga = models.PositiveIntegerField(default=0)
     langganan = models.IntegerField(choices=PEMBAYARAN,default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     expired_at = models.DateTimeField(null=True)
 
+class UserPaket(models.Model):
+    user = models.ForeignKey(User,on_delete=models.RESTRICT)
+    paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,related_name="daftar_paket")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user','paket']
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.RESTRICT)
     nama_lengkap = models.CharField(max_length=30,default="")
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,related_name="cabang_user")
     foto = models.ImageField(upload_to="foto_profile",blank=True,null=True)
-    daftar_paket = models.CharField(max_length=1000,default="") #akan diisi setelah loading ke variabel daftar_paket
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
