@@ -1,8 +1,7 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 
 def paymentRequest(request):
     return HttpResponseRedirect('/')
 
 def paymentResponse(request):
-    print(request.GET)
-    return HttpResponseRedirect('/')
+    return HttpResponse(request.GET)
