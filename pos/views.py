@@ -9,7 +9,8 @@ import datetime
 from django.contrib.auth import authenticate,login,logout
 from cms.views import addLog
 
-# Create your views here.
+DAFTAR_PAKET = []
+
 def index(request):
     toko = None
     tanggal = datetime.datetime.now()

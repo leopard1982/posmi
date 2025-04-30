@@ -2,15 +2,48 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 from django.utils import timezone
+import random
 
 SATUAN = [
     ('PCS','PCS'),
     ('PACK','PACK')
 ]
 
+PEMBAYARAN = [
+    ('1','Bulanan'),
+    ('3','Per Tiga Bulanan'),
+    ('6','Per Semester'),
+    ('12','Per 1 Tahun'),
+    ('24','Per 2 Tahun')
+]
+
+def prefixGenerator():
+    while True:
+        try:
+            prefix = "".join([chr(97+int(random.random()*25)) for x in range(0,4)])
+            cabang = Cabang.objects.get(prefix=prefix)
+        except:
+            return prefix 
+
+class DaftarPaket(models.Model):
+    paket = models.UUIDField(auto_created=True,editable=False,default=uuid.uuid4)
+    max_transaksi=models.IntegerField(default=0)
+    max_user_login = models.IntegerField(default=0)
+    is_download_transaksi = models.BooleanField(default=True)
+    is_tambah_barang = models.BooleanField(default=True)
+    is_download_barang = models.BooleanField(default=True)
+    is_laporan_transaksi = models.BooleanField(default=True)
+    harga_per_bulan = models.PositiveIntegerField(default=0)
+    harga_per_tiga_bulan = models.PositiveIntegerField(default=0)
+    harga_per_enam_bulan = models.PositiveIntegerField(default=0)
+    harga_per_tahun = models.PositiveIntegerField(default=0)
+    harga_per_dua_tahun = models.PositiveIntegerField(default=0)
+    disc = models.IntegerField(default=0)
 
 class Cabang(models.Model):
     nama_toko = models.CharField(max_length=20,default="Nama Toko")
+    prefix = models.CharField(max_length=5,default=prefixGenerator()) #randomize
+    prefix_count = models.IntegerField(default=0)
     token = models.UUIDField(auto_created=True,editable=True,default=uuid.uuid4)
     nama_cabang = models.CharField(max_length=15,default="Cabang1")
     alamat_toko = models.CharField(max_length=30,default="Jalan...")
@@ -23,11 +56,28 @@ class Cabang(models.Model):
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
 
+class PaketCabang(models.Model):
+    cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,default="",related_name="Cabang_Paket")
+    paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,default="",related_name="paket_cabang")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    expired = models.DateTimeField(null=True)
+    is_active = models.BooleanField(default=False)
+
+class Pembayaran(models.Model):
+    user = models.ForeignKey(User,on_delete=models.RESTRICT)
+    paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT)
+    harga = models.PositiveIntegerField(default=0)
+    langganan = models.IntegerField(choices=PEMBAYARAN,default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expired_at = models.DateTimeField(null=True)
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete=models.RESTRICT)
     nama_lengkap = models.CharField(max_length=30,default="")
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,related_name="cabang_user")
     foto = models.ImageField(upload_to="foto_profile",blank=True,null=True)
+    daftar_paket = models.CharField(max_length=1000,default="") #akan diisi setelah loading ke variabel daftar_paket
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

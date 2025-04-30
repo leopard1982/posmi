@@ -13,6 +13,9 @@ import os
 import pandas
 from stock.models import UploadBarang,UploadBarangList,LogTransaksi
 import uuid
+import random
+
+
 
 def bulannya(bulannya):
     if bulannya==1:
