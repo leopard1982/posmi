@@ -1,0 +1,11 @@
+db.sqlite3
+pos/migrations
+stock/migrations
+cms/migrations
+.gitignore
+kelontong_mami/settings.py
+pos/__pycache__
+kelontong_mami/__pycache__
+cms/__pycache__
+stock/__pycache__
+static_root
