@@ -47,7 +47,6 @@ class DaftarPaket(models.Model):
 class Cabang(models.Model):
     nama_toko = models.CharField(max_length=20,default="Nama Toko")
     prefix = models.CharField(max_length=5,blank=True,null=True) #randomize
-    prefix_count = models.IntegerField(default=0)
     token = models.UUIDField(auto_created=True,editable=True,default=uuid.uuid4)
     nama_cabang = models.CharField(max_length=15,default="Cabang1")
     alamat_toko = models.CharField(max_length=30,default="Jalan...")
@@ -57,6 +56,8 @@ class Cabang(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(max_length=200,blank=True,null=True)
+    kuota_transaksi = models.IntegerField(default=99999999)
+    jumlah_kasir = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"

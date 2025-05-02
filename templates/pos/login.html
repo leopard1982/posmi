@@ -1,9 +1,10 @@
-{% extends 'base.html'%}
+{% extends 'base-login.html'%}
+{% load static %}
 {% block contents %}
 <div class=" justify-content-center d-flex" style="margin-top:100px">
-    <div style="width: 300px;height: 270px; " class="p-2 border rounded border-secondary shadow" >
-        <div class="text-center fw-bold fs-4 text-primary">
-            POS-MI
+    <div style="width: 300px;height: 350px; " class="p-2 border rounded border-secondary shadow" >
+        <div class="text-center fw-bold fs-4 text-primary py-4">
+            <img src="{% static 'images/posmi-logo.png'%}" class="shadow" style="width: 160px;height: 70px;border-radius: 5px;">
         </div>
         <form method="post">
             {% csrf_token %}
@@ -16,7 +17,7 @@
             <div class="my-2 text-center">
                 <button type="submit" class="btn btn-primary">login</button><br>
                 <br>
-                <span><a href="#" class="fw-bold" style="text-decoration: none;">register</a> sekarang!</span><br>
+                <span><a href="/#bisniskecil" class="fw-bold" style="text-decoration: none;">register</a> sekarang!</span><br>
                 <span>ke <a href="/"  style="text-decoration: none;font-weight: bold;">halaman </a> utama</span>
             </div>    
         </form>
