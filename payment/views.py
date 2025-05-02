@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.conf import settings
-# import midtransclient
+import midtransclient
 
 def prosesPayment(noTransaksi,jumlah):
     midtrans_server = settings.MIDTRANS_SERVER
