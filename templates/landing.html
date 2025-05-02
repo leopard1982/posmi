@@ -106,7 +106,7 @@
           <h1 class="display-3 fw-bold mb-3">Aplikasi Penjualan Berbasis Web</h1>
           <p class="fs-4 mb-5">POSMI merupakan aplikasi penjualan berbasis web yang sangat mudah digunakan tanpa harus melakukan instalasi, cukup melakukan registrasi dan Go!</p>
           <div class="d-grid gap-2 d-sm-flex">
-            <a class="btn btn-danger bsb-btn-3xl" href="#">Register Sekarang</a>
+            <a class="btn btn-danger bsb-btn-3xl" href="#detailgratis">Register Sekarang</a>
             <a class="btn text-white bsb-btn-3xl" style="background-color: #0d6efd;" href="{% url 'loginkan'%}">Login</a>
           </div>
         </div>
@@ -274,122 +274,132 @@
               <div class="col-12 col-xl-11">
                 <div class="row gy-3 gy-md-4">
                   <div class="col-12 col-sm-6">
-                    <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-                      <div class="card-body text-center p-4 p-xxl-5">
-                        <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
-                          <span>Bisnis Kecil</span>
-                          <span><a href="#detailkecil"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
-                        </p>
-                        <p class="text-start">
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_kecil" id="bulanan">
-                            <label for="bulanan">
-                              <strong>Rp.250.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Langganan Per Bulan
+                    <form action="{% url 'payment_request'%}" method="post">
+                      {% csrf_token %}
+                      <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+                        <div class="card-body text-center p-4 p-xxl-5">
+                          <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
+                            <span>Bisnis Kecil</span>
+                            <span><a href="#detailkecil"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
                           </p>
                           <p class="text-start">
-                            <input type="radio" name="bisnis_kecil" id="3bulanan">
-                            <label for="3bulanan">
-                            <strong>Rp.240.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_kecil.harga_per_tiga_bulan|intcomma}}.00
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_kecil" id="bulanan" value="bulanan" required>
+                              <label for="bulanan">
+                                <strong>Rp.250.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Langganan Per Bulan
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_kecil" id="3bulanan" value="3bulanan">
+                              <label for="3bulanan">
+                              <strong>Rp.240.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_kecil.harga_per_tiga_bulan|intcomma}}.00
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_kecil" id="6bulanan" value="6bulanan">
+                              <label for="6bulanan">
+                              <strong>Rp.230.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_kecil.harga_per_enam_bulan|intcomma}}.00
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_kecil" id="tahunan" value="tahunan">
+                              <label for="tahunan">
+                              <strong>Rp.220.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_kecil.harga_per_tahun|intcomma}}.00
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_kecil" id="2tahunan" value="2tahunan">
+                              <label for="2tahunan">
+                              <strong>Rp.210.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_kecil.harga_per_dua_tahun|intcomma}}.00
+                            </p>
+                            <p class="p-2">
+                              <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                            </p>
                           </p>
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_kecil" id="6bulanan">
-                            <label for="6bulanan">
-                            <strong>Rp.230.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_kecil.harga_per_enam_bulan|intcomma}}.00
-                          </p>
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_kecil" id="tahunan">
-                            <label for="tahunan">
-                            <strong>Rp.220.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_kecil.harga_per_tahun|intcomma}}.00
-                          </p>
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_kecil" id="2tahunan">
-                            <label for="2tahunan">
-                            <strong>Rp.210.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_kecil.harga_per_dua_tahun|intcomma}}.00
-                          </p>
-                          <p class="p-2">
-                            <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
-                          </p>
-                        </p>
-                        <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+                          <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+                        </div>
                       </div>
-                    </div>
+                    </form>
+                    
                   </div>
                   <div class="col-12 col-sm-6" id="bisnismedium">
-                    <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-                      <div class="card-body text-center p-4 p-xxl-5">
-                        <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
-                          <span>Bisnis Medium</span>
-                          <span><a href="#detailmedium"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
-                        </p>
-                        <p class="text-start">
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_medium" id="bulanan">
-                            <label for="bulanan">
-                              <strong>Rp.350.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Langganan Per Bulan
+                    <form action="{% url 'payment_request'%}" method="post">
+                      {% csrf_token %}
+                      <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+                        <div class="card-body text-center p-4 p-xxl-5">
+                          <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
+                            <span>Bisnis Medium</span>
+                            <span><a href="#detailmedium"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
                           </p>
                           <p class="text-start">
-                            <input type="radio" name="bisnis_medium" id="3bulanan1">
-                            <label for="3bulanan1">
-                            <strong>Rp.340.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_medium.harga_per_tiga_bulan|intcomma}}.00
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_medium" id="bulanan1" value="bulanan" required>
+                              <label for="bulanan1">
+                                <strong>Rp.350.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Langganan Per Bulan
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_medium" id="3bulanan1" value="3bulanan"> 
+                              <label for="3bulanan1">
+                              <strong>Rp.340.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_medium.harga_per_tiga_bulan|intcomma}}.00
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_medium" id="6bulanan1" value="6bulanan">
+                              <label for="6bulanan1">
+                              <strong>Rp.330.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_medium.harga_per_enam_bulan|intcomma}}.00
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_medium" id="tahunan1" value="tahunan">
+                              <label for="tahunan1">
+                              <strong>Rp.320.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_medium.harga_per_tahun|intcomma}}.00
+                            </p>
+                            <p class="text-start">
+                              <input type="radio" name="bisnis_medium" id="2tahunan1" value="2tahunan">
+                              <label for="2tahunan1">
+                              <strong>Rp.310.000,00</strong>
+                              </label>
+                              <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_medium.harga_per_dua_tahun|intcomma}}.00
+                            </p>
+                            <p class="p-2">
+                              <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                            </p>
                           </p>
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_medium" id="6bulanan1">
-                            <label for="6bulanan1">
-                            <strong>Rp.330.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_medium.harga_per_enam_bulan|intcomma}}.00
-                          </p>
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_medium" id="tahunan1">
-                            <label for="tahunan1">
-                            <strong>Rp.320.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_medium.harga_per_tahun|intcomma}}.00
-                          </p>
-                          <p class="text-start">
-                            <input type="radio" name="bisnis_medium" id="2tahunan1">
-                            <label for="2tahunan1">
-                            <strong>Rp.310.000,00</strong>
-                            </label>
-                            <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_medium.harga_per_dua_tahun|intcomma}}.00
-                          </p>
-                          <p class="p-2">
-                            <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
-                          </p>
-                        </p>
-                        <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+                          <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+                        </div>
                       </div>
-                    </div>
+                    </form>
                   </div>
                   <div class="col-12" id="gratis">
-                    <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-                      <div class="card-body text-center p-4 p-xxl-5">
-                        <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
-                          <span>Bisnis Dasar</span>
-                          <span><a href="#detailgratis"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
-                        </p>
-                        <p>
-                          Saya ingin mencoba terlebih dahulu <strong>POSMI</strong> dengan paket dasar terlebih dahulu.
-                        </p>
-                        <p class="p-2">
-                            <button class="btn btn-warning btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                    <form action="{% url 'payment_request'%}" method="post">
+                      {% csrf_token %}
+                      <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+                        <div class="card-body text-center p-4 p-xxl-5">
+                          <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
+                            <span>Paket Dasar</span>
+                            <span><a href="#detailgratis"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
                           </p>
+                          <p>
+                            Saya ingin mencoba terlebih dahulu <strong>POSMI</strong> dengan paket dasar terlebih dahulu.
+                          </p>
+                          <p class="p-2">
+                              <button class="btn btn-warning btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                            </p>
+                        </div>
                       </div>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>
