@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from .models import Penjualan, PenjualanDetail
-from stock.models import Barang, Cabang
+from stock.models import Barang, Cabang, DaftarPaket
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib import messages
@@ -95,6 +95,9 @@ def index(request):
     penjualan_pending = Penjualan.objects.all().filter(Q(is_paid=False) & Q(user=user)).order_by('-created_at')
     jumlah_penjualan_pending = penjualan_pending.count()
 
+    bisnis_kecil = DaftarPaket.objects.get(nama="Bisnis Kecil")
+    bisnis_medium = DaftarPaket.objects.get(nama="Bisnis Medium")
+
     context = {
         'penjualandetail':penjualandetail,
         'nota':nota,
@@ -105,7 +108,9 @@ def index(request):
         'toko':toko,
         'tanggal':tanggal,
         'penjualan_pending':penjualan_pending,
-        'jumlah_penjualan_pending':jumlah_penjualan_pending
+        'jumlah_penjualan_pending':jumlah_penjualan_pending,
+        'bisnis_kecil':bisnis_kecil,
+        'bisnis_medium':bisnis_medium
     }
     return render(request,'pos/pos.html',context)
 

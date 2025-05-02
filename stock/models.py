@@ -27,6 +27,7 @@ def prefixGenerator():
 
 class DaftarPaket(models.Model):
     paket = models.UUIDField(auto_created=True,editable=False,default=uuid.uuid4)
+    nama=models.CharField(max_length=200,default="")
     max_transaksi=models.IntegerField(default=0)
     max_user_login = models.IntegerField(default=0)
     is_download_transaksi = models.BooleanField(default=True)
@@ -40,9 +41,12 @@ class DaftarPaket(models.Model):
     harga_per_dua_tahun = models.PositiveIntegerField(default=0)
     disc = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.nama
+
 class Cabang(models.Model):
     nama_toko = models.CharField(max_length=20,default="Nama Toko")
-    prefix = models.CharField(max_length=5,default=prefixGenerator()) #randomize
+    prefix = models.CharField(max_length=5,blank=True,null=True) #randomize
     prefix_count = models.IntegerField(default=0)
     token = models.UUIDField(auto_created=True,editable=True,default=uuid.uuid4)
     nama_cabang = models.CharField(max_length=15,default="Cabang1")
@@ -52,6 +56,7 @@ class Cabang(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    email = models.EmailField(max_length=200,blank=True,null=True)
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
@@ -65,13 +70,13 @@ class PaketCabang(models.Model):
     is_active = models.BooleanField(default=False)
 
 class Pembayaran(models.Model):
+    id = models.UUIDField(auto_created=True,editable=False,primary_key=True,default=uuid.uuid4)
     user = models.ForeignKey(User,on_delete=models.RESTRICT)
     midtrans_token = models.CharField(max_length=100,null=True,blank=True)
     paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT)
     harga = models.PositiveIntegerField(default=0)
-    langganan = models.IntegerField(choices=PEMBAYARAN,default=1)
+    jumlah_bulan = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    expired_at = models.DateTimeField(null=True)
 
 class UserPaket(models.Model):
     user = models.ForeignKey(User,on_delete=models.RESTRICT)

@@ -37,96 +37,102 @@
             margin-left: 10px;
          }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
-    {% include 'components/profile_kasir.html' %}
     {% if user.is_authenticated %}
-    <div class=" container fixed-top text-center rounded-top rounded-4  mb-4 py-3" style="background-color: rgb(38,75,93);height: 110px;">
-        <div class="row d-flex justify-content-between px-2">
-            
-            <div class="d-none d-xl-block d-lg-block col-12 col-xl-3 col-lg-3 col-md-3 border rounded border-white p-2" style="height: 90px; background-color: rgb(65,118,144);">
-                <div class="text-white fw-bold fs-6  align-items-center d-flex justify-content-center pt-2">
-                    {{toko}}
-                </div>
-                <div class="text-white fs-6">
-                    {{user.userprofile.cabang.nama_cabang}}
-                </div>
-            </div> 
-            <div class="col-12 col-xl-6 col-lg-6 col-md-12">
-                <div class="text-center text-white">
-                    Total Belanja:
-                </div>
-                <div class="orbitron fw-bold fs-1 pb-2  text-white fw-bold">
-                    Rp. {{total|intcomma}}
-                </div>
-            </div>
-            <div class="d-none d-xl-block d-lg-block  col-12 col-xl-3 col-lg-3 col-md-3  text-white border border-white rounded" style="height: 90px;padding-top: 3px;background-color: rgb(65,118,144)">
-                <div class="text-white   align-items-center d-flex text-start justify-content-start mt-1" style="font-size:14px">
-                    <span>
-                        {% if user.userprofile.foto %}
-                            <img class="img-profile rounded-circle" src="{{user.userprofile.foto.url}}">
-                        {% else %}
-                            <img class="img-profile rounded-circle" src="{% static 'img/undraw_profile.svg'%}" >
-                        {% endif %}
-                    </span>
-                    <span>
-                        {{user.userprofile.nama_lengkap|truncatechars:15}} 
-                        <br>
-                            <button class="btn btn-sm btn-danger px-2 rounded-pill " data-bs-toggle="modal" data-bs-target="#staticProfile" style="padding-top:0;padding-bottom: 0;padding-left: 20px !important;padding-right: 20px !important;">profile</button>
-                        <br>
-                        {{tanggal|date:"d M Y"}}
-                    </span>
-                </div>
+        {% include 'components/profile_kasir.html' %}
+        <div class=" container fixed-top text-center rounded-top rounded-4  mb-4 py-3" style="background-color: rgb(38,75,93);height: 110px;">
+            <div class="row d-flex justify-content-between px-2">
                 
-            </div>
-        </div>
-        <!-- <p class="text-center fw-bold pb-2 border-bottom border-white fs-4 fw-bold text-white">{{toko}}</p>
-        <p class=""></p>
-        <p class="text-center text-white text-normal">
-            <span class="py-2"></span>
-            <span style="margin-left: 20px;"><a href="{% url 'logoutkan'%}" class="btn btn-secondary">logout</a></span>
-        </p> -->
-        
-    </div>
-    {% endif %}
-    <div class="fixed-top rounded-bottom pb-3 container py-2" {% if user.is_authenticated %}style="margin-top: 110px;background-color: rgb(38,75,93)"{% else %}style="margin-top: 110px;background-color: white;border:1px solid grey;border-radius:5px;box-shadow:5px 5px 5px lightgrey"{%endif%}>
-        <form method="post" action="{% url 'index_pos'%}?nota={{nota}}">
-            {% csrf_token %}
-            {% if user.is_authenticated %}
-                <div class="row">
-                    <div class="col-12"><input type="text" name="kode" placeholder="SCAN BARCODE/ KETIK BARCODE" autofocus id="kode" class="form-control"></div>
-                    <!-- <div class="col-1"><button class="btn btn-success" type="submit">+</button></div> -->
-                </div>
-            {% else %}
-                <div class="text-center fw-bold mb-3 fs-2">POS-MI versi 1.0</div>
-                <div class="fst-italic text-center mb-3">
-                    Silakan Login terlebih dahulu untuk bisa melakukan penjualan
-                </div>
-                <div class="text-center">
-                    <a href="{% url 'loginkan'%}" class="btn btn-primary">login</a>
-                </div>
-            {% endif %}
-        </form>
-    </div>
-    <div style="margin-top: 180px; margin-bottom: 110px;">
-            <div class="container my-2">
-                {% if messages %}
-                    {% for message in messages %}
-                    <div class="alert text-center p-2 alert-primary" role="alert">
-                            {{message}}
+                <div class="d-none d-xl-block d-lg-block col-12 col-xl-3 col-lg-3 col-md-3 border rounded border-white p-2" style="height: 90px; background-color: rgb(65,118,144);">
+                    <div class="text-white fw-bold fs-6  align-items-center d-flex justify-content-center pt-2">
+                        {{toko}}
                     </div>
-                    {% endfor %}
+                    <div class="text-white fs-6">
+                        {{user.userprofile.cabang.nama_cabang}}
+                    </div>
+                </div> 
+                <div class="col-12 col-xl-6 col-lg-6 col-md-12">
+                    <div class="text-center text-white">
+                        Total Belanja:
+                    </div>
+                    <div class="orbitron fw-bold fs-1 pb-2  text-white fw-bold">
+                        Rp. {{total|intcomma}}
+                    </div>
+                </div>
+                <div class="d-none d-xl-block d-lg-block  col-12 col-xl-3 col-lg-3 col-md-3  text-white border border-white rounded" style="height: 90px;padding-top: 3px;background-color: rgb(65,118,144)">
+                    <div class="text-white   align-items-center d-flex text-start justify-content-start mt-1" style="font-size:14px">
+                        <span>
+                            {% if user.userprofile.foto %}
+                                <img class="img-profile rounded-circle" src="{{user.userprofile.foto.url}}">
+                            {% else %}
+                                <img class="img-profile rounded-circle" src="{% static 'img/undraw_profile.svg'%}" >
+                            {% endif %}
+                        </span>
+                        <span>
+                            {{user.userprofile.nama_lengkap|truncatechars:15}} 
+                            <br>
+                                <button class="btn btn-sm btn-danger px-2 rounded-pill " data-bs-toggle="modal" data-bs-target="#staticProfile" style="padding-top:0;padding-bottom: 0;padding-left: 20px !important;padding-right: 20px !important;">profile</button>
+                            <br>
+                            {{tanggal|date:"d M Y"}}
+                        </span>
+                    </div>
+                    
+                </div>
+            </div>
+            <!-- <p class="text-center fw-bold pb-2 border-bottom border-white fs-4 fw-bold text-white">{{toko}}</p>
+            <p class=""></p>
+            <p class="text-center text-white text-normal">
+                <span class="py-2"></span>
+                <span style="margin-left: 20px;"><a href="{% url 'logoutkan'%}" class="btn btn-secondary">logout</a></span>
+            </p> -->
+            
+        </div>
+        <div class="fixed-top rounded-bottom pb-3 container py-2" {% if user.is_authenticated %}style="margin-top: 110px;background-color: rgb(38,75,93)"{% else %}style="margin-top: 110px;background-color: white;border:1px solid grey;border-radius:5px;box-shadow:5px 5px 5px lightgrey"{%endif%}>
+            <form method="post" action="{% url 'index_pos'%}?nota={{nota}}">
+                {% csrf_token %}
+                {% if user.is_authenticated %}
+                    <div class="row">
+                        <div class="col-12"><input type="text" name="kode" placeholder="SCAN BARCODE/ KETIK BARCODE" autofocus id="kode" class="form-control"></div>
+                        <!-- <div class="col-1"><button class="btn btn-success" type="submit">+</button></div> -->
+                    </div>
+                
+                
+                    <!-- <div class="text-center fw-bold mb-3 fs-2">POS-MI versi 1.0</div>
+                    <div class="fst-italic text-center mb-3">
+                        Silakan Login terlebih dahulu untuk bisa melakukan penjualan
+                    </div>
+                    <div class="text-center">
+                        <a href="{% url 'loginkan'%}" class="btn btn-primary">login</a>
+                    </div> -->
                 {% endif %}
-            </div>
-            <div class="container">
-                {% block contents %}
-                {% endblock %}
-            </div>
-    </div>
-    <div class=" bg-white py-3 px-2 text-center border-top border-secondary">
-        <span class="fw-bold fs-5">POS-MI APP versi 1.0</span> <br>
-        <span class="fw-bold">&COPY; 2025 - by: Leopard Inc.</span>
-    </div>
+            </form>
+        </div>
+        <div style="margin-top: 180px; margin-bottom: 110px;">
+                <div class="container my-2">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert text-center p-2 alert-primary" role="alert">
+                                {{message}}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="container">
+                    {% block contents %}
+                    {% endblock %}
+                </div>
+        </div>
+        <div class=" bg-white py-3 px-2 text-center border-top border-secondary">
+            <span class="fw-bold fs-5">POS-MI APP versi 1.0</span> <br>
+            <span class="fw-bold">&COPY; 2025 - by: Leopard Inc.</span>
+        </div>
+    {%  else %}
+        {% include 'landing.html'%}
+    {% endif %}
+    
+    
     
 </body>
 </html>
