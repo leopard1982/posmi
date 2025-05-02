@@ -98,6 +98,18 @@
 
   </header>
 
+  <div>
+            <div class="container my-2">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert text-center p-2 alert-primary" role="alert">
+                            {{message}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+</div>
+
   <!-- Hero 3 - Bootstrap Brain Component -->
   <section id="scrollspyHero" class="bsb-tpl-bg-alabaster pt-3 pb-5 p-lg-0">
     <div class="container overflow-hidden">
