@@ -10,3 +10,4 @@ cms/__pycache__
 stock/__pycache__
 payment/__pycache__
 static_root
+.env
