@@ -63,7 +63,7 @@ class Penjualan(models.Model):
             status="LUNAS"
         else:
             status="BELUM BAYAR"
-        return f"{self.nota} [{self.created_at.strftime("%d/%m/%Y")}] - {self.customer} - {self.total} : {status}"
+        return f"{self.nota} - {self.customer} - {self.total} : {status}"
 
 class PenjualanDetail(models.Model):
     penjualan = models.ForeignKey(Penjualan,on_delete=models.CASCADE)
