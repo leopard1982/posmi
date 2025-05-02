@@ -234,6 +234,7 @@ def tambahBarang(request):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
         cabang = request.user.userprofile.cabang
+        print(cabang.id)
         try:
             nota = request.GET['nota']
         except:

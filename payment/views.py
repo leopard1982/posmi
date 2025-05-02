@@ -104,6 +104,8 @@ def paymentResponse(request):
             cabang.prefix=kode_toko
             cabang.save()
 
+            print(cabang)
+
             user = User()
             user.username=f"{kode_toko}1"
             user.email=email_toko

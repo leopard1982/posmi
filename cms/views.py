@@ -103,16 +103,19 @@ def index(request):
                 list_nama_barang.append(bar.nama)
                 list_jumlah_barang.append(bar.jumlah_dibeli)
             
+            print(request.user.userprofile.cabang)
             # mengisi jumlah transaksi pengguna
-            liga_kasir = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=4) & Q(updated_at__year=datetime.datetime.now().year)).values('user').annotate(jumlah=Count('user'))
+            liga_kasir = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year)).values('user').annotate(jumlah=Count('user'))
             nama_kasir = []
             jumlah_transaksi=[]
             for kasir in liga_kasir:
                 nama_kasir.append(User.objects.get(id=int(kasir['user'])).username)
                 jumlah_transaksi.append(kasir['jumlah'])
+            
+            print(liga_kasir)
 
             # mengisi jumlah pembayaran cash vs transfer
-            liga_metode = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=4) & Q(updated_at__year=datetime.datetime.now().year)).values('metode').annotate(jumlah=Count('metode')).order_by()
+            liga_metode = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year)).values('metode').annotate(jumlah=Count('metode')).order_by()
             print(liga_metode)
             jumlah_metode = []
             # apakah metode cash?
