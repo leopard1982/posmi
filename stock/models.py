@@ -58,6 +58,8 @@ class Cabang(models.Model):
     email = models.EmailField(max_length=200,blank=True,null=True)
     kuota_transaksi = models.IntegerField(default=99999999)
     jumlah_kasir = models.IntegerField(default=0)
+    lisensi_expired = models.DateTimeField(null=True,blank=True)
+    lisensi_grace = models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
