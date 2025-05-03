@@ -76,6 +76,7 @@ def paymentRequest(request):
         else:
             paket="PAKET DASAR"
             harga=0
+            jenis_paket=f"2 Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(days=7)).strftime('%d-%m-%Y')}"
 
 
         context = {
