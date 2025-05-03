@@ -36,7 +36,7 @@
     
     <div class="mt-5 mb-5">
         <p class="fst-italic fs-5 fw-bold">Detail Informasi Pendaftar:</p>
-        <form action="{% url 'payment_response'%}" method="post">
+        <form action="{% url 'payment_response'%}?tipe={{tipe}}&pkt={{pkt}}" method="post">
             {% csrf_token %}
             <table class="table">
                 <tr>

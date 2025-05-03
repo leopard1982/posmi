@@ -11,10 +11,59 @@ from cms.views import addLog
 
 DAFTAR_PAKET = []
 
+def cek_expired_kuota(id_cabang):
+    cabang = Cabang.objects.get(id=id_cabang)
+    try:
+        if cabang.lisensi_expired<datetime.datetime.now():
+            if cabang.lisensi_grace<datetime.datetime.now():
+                return False
+            else:
+                if cabang.kuota_transaksi>0:
+                    return True
+                else:
+                    return False
+        else:
+            if cabang.kuota_transaksi>0:
+                return True
+            else:
+                return False
+    except:
+        return False
+    
+def cek_kuota_transaksi(id_cabang):
+    cabang = Cabang.objects.get(id=id_cabang)
+    if cabang.kuota_transaksi>0:
+        return True
+    else:
+        return False
+
+def cek_lisensi_expired(id_cabang):
+    try:
+        cabang = Cabang.objects.get(id=id_cabang)
+        if cabang.lisensi_expired<datetime.datetime.now():
+            return False
+        else:
+            return True
+    except:
+        return False
+
+def cek_jumlah_grace(id_cabang):
+    try:
+        cabang = Cabang.objects.get(id=id_cabang)
+        return (cabang.lisensi_grace-datetime.datetime.now()).days
+    except:
+        return 0
+
 def index(request):
     toko = None
     tanggal = datetime.datetime.now()
+    cabang_available=False
+    jumlah_grace = 0
+    bisa_transaksi=False
     if request.user.is_authenticated:
+        cabang_available = cek_expired_kuota(request.user.userprofile.cabang.id)
+        bisa_transaksi=cek_expired_kuota(request.user.userprofile.cabang.id)
+        jumlah_grace=cek_jumlah_grace(request.user.userprofile.cabang.id)
         user = User.objects.get(username=request.user.username)
         toko = request.user.userprofile.cabang.nama_toko
         if request.method=="POST":
@@ -110,7 +159,10 @@ def index(request):
         'penjualan_pending':penjualan_pending,
         'jumlah_penjualan_pending':jumlah_penjualan_pending,
         'bisnis_kecil':bisnis_kecil,
-        'bisnis_medium':bisnis_medium
+        'bisnis_medium':bisnis_medium,
+        'cabang_available':cabang_available,
+        'jumlah_grace':jumlah_grace,
+        'bisa_transaksi':bisa_transaksi
     }
     return render(request,'pos/pos.html',context)
 
@@ -324,7 +376,7 @@ def loginkan(request):
             user = authenticate(username=username,password=password)
             if(user):
                 login(request,user)
-                messages.add_message(request,messages.SUCCESS,f"Selamat datang {username}")
+                messages.add_message(request,messages.SUCCESS,f"Selamat datang {user.userprofile.nama_lengkap}")
                 addLog(user,user.userprofile.cabang,"login",f"login berhasil")
                 return HttpResponseRedirect('/')
             else:

@@ -71,7 +71,7 @@
                             {% endif %}
                         </span>
                         <span>
-                            {{user.userprofile.nama_lengkap|truncatechars:15}} [{{user.username}}]
+                            {{user.userprofile.nama_lengkap|truncatechars:12}} [{{user.username}}]
                             <br>
                                 <button class="btn btn-sm btn-danger px-2 rounded-pill " data-bs-toggle="modal" data-bs-target="#staticProfile" style="padding-top:0;padding-bottom: 0;padding-left: 20px !important;padding-right: 20px !important;">profile</button>
                             <br>
@@ -124,6 +124,17 @@
                     {% endblock %}
                 </div>
         </div>
+        {% if bisa_transaksi %}
+            {% if jumlah_grace < 8 %}
+            <div class="text-center text-danger p-3 bg-white fw-bold">
+                Lisensi Aplikasi Akan Berakhir dalam {{jumlah_grace}} Hari. Silakan Hubungi Admin untuk Melakukan Perpanjangan Lisensi.
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="text-center text-danger p-3 bg-white fw-bold">
+                Lisensi Aplikasi Sudah Berakhir, Tidak bisa Melakukan Pembayaran. Silakan Hubungi Admin untuk Melakukan Perpanjangan Lisensi.
+            </div>
+        {% endif %}
         <div class=" bg-white py-3 px-2 text-center border-top border-secondary">
             <span class="fw-bold fs-5">POS-MI APP versi 1.0</span> <br>
             <span class="fw-bold">&COPY; 2025 - by: Leopard Inc.</span>

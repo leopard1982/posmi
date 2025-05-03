@@ -35,45 +35,61 @@ def paymentRequest(request):
         harga=None
         kode_toko = prefixGenerator()
         jenis_paket =""
+        tipe=None #sm=small, med=medium, tr=trial
+        pkt=None #untuk paket, 0 bulanan, 1 3bulan, 2 6bulan, 3 tahunan, 4 2tahunan, 5 trial
         if 'bisnis_kecil' in request.POST:
+            tipe="sm"
             paket="PAKET BISNIS KECIL"
             paketan = request.POST['bisnis_kecil']
             daftarpaket = DaftarPaket.objects.get(nama="Bisnis Kecil")
             if paketan=="bulanan":
                 harga = daftarpaket.harga_per_bulan
                 jenis_paket=f"1 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')}"
+                pkt=0
             elif paketan=="3bulanan":
                 harga = daftarpaket.harga_per_tiga_bulan
                 jenis_paket=f"3 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=13)).strftime('%d-%m-%Y')}"
+                pkt=1
             elif paketan=="6bulanan":
                 harga = daftarpaket.harga_per_enam_bulan
                 jenis_paket=f"6 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=26)).strftime('%d-%m-%Y')}"
+                pkt=2
             elif paketan=="tahunan":
                 harga = daftarpaket.harga_per_tahun
                 jenis_paket=f"Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=52)).strftime('%d-%m-%Y')}"
+                pkt=3
             else:
                 harga = daftarpaket.harga_per_dua_tahun
                 jenis_paket=f"2 Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=104)).strftime('%d-%m-%Y')}"
+                pkt=4
         elif 'bisnis_medium' in request.POST:
             paket="PAKET BISNIS MEDIUM"
             paketan = request.POST['bisnis_medium']
             daftarpaket = DaftarPaket.objects.get(nama="Bisnis Medium")
+            tipe="med"
             if paketan=="bulanan":
                 harga = daftarpaket.harga_per_bulan
                 jenis_paket=f"1 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')}"
+                pkt=0
             elif paketan=="3bulanan":
                 harga = daftarpaket.harga_per_tiga_bulan
                 jenis_paket=f"3 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=13)).strftime('%d-%m-%Y')}"
+                pkt=1
             elif paketan=="6bulanan":
                 harga = daftarpaket.harga_per_enam_bulan
                 jenis_paket=f"6 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=26)).strftime('%d-%m-%Y')}"
+                pkt=2
             elif paketan=="tahunan":
                 harga = daftarpaket.harga_per_tahun
                 jenis_paket=f"Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=52)).strftime('%d-%m-%Y')}"
+                pkt=3
             else:
                 harga = daftarpaket.harga_per_dua_tahun
                 jenis_paket=f"2 Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=104)).strftime('%d-%m-%Y')}"
+                pkt=4
         else:
+            tipe="tr"
+            pkt=0
             paket="PAKET DASAR"
             harga=0
             jenis_paket=f"2 Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(days=7)).strftime('%d-%m-%Y')}"
@@ -83,7 +99,9 @@ def paymentRequest(request):
             'paket':paket,
             'harga':harga,
             'kode_toko':kode_toko,
-            'jenis_paket':jenis_paket
+            'jenis_paket':jenis_paket,
+            'tipe':tipe,
+            'pkt':pkt
         }
         return render(request,'registrasi/registrasi.html',context)
     return HttpResponseRedirect('/')
@@ -93,6 +111,45 @@ def paymentResponse(request):
         asal = request.META['HTTP_REFERER']
     except:
         asal="/"
+
+    pkt=int(request.GET['pkt'])
+    tipe=request.GET['tipe']
+    jumlah_transaksi=0
+    lisensi_grace=None
+    lisensi_expired=None
+
+    print(pkt)
+    if pkt==0:
+        print('pkt0')
+        if(tipe!="tr"):
+            lisensi_expired = datetime.datetime.now() + datetime.timedelta(days=30)
+            lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+        else:
+            lisensi_expired = datetime.datetime.now() + datetime.timedelta(days=7)
+            lisensi_grace = lisensi_expired
+    elif pkt==1:
+        print('pkt1')
+        lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=13)
+        lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+    elif pkt==2:
+        print('pkt2')
+        lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=26)
+        lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+    elif pkt==3:
+        print('pkt3')
+        lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=52)
+        lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+    elif pkt==4:
+        print('pkt4')
+        lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=104)
+        lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+
+    if tipe=="tr":
+        jumlah_transaksi=100 #default jumlah transaksi adalah 100 kalau trial
+    elif tipe=="sm":
+        jumlah_transaksi=DaftarPaket.objects.get(nama="Bisnis Kecil").max_transaksi
+    elif tipe=="med":
+        jumlah_transaksi=DaftarPaket.objects.get(nama="Bisnis Medium").max_transaksi
 
     if request.method=="POST":
         kode_toko = request.POST['kode_toko']
@@ -116,6 +173,9 @@ def paymentResponse(request):
             cabang.telpon=telpon_toko
             cabang.email=email_toko
             cabang.prefix=kode_toko
+            cabang.lisensi_expired=lisensi_expired
+            cabang.lisensi_grace=lisensi_grace
+            cabang.kuota_transaksi=jumlah_transaksi
             cabang.save()
 
             print(cabang)
