@@ -418,6 +418,9 @@ def bayarTransaksi(request):
                         barangnya.stok -= jumlah
                         barangnya.save()
                     addLog(request.user,request.user.userprofile.cabang,"pembayaran",f"Melakukan Pembayaran no. transaksi: {penjualan.nota}")
+                    cabang = Cabang.objects.get(id=request.user.userprofile.cabang.id)
+                    cabang.kuota_transaksi-=1
+                    cabang.save()
                     return HttpResponseRedirect(f'/print/{nota}')
                 except Exception as ex:
                     print(ex)
