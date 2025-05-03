@@ -218,9 +218,13 @@ def daftarBarang(request):
 def transaksiBulanBerjalan(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
-            transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=4) & Q(updated_at__year=datetime.datetime.now().year))
+            transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year))
+            bulan = bulannya(datetime.datetime.now().month)
+            tahun = datetime.datetime.now().year
             context = {
-                'transaksi':transaksi
+                'transaksi':transaksi,
+                'bulannya':bulan,
+                'tahunnya':tahun
             }
             return render(request,'administrator/components/history_bulan_berjalan.html',context)
         else:
@@ -279,6 +283,7 @@ def editBarang(request):
                     barang.stok = int(request.POST['stok'])
                     barang.harga_ecer=int(request.POST['harga_ecer'])
                     barang.harga_grosir=int(request.POST['harga_grosir'])
+                    barang.harga_beli = int(request.POST['harga_beli'])
                     barang.save()
                     addLog(request.user,request.user.userprofile.cabang,"edit barang",f"Edit Barang {barang.nama} ({barang.id})Berhasil")
                     messages.add_message(request,messages.SUCCESS,f"Update Informasi '{barang.nama}' Berhasil.")
@@ -345,6 +350,12 @@ def tambahBarang(request):
                         except Exception as ex:
                             # print(ex)
                             min_beli_grosir=0
+                        try:
+                            harga_beli=int(data['harga_beli'])
+                        except Exception as ex:
+                            # print(ex)
+                            harga_beli=0
+
                         informasi = {
                             'barcode':barcode,
                             'nama':nama,
@@ -352,6 +363,7 @@ def tambahBarang(request):
                             'stok':stok,
                             'harga_ecer':harga_ecer,
                             'harga_grosir':harga_grosir,
+                            'harga_beli':harga_beli,
                             'min_beli_grosir':min_beli_grosir
                         }
                         # print(informasi)
@@ -365,6 +377,7 @@ def tambahBarang(request):
                         uploadbaranglist.harga_ecer=harga_ecer
                         uploadbaranglist.harga_grosir=harga_grosir
                         uploadbaranglist.min_beli_grosir=min_beli_grosir
+                        uploadbaranglist.harga_beli=harga_beli
                         uploadbaranglist.save()
 
                     except Exception as ex:
@@ -422,6 +435,7 @@ def konfirmasiUpload(request):
                         barang.harga_ecer = baranglist.harga_ecer
                         barang.harga_grosir = baranglist.harga_grosir
                         barang.min_beli_grosir = baranglist.min_beli_grosir
+                        barang.harga_beli = baranglist.harga_beli
                         barang.save()
                     except Exception as ex:
                         print(ex)
@@ -434,6 +448,7 @@ def konfirmasiUpload(request):
                         barang.harga_ecer = baranglist.harga_ecer
                         barang.harga_grosir = baranglist.harga_grosir
                         barang.min_beli_grosir = baranglist.min_beli_grosir
+                        barang.harga_beli = baranglist.harga_beli
                         barang.save()
                 addLog(request.user,request.user.userprofile.cabang,"tambah barang",f"Menambahkan  {len(uploadbaranglist)} Barang Berhasil.")
                 uploadbarang.delete()
@@ -493,6 +508,7 @@ def downloadBarang(request):
             harga_ecer=[]
             harga_grosir=[]
             min_beli_grosir=[]
+            harga_beli=[]
 
             barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang).order_by('nama')
             for barang in barangs:
@@ -500,6 +516,7 @@ def downloadBarang(request):
                 nama.append(barang.nama)
                 satuan.append(barang.satuan)
                 stok.append(barang.stok)
+                harga_beli.append(barang.harga_beli)
                 harga_ecer.append(barang.harga_ecer)
                 harga_grosir.append(barang.harga_grosir)
                 min_beli_grosir.append(barang.min_beli_grosir)
@@ -509,6 +526,7 @@ def downloadBarang(request):
                 'nama':nama,
                 'satuan':satuan,
                 'stok':stok,
+                'harga_beli':harga_beli,
                 'harga_ecer':harga_ecer,
                 'harga_grosir':harga_grosir,
                 'min_beli_grosir':min_beli_grosir

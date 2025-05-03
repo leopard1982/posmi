@@ -63,7 +63,7 @@ class FormUserProfile(forms.ModelForm):
 class FormBarang(forms.ModelForm):
     class Meta:
         model = Barang
-        fields = ['barcode','nama','satuan','stok','harga_ecer','harga_grosir','min_beli_grosir','jumlah_dibeli']
+        fields = ['barcode','nama','satuan','stok','harga_beli','harga_ecer','harga_grosir','min_beli_grosir','jumlah_dibeli']
 
         widgets = {
             'barcode': forms.TextInput(
@@ -96,6 +96,13 @@ class FormBarang(forms.ModelForm):
                     'placeholder':"Isi Jumlah Stok",
                     'max_length':15,
                     'required':'required'
+                }
+            ),
+            'harga_beli': forms.NumberInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Harga Beli",
+                    'max_length':200,
                 }
             ),
             'harga_ecer': forms.NumberInput(

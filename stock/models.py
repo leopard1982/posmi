@@ -119,6 +119,7 @@ class Barang(models.Model):
     nama = models.CharField(max_length=200)
     satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS")
     stok = models.IntegerField(default=0)
+    harga_beli = models.IntegerField(default=0)
     harga_ecer = models.IntegerField(default=0)
     harga_grosir = models.IntegerField(default=0)
     min_beli_grosir = models.IntegerField(default=0)
@@ -148,6 +149,7 @@ class UploadBarangList(models.Model):
     harga_ecer = models.IntegerField(default=0)
     harga_grosir = models.IntegerField(default=0)
     min_beli_grosir = models.IntegerField(default=0)
+    harga_beli = models.IntegerField(default=0)
 
 class LogTransaksi(models.Model):
     transaksi=models.CharField(max_length=100,default="")
