@@ -26,7 +26,8 @@
                     {% if harga == 0 %}
                         <b>GRATIS</b>
                     {% else %}
-                        <b>Rp.{{harga|intcomma}}.00</b>
+                        <b>Rp.{{harga|intcomma}}.00</b><br>
+                        <span class="ps-2">Berlangganan: {{jenis_paket}}</span>
                     {% endif %}
                 </td>
             </tr>

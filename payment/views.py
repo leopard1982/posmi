@@ -4,6 +4,7 @@ import midtransclient
 from stock.models import DaftarPaket,prefixGenerator, Cabang, UserProfile
 from django.contrib import messages
 from django.contrib.auth.models import User
+import datetime
 
 
 def prosesPayment(noTransaksi,jumlah):
@@ -33,34 +34,45 @@ def paymentRequest(request):
         paket=""
         harga=None
         kode_toko = prefixGenerator()
+        jenis_paket =""
         if 'bisnis_kecil' in request.POST:
             paket="PAKET BISNIS KECIL"
             paketan = request.POST['bisnis_kecil']
             daftarpaket = DaftarPaket.objects.get(nama="Bisnis Kecil")
             if paketan=="bulanan":
                 harga = daftarpaket.harga_per_bulan
+                jenis_paket=f"1 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')}"
             elif paketan=="3bulanan":
                 harga = daftarpaket.harga_per_tiga_bulan
+                jenis_paket=f"3 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=13)).strftime('%d-%m-%Y')}"
             elif paketan=="6bulanan":
                 harga = daftarpaket.harga_per_enam_bulan
+                jenis_paket=f"6 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=26)).strftime('%d-%m-%Y')}"
             elif paketan=="tahunan":
                 harga = daftarpaket.harga_per_tahun
+                jenis_paket=f"Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=52)).strftime('%d-%m-%Y')}"
             else:
                 harga = daftarpaket.harga_per_dua_tahun
+                jenis_paket=f"2 Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=104)).strftime('%d-%m-%Y')}"
         elif 'bisnis_medium' in request.POST:
             paket="PAKET BISNIS MEDIUM"
             paketan = request.POST['bisnis_medium']
             daftarpaket = DaftarPaket.objects.get(nama="Bisnis Medium")
             if paketan=="bulanan":
                 harga = daftarpaket.harga_per_bulan
+                jenis_paket=f"1 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')}"
             elif paketan=="3bulanan":
                 harga = daftarpaket.harga_per_tiga_bulan
+                jenis_paket=f"3 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=13)).strftime('%d-%m-%Y')}"
             elif paketan=="6bulanan":
                 harga = daftarpaket.harga_per_enam_bulan
+                jenis_paket=f"6 Bulan mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=26)).strftime('%d-%m-%Y')}"
             elif paketan=="tahunan":
                 harga = daftarpaket.harga_per_tahun
+                jenis_paket=f"Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=52)).strftime('%d-%m-%Y')}"
             else:
                 harga = daftarpaket.harga_per_dua_tahun
+                jenis_paket=f"2 Tahun mulai tanggal {datetime.datetime.now().strftime('%d-%m-%Y')} s.d. {(datetime.datetime.now()+datetime.timedelta(weeks=104)).strftime('%d-%m-%Y')}"
         else:
             paket="PAKET DASAR"
             harga=0
@@ -69,7 +81,8 @@ def paymentRequest(request):
         context = {
             'paket':paket,
             'harga':harga,
-            'kode_toko':kode_toko
+            'kode_toko':kode_toko,
+            'jenis_paket':jenis_paket
         }
         return render(request,'registrasi/registrasi.html',context)
     return HttpResponseRedirect('/')
