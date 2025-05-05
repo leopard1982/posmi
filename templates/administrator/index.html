@@ -423,13 +423,73 @@
                                 {{user.userprofile.cabang.nama_toko}} (<i>{{user.userprofile.cabang.nama_cabang}}</i>)<br>
                                 <span style="font-size: 15px;font-weight: bold;">{{user.userprofile.cabang.alamat_toko}}</span>
                             </div>
-                            <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                    class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                            <div class="p-2">
+                                
+                                {% if user.userprofile.cabang.paket%}
+                                    {% if user.userprofile.cabang.paket.nama == "Bisnis Kecil" %}
+                                        <div class="p-2 fs-5 rounded border border-primary text-primary border-2 text-center">
+                                            BISNIS KECIL
+                                        </div>    
+                                        <div class="mt-2" style="font-size: 14px;">
+                                            max. {{user.userprofile.cabang.paket.max_transaksi|intcomma}} transaksi/bulan
+                                        </div>
+                                    {% else %}
+                                        <div class="p-2 rounded fs-5 border border-success border-2 text-success text-center">
+                                            BISNIS MEDIUM
+                                        </div>
+                                        <div class="mt-2" style="font-size: 14px;">
+                                            max. {{user.userprofile.cabang.paket.max_transaksi|intcomma}} transaksi/bulan
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="p-2 rounded border fs-5 border-secondary border-2 fw-bold">
+                                        PAKET DASAR
+                                    </div>
+                                    <div class="mt-2" style="font-size: 14px;">
+                                            max. 100 transaksi/bulan
+                                    </div>
+                                {% endif %}    
+                            </div>
                         </div>
 
                         <!-- Content Row -->
                         <div class="row">
-
+                            <div class="col-xl-6 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 15px !important;">
+                                                    Transaksi Expired Tanggal</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    {{user.userprofile.cabang.lisensi_expired|date:"d/M/Y"}}
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-auto">
+                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 15px !important;">
+                                                    Sisa Kuota Transaksi</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    {{user.userprofile.cabang.kuota_transaksi|intcomma}} 
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-auto">
+                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                            </div> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Earnings (Monthly) Card Example -->
                             <div class="col-xl-6 col-md-6 mb-4">
                                 <div class="card border-left-primary shadow h-100 py-2">
