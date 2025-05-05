@@ -392,8 +392,11 @@ def loginkan(request):
         return render(request,'pos/login.html',context)
     
 def logoutkan(request):
-    addLog(request.user,request.user.userprofile.cabang,"logout",f"logout berhasil")
-    logout(request)
+    try:
+        addLog(request.user,request.user.userprofile.cabang,"logout",f"logout berhasil")
+        logout(request)
+    except:
+        pass
     return HttpResponseRedirect('/')
 
 def bayarTransaksi(request):

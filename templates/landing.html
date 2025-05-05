@@ -28,6 +28,42 @@
     /* border-width: 2px; */
   }
 
+  .card-addons {
+    min-height: 500px !important;
+    max-height: 500px !important; 
+    min-width: 320px !important;
+    max-width: 320px !important;
+    border-bottom: 5px solid black !important;
+    margin:20px !important;
+    box-shadow: none ;
+  }
+
+  .card-addons:hover {
+    box-shadow: 5px 5px 5px lightgrey !important;
+    cursor: pointer;
+    border-color: red !important;
+    border-radius: 10px !important;
+    /* border-width: 2px; */
+  }
+
+  .card-addons-upgrade {
+    min-height: 370px !important;
+    max-height: 370px !important; 
+    min-width: 320px !important;
+    max-width: 320px !important;
+    border-bottom: 5px solid black !important;
+    margin:20px !important;
+    box-shadow: none ;
+  }
+
+  .card-addons-upgrade:hover {
+    box-shadow: 5px 5px 5px lightgrey !important;
+    cursor: pointer;
+    border-color: green !important;
+    border-radius: 10px !important;
+    /* border-width: 2px; */
+  }
+
   .text-primary {
     color:#0d6efd
   }
@@ -637,97 +673,117 @@
         <div class="row gy-5 gy-lg-0">
           <div class="col-12 col-lg-4">
             <h2 class="display-5 mb-3 mb-xl-4">Add-ons Paket</h2>
-            <p class="lead mb-4 mb-xl-5">Klik Paket disamping</p>
-            <a href="#!" class="btn bsb-btn-2xl btn-primary">More Plans</a>
+            <p class="lead mb-4 mb-xl-5">
+              Digunakan untuk melakukan perpanjangan lisensi, upgrade paket bisnis dan membeli paket kuota. Silakan klik cek kode toko untuk pengecekan dan melihat <b>kode promo</b>!
+            </p>
           </div>
           <div class="col-12 col-lg-8">
             <div class="row justify-content-xl-end">
               <div class="col-12 col-xl-11">
                 <div class="row gy-4 gy-md-0 gx-xxl-5">
-                  <div class="col-12 col-md-6">
-                    <div class="card border-0 border-bottom border-primary shadow-sm">
+                  <div class="col-12 col-lg-6 p-2">
+                    <div class="card card-addons border-0 border-bottom border-primary shadow-sm">
                       <div class="card-body p-4 p-xxl-5">
-                        <h2 class="h4 mb-2">Perpanjangan Lisensi</h2>
-                        <h4 class="display-1 text-primary mb-0 bsb-tpl-font">$45</h4>
-                        <p class="text-secondary mb-4">USD / Month</p>
+                        <h2 class="h4">Perpanjangan Lisensi</h2>
+                        <h3 class="h5" style="color:black">Paket Bisnis Kecil</h3>
+                        <h4 class="display-3 text-primary mb-0 bsb-tpl-font">250.000</h4>
+                        <p class="text-secondary mb-4">Rupiah / Bulan</p>
                         <ul class="list-group list-group-flush mb-4">
                           <li class="list-group-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                               <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                             </svg>
-                            <span><strong>5</strong> Bootstrap Install</span>
+                            <span><strong>1500</strong> Transaksi Perbulan</span>
                           </li>
                           <li class="list-group-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                               <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                             </svg>
-                            <span><strong>100,000</strong> Visits</span>
+                            <span>Menambah <strong>3</strong> User Kasir</span>
                           </li>
                           <li class="list-group-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                               <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                             </svg>
-                            <span><strong>30 GB</strong> Disk Space</span>
-                          </li>
-                          <li class="list-group-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x text-danger" viewBox="0 0 16 16">
-                              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                            </svg>
-                            <span>Free <strong>SSL and CDN</strong></span>
-                          </li>
-                          <li class="list-group-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x text-danger" viewBox="0 0 16 16">
-                              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                            </svg>
-                            <span>Free <strong>Support</strong></span>
+                            <span>Full Support Admin</span>
                           </li>
                         </ul>
-                        <a href="#!" class="btn bsb-btn-xl btn-accent rounded-pill">Choose Plan</a>
+                        <div class="my-3">
+                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                        </div>
+                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</a>
                       </div>
                     </div>
                   </div>
-                  <div class="col-12 col-md-6">
-                    <div class="card border-0 border-bottom border-primary shadow-lg pt-md-4 pb-md-4 bsb-pricing-popular">
+                  <div class="col-12 col-lg-6 p-2">
+                    <div class="card card-addons border-0 border-bottom border-primary shadow-sm">
                       <div class="card-body p-4 p-xxl-5">
-                        <h2 class="h4 mb-2">Menambah Kuota</h2>
-                        <h4 class="display-1 text-primary mb-0 bsb-tpl-font">$149</h4>
-                        <p class="text-secondary mb-4">USD / Month</p>
+                        <h2 class="h4">Perpanjangan Lisensi</h2>
+                        <h3 class="h5" style="color: black;">Paket Bisnis Medium</h3>
+                        <h4 class="display-3 text-primary mb-0 bsb-tpl-font">350.000</h4>
+                        <p class="text-secondary mb-4">Rupiah / Bulan</p>
                         <ul class="list-group list-group-flush mb-4">
                           <li class="list-group-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                               <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                             </svg>
-                            <span><strong>20</strong> Bootstrap Install</span>
+                            <span><strong>6000</strong> Transaksi Perbulan</span>
                           </li>
                           <li class="list-group-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                               <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                             </svg>
-                            <span><strong>400,000</strong> Visits</span>
+                            <span>Menambah <strong>10</strong> User Kasir</span>
                           </li>
                           <li class="list-group-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                               <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
                             </svg>
-                            <span><strong>50 GB</strong> Disk Space</span>
-                          </li>
-                          <li class="list-group-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                              <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                            </svg>
-                            <span>Free <strong>SSL and CDN</strong></span>
-                          </li>
-                          <li class="list-group-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                              <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                            </svg>
-                            <span>Free <strong>Support</strong></span>
+                            <span>Full Support Admin</span>
                           </li>
                         </ul>
-                        <a href="#!" class="btn bsb-btn-xl btn-accent rounded-pill">Choose Plan</a>
+                        <div class="my-3">
+                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                        </div>
+                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</a>
                       </div>
                     </div>
                   </div>
+                  
+                  <div class="col-12 col-lg-6 p-2">
+                    <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" >
+                      <div class="card-body p-4 p-xxl-5">
+                        <h2 class="h3">Upgrade Paket</h2>
+                        <h3 class="h5" style="color: black;">Upgrade paket bisnis dari bisnis kecil ke medium untuk skala transaksi lebih besar.</h3>
+                        <ul class="list-group list-group-flush mb-4">
+                          <li class="list-group-item p-2" style="border-radius: 5px; background-color: whitesmoke;">
+                            <span style="font-weight: bold;">catatan:</span><br>
+                            <span>Biaya upgrade akan dihitung dari sisa tanggal expired paket.</span>
+                          </li>
+                        </ul>
+                        <div class="my-3">
+                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                        </div>
+                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Biaya Upgrade</a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-lg-6 p-2">
+                    <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" >
+                      <div class="card-body p-4 p-xxl-5">
+                        <h2 class="h4">Tambah Kuota Transaksi</h2>
+                        <h3  style="color: black;font-size: 19px;">Menambah kuota transaksi mu?<br>Bisa! Mulai dari:</h3>
+                        <h4 class="display-4 text-primary mb-0 bsb-tpl-font">10.000</h4>
+                        <p class="text-secondary mb-4">Rupiah / 50 Transaksi</p>
+                        <div class="my-3">
+                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                        </div>
+                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; margin-top:5px;height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Kode Toko</a>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
