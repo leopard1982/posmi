@@ -104,6 +104,7 @@
                     </div>
                 </div>
             </li>
+            {% if user.userprofile.paket %}
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
                     aria-expanded="true" aria-controls="collapseUsers">
@@ -119,6 +120,7 @@
                     </div>
                 </div>
             </li>
+            {% endif %}
 
             <!-- Divider -->
             <hr class="sidebar-divider">
