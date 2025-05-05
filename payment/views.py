@@ -415,14 +415,17 @@ def hitungExpired(request):
         elif metode=="duatahunan":
             day = 365*2
         
-        # day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
-
+        try:
+            sisa_hari = (cabang.lisensi_expired-datetime.datetime.now()).days
+        except:
+            sisa_hari=0
+            day = day-sisa_hari
         try:
             if cabang.lisensi_expired< datetime.datetime.now():
-                day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
+                # day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
                 tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
             else:
-                day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
+                # day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
                 tanggal_expired = tanggal_expired + datetime.timedelta(days=day)
         except:
             tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
@@ -459,11 +462,16 @@ def upgradeLisensi(request):
             day = 365*2
 
         try:
+            sisa_hari = (cabang.lisensi_expired-datetime.datetime.now()).days
+        except:
+            sisa_hari=0
+            day = day-sisa_hari
+
+        try:
             if cabang.lisensi_expired< datetime.datetime.now():
-                day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
                 tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
             else:
-                day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
+                # day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
                 tanggal_expired = tanggal_expired + datetime.timedelta(days=day)
         except:
             tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
@@ -481,6 +489,8 @@ def upgradeLisensi(request):
         #         cabang.lisensi_expired=datetime.datetime.now() + datetime.timedelta(days=day)
         #     else:
         #         cabang.lisensi_expired = cabang.lisensi_expired + datetime.timedelta(days=day)
+        cabang.lisensi_expired=tanggal_expired
+        cabang.lisensi_expired
         cabang.kuota_transaksi=paket.max_transaksi
         cabang.paket=paket
         cabang.save()
