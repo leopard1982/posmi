@@ -147,10 +147,13 @@ def paymentResponse(request):
 
     if tipe=="tr":
         jumlah_transaksi=100 #default jumlah transaksi adalah 100 kalau trial
+        daftarpaket = None
     elif tipe=="sm":
-        jumlah_transaksi=DaftarPaket.objects.get(nama="Bisnis Kecil").max_transaksi
+        daftarpaket = DaftarPaket.objects.get(nama="Bisnis Kecil")
+        jumlah_transaksi=daftarpaket.max_transaksi
     elif tipe=="med":
-        jumlah_transaksi=DaftarPaket.objects.get(nama="Bisnis Medium").max_transaksi
+        daftarpaket=DaftarPaket.objects.get(nama="Bisnis Medium")
+        jumlah_transaksi=daftarpaket.max_transaksi
 
     if request.method=="POST":
         kode_toko = request.POST['kode_toko']
@@ -168,6 +171,7 @@ def paymentResponse(request):
         except:
             cabang = Cabang()
             cabang.keterangan=""
+            cabang.paket=daftarpaket
             cabang.nama_toko=nama_toko
             cabang.nama_cabang=nama_cabang
             cabang.alamat_toko = alamat_toko
