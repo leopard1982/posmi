@@ -415,12 +415,14 @@ def hitungExpired(request):
         elif metode=="duatahunan":
             day = 365*2
         
-        day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
+        # day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
 
         try:
             if cabang.lisensi_expired< datetime.datetime.now():
+                day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
                 tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
             else:
+                day = day-(cabang.lisensi_expired-datetime.datetime.now()).days
                 tanggal_expired = tanggal_expired + datetime.timedelta(days=day)
         except:
             tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
