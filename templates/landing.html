@@ -681,7 +681,7 @@
             <div class="row justify-content-xl-end">
               <div class="col-12 col-xl-11">
                 <div class="row gy-4 gy-md-0 gx-xxl-5">
-                  <div class="col-12 col-lg-6 p-2  d-flex justify-content-center">
+                  <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="lisensismall">
                     <div class="card card-addons border-0 border-bottom border-primary shadow-sm">
                       <div class="card-body p-4 p-xxl-5">
                         <h2 class="h4">Perpanjangan Lisensi</h2>
@@ -708,14 +708,17 @@
                             <span>Full Support Admin</span>
                           </li>
                         </ul>
-                        <div class="my-3">
-                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                        </div>
-                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</a>
+                        <form action="{% url 'cek_lisensi'%}?tipe=small" method="post">
+                          {% csrf_token %}
+                          <div class="my-3">
+                            <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                          </div>
+                          <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</button>                        
+                        </form>
                       </div>
                     </div>
                   </div>
-                  <div class="col-12 col-lg-6 p-2  d-flex justify-content-center">
+                  <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="lisensimedium">
                     <div class="card card-addons border-0 border-bottom border-primary shadow-sm">
                       <div class="card-body p-4 p-xxl-5">
                         <h2 class="h4">Perpanjangan Lisensi</h2>
@@ -742,15 +745,18 @@
                             <span>Full Support Admin</span>
                           </li>
                         </ul>
-                        <div class="my-3">
-                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                        </div>
-                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</a>
+                        <form action="{% url 'cek_lisensi'%}?tipe=medium" method="post">
+                          {% csrf_token %}
+                          <div class="my-3">
+                            <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                          </div>
+                          <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</button>                          
+                        </form>
                       </div>
                     </div>
                   </div>
                   
-                  <div class="col-12 col-lg-6 p-2  d-flex justify-content-center">
+                  <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="upgradepaket">
                     <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" >
                       <div class="card-body p-4 p-xxl-5">
                         <h2 class="h3">Upgrade Paket</h2>
@@ -761,25 +767,31 @@
                             <span>Biaya upgrade akan dihitung dari sisa tanggal expired paket.</span>
                           </li>
                         </ul>
-                        <div class="my-3">
-                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                        </div>
-                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Biaya Upgrade</a>
+                        <form action="{% url 'cek_lisensi'%}?tipe=upgrade" method="post">
+                          {% csrf_token %}
+                          <div class="my-3">
+                            <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                          </div>
+                          <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Biaya Upgrade</button>
+                        </form>
                       </div>
                     </div>
                   </div>
 
-                  <div class="col-12 col-lg-6 p-2 d-flex justify-content-center">
+                  <div class="col-12 col-lg-6 p-2 d-flex justify-content-center" id="tambahkuota">
                     <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" >
                       <div class="card-body p-4 p-xxl-5">
                         <h2 class="h4">Tambah Kuota Transaksi</h2>
                         <h3  style="color: black;font-size: 19px;">Menambah kuota transaksi mu?<br>Bisa! Mulai dari:</h3>
                         <h4 class="display-4 text-primary mb-0 bsb-tpl-font">10.000</h4>
                         <p class="text-secondary mb-4">Rupiah / 50 Transaksi</p>
-                        <div class="my-3">
-                          <input type="text" name="kode_toko" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                        </div>
-                        <a href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; margin-top:5px;height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Kode Toko</a>
+                        <form action="{% url 'cek_lisensi'%}?tipe=kuota" method="post">
+                          {% csrf_token %}
+                                                  <div class="my-3">
+                                                    <input required type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                                                  </div>
+                                                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; margin-top:5px;height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Kode Toko</button>
+                        </form>
                       </div>
                     </div>
                   </div>

@@ -5,6 +5,7 @@ from stock.models import DaftarPaket,prefixGenerator, Cabang, UserProfile
 from django.contrib import messages
 from django.contrib.auth.models import User
 import datetime
+from django.db.models import Q
 
 
 def prosesPayment(noTransaksi,jumlah):
@@ -201,3 +202,278 @@ def paymentResponse(request):
 
     return HttpResponseRedirect(asal)
 
+def getAdmin(kode_toko):
+    try:
+        user = User.objects.get(username=f"{kode_toko}1")
+        userprofile = UserProfile.objects.get(user=user).nama_lengkap
+        return userprofile
+    except:
+        return ""
+
+def cekLisensi(request):
+    try:
+        asal = request.META['HTTP_REFERER']
+    except Exception as ex:
+        print(ex)
+        asal="/"
+    
+    try:
+        kode_toko = request.POST['id']
+        tipe = request.GET['tipe']    
+        info_registrasi=""
+        list_kuota=[data for data in range(50,1500,50)]
+        list_biaya = []
+        try:
+            cabang = Cabang.objects.get(prefix=kode_toko)
+            if tipe=="small":
+                info_registrasi="Perpanjangan Lisensi Bisnis Kecil"
+            elif tipe=="medium":
+                info_registrasi="Perpanjangan Lisensi Bisnis Kecil"
+            elif tipe=="upgrade":
+                if cabang.paket== None:
+                    info_registrasi="Upgrade ke Paket Bisnis Kecil atau Medium"
+                    daftarpaket = DaftarPaket.objects.all().filter(nama__in=['Bisnis Kecil','Bisnis Medium'])
+                    sisa_uang=0
+                    for daftar in daftarpaket:
+                        data = {
+                                "id":daftar.paket,
+                                'nama':daftar.nama,
+                            }
+                        biaya_list=[]
+                        if int(daftar.harga_per_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'bulanan',
+                                'info': '1 bulanan',
+                                'data':int(daftar.harga_per_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_tiga_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'tigabulanan',
+                                'info':'3 bulanan',
+                                'data':int(daftar.harga_per_tiga_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_enam_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'enambulanan',
+                                'info':'6 bulanan',
+                                'data':int(daftar.harga_per_enam_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_tahun-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'tahunan',
+                                'info':'1 tahunan',
+                                'data':int(daftar.harga_per_tahun-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_dua_tahun-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'duatahunan',
+                                'info':'2 tahunan',
+                                'data':int(daftar.harga_per_dua_tahun-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        data['biaya']=biaya_list
+                        list_biaya.append(data)
+                    print(list_biaya)
+                elif cabang.paket.nama=="Bisnis Kecil":
+                    info_registrasi="Upgrade ke Paket Bisnis Medium"
+                    daftarpaket = DaftarPaket.objects.all().filter(nama__in=['Bisnis Medium'])
+                    sisa_hari = int((cabang.lisensi_expired-datetime.datetime.now()).days)
+                    sisa_uang = 0
+                    # cek apakah sisa hari masih bulanan?
+                    sisa_uang = (cabang.paket.harga_per_tahun/365)*sisa_hari
+                    for daftar in daftarpaket:
+                        data = {
+                                "id":str(daftar.paket),
+                                'nama':daftar.nama,
+                        }
+                        
+                        biaya_list=[]
+                        if int(daftar.harga_per_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'bulanan',
+                                'info': '1 bulanan',
+                                'data':int(daftar.harga_per_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_tiga_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'tigabulanan',
+                                'info':'3 bulanan',
+                                'data':int(daftar.harga_per_tiga_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_enam_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'enambulanan',
+                                'info':'6 bulanan',
+                                'data':int(daftar.harga_per_enam_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_tahun-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'tahunan',
+                                'info':'1 tahunan',
+                                'data':int(daftar.harga_per_tahun-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_dua_tahun-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'duatahunan',
+                                'info':'2 tahunan',
+                                'data':int(daftar.harga_per_dua_tahun-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        data['biaya']=biaya_list
+                        print(data)
+                        list_biaya.append(data)
+                else:
+                    messages.add_message(request,messages.SUCCESS,f"Paket untuk {cabang.nama_toko} sudah Medium tidak bisa melakukan upgrade. Yang bisa dilakukan adalah menambah kuota transaksi penjualan. Terima kasih.")
+                    return HttpResponseRedirect('/')
+            elif tipe=="kuota":
+                info_registrasi="Penambahan Kuota"
+            
+            nama_admin = getAdmin(kode_toko)
+            context = {
+                'kode_toko':kode_toko,
+                'cabang':cabang,
+                'nama_admin':nama_admin,
+                'info_registrasi':info_registrasi,
+                'tipe':tipe,
+                'list_kuota':list_kuota,
+                'asal':asal,
+                'list_biaya':list_biaya
+            }
+            return render(request,'registrasi/cek_lisensi.html',context)
+        except Exception as ex:
+            print(ex)
+            messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")    
+            if tipe=="small":
+                return HttpResponseRedirect("/#lisensismall")
+            elif tipe=="medium":
+                return HttpResponseRedirect("/#lisensimedium")
+            elif tipe=="upgrade":
+                return HttpResponseRedirect("/#upgradepaket")
+            elif tipe=="kuota":
+                return HttpResponseRedirect("/#tambahkuota")
+        
+    except Exception as ex:
+        print(ex)
+        messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")
+        return HttpResponseRedirect("/")
+    
+def hitungBiayaKuota(request):
+    try:
+        jumlah_kuota = int(request.GET['jumlah_kuota'])
+        return HttpResponse(f'<span style="width:270px">Perkiraan Biaya adalah:</span> Rp.{int(jumlah_kuota*10000/50):,}.00')
+    except:
+        return HttpResponse('<span style="width:270px">Perkiraan Biaya adalah:</span> Rp.0.00')
+
+def tambahKuota(request):
+    try:
+        asal = request.META['HTTP_REFERER']
+    except Exception as ex:
+        print(ex)
+        asal="/"
+
+    try:
+        kode_toko=request.GET['id']
+        jumlah_kuota = request.POST['jumlah_kuota']
+        cabang = Cabang.objects.get(prefix=kode_toko)
+        cabang.kuota_transaksi+=int(jumlah_kuota)
+        cabang.save()
+        messages.add_message(request,messages.SUCCESS,f"Selamat kuota transaksi untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah bertambah {jumlah_kuota} menjadi sebanyak: {cabang.kuota_transaksi} transaksi. ")
+        return HttpResponseRedirect('/')
+    except:
+        return HttpResponseRedirect(asal)
+    
+def hitungExpired(request):
+    try:
+        asal = request.META['HTTP_REFERER']
+    except Exception as ex:
+        print(ex)
+        asal="/"
+    try:
+        kode_toko = request.GET['id']
+        cabang = Cabang.objects.get(prefix=kode_toko)
+        metode = str(request.GET['list_biaya']).split('^')[0]
+        if(metode==""):
+            return HttpResponse("")
+        tanggal_expired = None
+        day=0
+        if metode=="bulanan":
+            day = 30
+        elif metode=="tigabulanan":
+            day = 30*3
+        elif metode=="enambulanan":
+            day = 30*6
+        elif metode=="tahunan":
+            day = 365
+        elif metode=="duatahunan":
+            day = 365*2
+        
+        day = day+ day-(cabang.lisensi_expired-datetime.datetime.now()).days
+
+        try:
+            if cabang.lisensi_expired< datetime.datetime.now():
+                tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
+            else:
+                tanggal_expired = tanggal_expired + datetime.timedelta(days=day)
+        except:
+            tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
+        return HttpResponse(f"Lisensi akan berakhir: {tanggal_expired.strftime("%d/%m/%Y")}")
+    except Exception as ex:
+        print(ex)
+        return HttpResponse("-")
+    
+def upgradeLisensi(request):
+    try:
+        asal = request.META['HTTP_REFERER']
+    except Exception as ex:
+        print(ex)
+        asal="/"
+
+    try:
+        print(request.GET)
+        print(request.POST)
+        kode_toko=request.GET['id']
+        print(kode_toko)
+        cabang = Cabang.objects.get(prefix=kode_toko)
+        metode = str(request.POST['list_biaya']).split('^')[0]
+        paket_id = str(request.POST['list_biaya']).split('^')[1]
+        paket = DaftarPaket.objects.get(paket=paket_id)
+        if metode=="bulanan":
+            day = 30
+        elif metode=="tigabulanan":
+            day = 30*3
+        elif metode=="enambulanan":
+            day = 30*6
+        elif metode=="tahunan":
+            day = 365
+        elif metode=="duatahunan":
+            day = 365*2
+        
+        try:
+            day =  day-(cabang.lisensi_expired-datetime.datetime.now()).days
+        except:
+            pass
+            
+        print(cabang)
+        if cabang.lisensi_expired==None:
+            cabang.lisensi_expired=datetime.datetime.now() + datetime.timedelta(days=day)
+        else:
+            if(cabang.lisensi_expired<datetime.datetime.now()):
+                cabang.lisensi_expired=datetime.datetime.now() + datetime.timedelta(days=day)
+            else:
+                cabang.lisensi_expired = cabang.lisensi_expired + datetime.timedelta(days=day)
+        cabang.kuota_transaksi=paket.max_transaksi
+        cabang.paket=paket
+        cabang.save()
+        messages.add_message(request,messages.SUCCESS,f"Selamat untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah menggunakan paket {paket.nama} dengan lisensi diperpanjang sampai dengan {cabang.lisensi_expired.strftime("%d/%m/%Y")}.")
+        return HttpResponseRedirect('/')
+    except Exception as ex:
+        print(ex)
+        return HttpResponseRedirect(asal)

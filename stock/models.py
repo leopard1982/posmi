@@ -30,10 +30,10 @@ class DaftarPaket(models.Model):
     nama=models.CharField(max_length=200,default="")
     max_transaksi=models.IntegerField(default=0)
     max_user_login = models.IntegerField(default=0)
-    is_download_transaksi = models.BooleanField(default=True)
-    is_tambah_barang = models.BooleanField(default=True)
-    is_download_barang = models.BooleanField(default=True)
-    is_laporan_transaksi = models.BooleanField(default=True)
+    # is_download_transaksi = models.BooleanField(default=True)
+    # is_tambah_barang = models.BooleanField(default=True)
+    # is_download_barang = models.BooleanField(default=True)
+    # is_laporan_transaksi = models.BooleanField(default=True)
     harga_per_bulan = models.PositiveIntegerField(default=0)
     harga_per_tiga_bulan = models.PositiveIntegerField(default=0)
     harga_per_enam_bulan = models.PositiveIntegerField(default=0)
@@ -51,7 +51,7 @@ class Cabang(models.Model):
     nama_cabang = models.CharField(max_length=15,default="Cabang1")
     alamat_toko = models.CharField(max_length=30,default="Jalan...")
     telpon = models.CharField(max_length=15,default="081234567890")
-    keterangan = models.CharField(max_length=200,default="")
+    keterangan = models.CharField(max_length=200,default="",null=True,blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -60,17 +60,19 @@ class Cabang(models.Model):
     jumlah_kasir = models.IntegerField(default=0)
     lisensi_expired = models.DateTimeField(null=True,blank=True)
     lisensi_grace = models.DateTimeField(null=True,blank=True)
+    paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,default="",related_name="paket_cabang",null=True,blank=True)
+    last_update_kuota = models.DateTimeField(blank=True,null=True)
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
 
-class PaketCabang(models.Model):
-    cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,default="",related_name="Cabang_Paket")
-    paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,default="",related_name="paket_cabang")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    expired = models.DateTimeField(null=True)
-    is_active = models.BooleanField(default=False)
+# class PaketCabang(models.Model):
+#     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,default="",related_name="Cabang_Paket")
+#     paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,default="",related_name="paket_cabang")
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     expired = models.DateTimeField(null=True)
+#     is_active = models.BooleanField(default=False)
 
 class Pembayaran(models.Model):
     id = models.UUIDField(auto_created=True,editable=False,primary_key=True,default=uuid.uuid4)
@@ -129,6 +131,7 @@ class Barang(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User,on_delete=models.RESTRICT,blank=True,null=True)
     jumlah_dibeli = models.BigIntegerField(default=0)
+    keterangan = models.CharField(max_length=200,default="",null=True,blank=True)
 
     def __str__(self):
         return f"{self.barcode} - {self.nama} - {self.satuan}"

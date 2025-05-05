@@ -1,0 +1,45 @@
+{% load humanize %}
+{% load static %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js" integrity="sha512-2kIcAizYXhIn8TzUvqzEDZNuDZ+aW7yE/+f1HJHXFjQcGNfv1kqzJSTBRBSlOgp6B/KZsz1K0a3ZTqP9dnxioQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+    .keterangan {
+        width: 220px;
+        padding-top:5px
+    }
+</style>
+{% endblock %}
+
+<div>
+    <div class="fs-6 fw-bold mt-3">
+        Perhitungan Upgrade Paket
+    </div>
+    <div>
+        Penghitungan upgrade paket ini disesuaikan dengan tabel tarif yang terdefinisi di awal dikurangkan pembayaran yang telah dilakukan di awal pendaftaran untuk paket berjalan.
+    </div>
+    <form action="{% url 'upgrade_lisensi'%}?id={{kode_toko}}" method="POST">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center">
+            <label for="list_biaya" class="keterangan">Penambahan Biaya: </label>
+            <select name="list_biaya" required class="form-select" id="list_biaya" hx-get="{% url 'hitung_expired'%}?id={{kode_toko}}" hx-trigger="change" hx-target="#biaya">
+                <option value="">----------</option>
+                {% for list in list_biaya %}
+                    {% for detail in list.biaya %}
+                        <option value="{{detail.nama}}^{{list.id}}">[{{list.nama}} - {{detail.info}}] Rp.{{detail.data|intcomma}}.00</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+        <div id="biaya" class="mt-4"></div>
+        <div class="mt-4">
+            Apakah akan di proses?
+            <button class="btn btn-sm btn-success ">
+                ya, saya proses.
+            </button>
+            <a class="btn btn-sm btn-warning " href="{{asal}}#tambahkuota">
+                tidak, batalkan dulu.
+            </a>
+        </div>
+    </form>
+    
+</div>

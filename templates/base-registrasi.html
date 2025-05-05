@@ -27,9 +27,11 @@
             font-style: normal;
         }
     </style>
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
-    <div>
+    <div class="mb-5">
             <div class="container my-2">
                 {% if messages %}
                     {% for message in messages %}
@@ -46,7 +48,7 @@
                 </div>
                 <div class="bg-white" style="margin-top: 50px;">
                     {% block contents %}
-                {% endblock %}
+                    {% endblock %}
                 </div>
                 
             </div>

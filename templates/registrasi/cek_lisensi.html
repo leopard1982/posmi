@@ -1,0 +1,105 @@
+{% extends 'base-registrasi.html'%}
+{% load static%}
+{% load humanize %}
+{% block contents %}
+<div>
+            <div class="container my-2">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert text-center p-2 alert-primary" role="alert">
+                            {{message}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+</div>
+
+<div class="p-2 bg-white">
+    <div class="p-2 border border-secondary rounded ">
+        <table class="table">
+            <tr>
+                <th>Nama Toko</th>
+                <td>: {{cabang.nama_toko}} ({{cabang.prefix}})</td>
+            </tr>
+            <tr>
+                <th>Cabang Toko</th>
+                <td>: {{cabang.nama_cabang}}</td>
+            </tr>
+            <tr>
+                <th>Pemilik Toko</th>
+                <td>: Bpk/Ibu {{nama_admin}}</td>
+            </tr>
+            <tr>
+                <th>Paket</th>
+                <td>: {{cabang.paket.nama}}</td>
+            </tr>
+            <tr>
+                <th>Lisensi Expired</th>
+                <td>: {{cabang.lisensi_expired|date:"d/M/Y"}}</td>
+            </tr>
+            <tr>
+                <th>Maksimal Kuota Transaksi</th>
+                <td>: {{cabang.paket.max_transaksi|intcomma}}</td>
+            </tr>
+            <tr>
+                <th>Jumlah Kuota Tersedia</th>
+                <td>: {{cabang.kuota_transaksi|intcomma}}</td>
+            </tr>
+            <tr>
+                <th>Rencana Perubahan</th>
+                <td style="color: red;">: {{info_registrasi}}</td>
+            </tr>
+        </table>
+    </div>
+
+    {% if tipe == "kuota" %}
+        {% include 'registrasi/components/tambah_kuota.html'%}
+    {% elif tipe == "upgrade" %}
+        {% include 'registrasi/components/upgrade_paket.html' %}
+    {% endif %}
+    
+    <!-- <div class="mt-5 mb-5">
+        <p class="fst-italic fs-5 fw-bold">Detail Informasi Pendaftar:</p>
+        <form action="{% url 'payment_response'%}?tipe={{tipe}}&pkt={{pkt}}" method="post">
+            {% csrf_token %}
+            <table class="table">
+                <tr>
+                    <th>Kode Toko</th>
+                    <td><input type="text" name="kode_toko" id="" class="form-control" value="{{kode_toko}}" readonly required></td>
+                </tr>
+                <tr>
+                    <th>Nama Toko</th>
+                    <td><input type="text" maxlength="20" name="nama_toko" placeholder="Nama Toko" id="" class="form-control" required></td>
+                </tr>
+                <tr>
+                    <th>Nama Cabang</th>
+                    <td><input type="text" maxlength="20" name="nama_cabang" placeholder="Nama Cabang Toko (mis.Tanah Abang1)" id="" class="form-control" required></td>
+                </tr>
+                <tr>
+                    <th>Alamat Toko</th>
+                    <td><input type="text" name="alamat_toko" placeholder="Alamat Toko" id="" class="form-control" required></td>
+                </tr>
+                <tr>
+                    <th>Nomor Telpon:</th>
+                    <td><input type="text" name="telpon_toko" id="" class="form-control" placeholder="Nomor Telpon" required></td>
+                </tr>
+                <tr>
+                    <th>Email Toko</th>
+                    <td><input type="email" name="email_toko" id="" class="form-control" required placeholder="Email Toko"></td>
+                </tr>
+                <tr>
+                    <th>Pemilik Toko</th>
+                    <td><input type="text" name="pemilik_toko" id="" class="form-control" required placeholder="Pemilik Toko"></td>
+                </tr>
+                <tr>
+                    <th>Password Admin</th>
+                    <td><input type="password" name="password_admin" id="" class="form-control" minlength="8" required placeholder="Password Admin Min.8 karakter"></td>
+                </tr>
+            </table>
+            <p><input type="checkbox" name="ok" value="ok" required id="ok" class="mt-2"> <label for="ok">Saya mengkonfirmasi pembuatan akun di POSMI</label></p>
+            <p><button class="px-3 btn btn-primary mt-2" type="submit">Konfirmasi Pendaftaran</button></p>
+        </form>
+        
+    </div> -->
+</div>
+{% endblock%}
