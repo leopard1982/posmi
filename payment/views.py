@@ -490,7 +490,7 @@ def upgradeLisensi(request):
         #     else:
         #         cabang.lisensi_expired = cabang.lisensi_expired + datetime.timedelta(days=day)
         cabang.lisensi_expired=tanggal_expired
-        cabang.lisensi_expired
+        cabang.lisensi_grace = tanggal_expired + datetime.timedelta(days=7)
         cabang.kuota_transaksi=paket.max_transaksi
         cabang.paket=paket
         cabang.save()
