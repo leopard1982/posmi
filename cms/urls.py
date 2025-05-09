@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import index, infoToko, daftarBarang, transaksiBulanBerjalan,transaksiBulanLain,profilSaya
 from .views import editBarang, tambahBarang,downloadTemplate,konfirmasiUpload, hapusBarang, downloadBarang
-from .views import viewLog
+from .views import viewLog,daftarKasir,tambahKasir
 
 urlpatterns = [
     path('', index,name='index_cms'),
@@ -16,5 +16,7 @@ urlpatterns = [
     path('barang/upload/',konfirmasiUpload,name='konfirmasi_upload'),
     path('barang/hapus/',hapusBarang,name="hapus_barang"),
     path('barang/download/',downloadBarang,name='download_barang'),
-    path('log/',viewLog,name="view_log")
+    path('log/',viewLog,name="view_log"),
+    path('kasir/',daftarKasir,name="daftar_kasir"),
+    path('kasir/tambah/',tambahKasir,name="tambah_kasir")
 ]

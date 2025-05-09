@@ -5,7 +5,7 @@ from django.db.models import Q,Sum,Count
 import datetime
 from django.contrib.auth.models import User
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
-from stock.models import Cabang
+from stock.models import Cabang,UserProfile
 from django.urls import reverse
 from django.http import FileResponse
 from django.conf import settings
@@ -561,3 +561,64 @@ def viewLog(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+    
+def daftarKasir(request):
+    list_user = User.objects.all().filter(userprofile__cabang=request.user.userprofile.cabang)
+    context = {
+        'list_user':list_user
+    }
+    return render(request,'administrator/components/list_user.html',context)
+
+def tambahKasir(request):
+    if request.method=="POST":
+        pass1 = request.POST['password1']
+        pass2 = request.POST['password2']
+        print(pass1)
+        print(pass2)
+        if pass1!=pass2:
+            messages.add_message(request,messages.SUCCESS,'Penambahan kasir gagal, password dan konfirmasinya tidak sama. Silakan ulangi kembali.')
+            return render(request,'administrator/components/tambah_user.html')
+        else:
+            try:
+                nama_lengkap = request.POST['nama_lengkap']
+                id_cabang = request.user.userprofile.cabang.id
+                cabang = Cabang.objects.get(id=id_cabang)
+                jumlah_kasir = cabang.jumlah_kasir+1
+                userid = f"{cabang.prefix}{jumlah_kasir}"
+                print(userid)
+                try:
+                    usernya = User()
+                    usernya.username=userid
+                    usernya.password=pass1
+                    usernya.save()
+                    usernya.set_password(pass1)
+                    usernya.save()
+
+
+                    cabang.jumlah_kasir=cabang.jumlah_kasir+1
+                    cabang.save()
+                except:
+                    jumlah_kasir = cabang.jumlah_kasir+2
+                    userid = f"{cabang.prefix}{jumlah_kasir}"
+                    usernya = User()
+                    usernya.username=userid
+                    usernya.password=pass1
+                    usernya.save()
+                    usernya.set_password(pass1)
+                    usernya.save()
+
+                    cabang.jumlah_kasir=cabang.jumlah_kasir+2
+                    cabang.save()
+
+                userprofile = UserProfile()
+                userprofile.user=usernya
+                userprofile.cabang=cabang
+                userprofile.nama_lengkap=nama_lengkap
+                userprofile.save()
+                
+                return HttpResponseRedirect('/cms/kasir/')
+            except Exception as ex:
+                print(ex)
+                return HttpResponseRedirect('/cms/kasir/tambah/')
+    else:
+        return render(request,'administrator/components/tambah_user.html')

@@ -9,25 +9,37 @@
       </div>
       <div class="modal-body">
         {% if user.userprofile.foto %}
-                                <img class="img-profile rounded-circle"
-                                    src="{{user.userprofile.foto.url}}">
-                                {% else %}
-                                <img class="img-profile rounded-circle"
-                                    src="{% static 'img/undraw_profile.svg'%}">
+          <img class="img-profile rounded-circle" src="{{user.userprofile.foto.url}}">
+        {% else %}
+          <img class="img-profile rounded-circle" src="{% static 'img/undraw_profile.svg'%}">
         {% endif %}
         <div>
-            Username: {{user.username}}
-        </div>
-        <div>
-            Nama Lengkap: {{user.userprofile.nama_lengkap}}
-        </div>
-        <div>
-            Login Terakhir: {{user.last_login|date:"d/M/Y h:j:s"}}
+          <table class="table">
+            <tr>
+              <td>Nama Toko: </td>
+              <td>{{user.userprofile.cabang.nama_toko}}</td>
+            </tr>
+            <tr>
+              <td>Kode Toko: </td>
+              <td>{{user.userprofile.cabang.prefix}}</td>
+            </tr>
+            <tr>
+              <td>Nama Lengkap: </td>
+              <td>{{user.userprofile.nama_lengkap}} ({{user.username}})</td>
+            </tr>
+            <tr>
+              <td>Status: </td>
+              <td>{% if user.is_superuser%}Pemilik Toko{% else %}Kasir{%endif%}</td>
+            </tr>
+            <tr>
+              <td>Login Terakhir: </td>
+              <td>{{user.last_login|date:"d/M/Y h:i:s"}}</td>
+            </tr>
+          </table>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Understood</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
       </div>
     </div>
   </div>

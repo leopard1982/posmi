@@ -1,0 +1,25 @@
+<div class="bg-white p-3">
+    <table class="table bg-white">
+            <tr>
+                <th>No.</th>
+                <th>Username</th>
+                <th>Nama Lengkap</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            
+            {% for usernya in list_user %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{usernya.username}}</td>
+                    <td>{{usernya.userprofile.nama_lengkap}}</td>
+                    <td>{% if usernya.is_superuser %}Pemilik Toko{%else%}Kasir{%endif%}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning mx-2 my-1 rounded-pill">update password</button>
+                        <button class="btn btn-sm btn-info mx-2 my-1 rounded-pill">update nama</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        
+    </table>
+</div>
