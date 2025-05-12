@@ -8,7 +8,7 @@ from django.conf import settings
 import datetime
 from django.contrib.auth import authenticate,login,logout
 from cms.views import addLog
-from promo.models import Promo
+# from promo.models import Promo
 
 DAFTAR_PAKET = []
 
@@ -110,7 +110,7 @@ def index(request):
     else:
         user=None
 
-    promo_list = Promo.objects.all().filter(Q(end_period__gte=datetime.datetime.now()) & Q(is_active=True) & Q(kuota__gt=0))
+    # promo_list = Promo.objects.all().filter(Q(end_period__gte=datetime.datetime.now()) & Q(is_active=True) & Q(kuota__gt=0))
 
     try:
         # diubah supaya bs fleksible
@@ -165,7 +165,7 @@ def index(request):
         'cabang_available':cabang_available,
         'jumlah_grace':jumlah_grace,
         'bisa_transaksi':bisa_transaksi,
-        'promo_list':promo_list
+        # 'promo_list':promo_list
     }
     return render(request,'pos/pos.html',context)
 
