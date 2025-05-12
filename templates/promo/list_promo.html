@@ -1,0 +1,70 @@
+{% load humanize %}
+{% if promo_list %}
+<div>
+    <h1>Promo Hari Ini!</h1>
+    <h4>Masukkan Kode Promo pada saat pembelian paket atau perpanjangan paket.</h3>
+</div>
+<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        {% for promo in promo_list %}
+            {% if forloop.first %}
+                <div class="carousel-item active  p-2">
+                    <div class="px-2 py-3 rounded  border shadow " style="background:linear-gradient(to right,#126180 ,white,#126180);">
+                        <h3 class="fw-bold">Potongan: Rp.{{promo.disc|intcomma}}</h3>
+                        <h5 class="">{{promo.nama}}</h5>
+                        
+                        <div class="fs-5 py-2 px-5" >
+                            <div class="text-center fw-bold bg-white rounded p-2">Kode Promo: {{promo.kode}}</div>
+                        </div>
+                        <div class="text-center ">
+                            <h5><b>Promo Sampai: {{promo.end_period|date:"d M Y"}}</b></h5>
+                            <h5><b>Sisa Kuota: {{promo.kuota|intcomma}}</b></h5>
+                        </div>
+                        <div style="min-height: 30px">
+
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="carousel-item ">
+                    <div class="px-2 py-3 rounded  border shadow " style="background:linear-gradient(to right,#126180 ,white,#126180);">
+                        <h3 class="fw-bold">Potongan: Rp.{{promo.disc|intcomma}}</h3>
+                        <h5 class="">{{promo.nama}}</h5>
+                        
+                        <div class="fs-5 py-2 px-5" >
+                            <div class="text-center fw-bold bg-white rounded p-2">Kode Promo: {{promo.kode}}</div>
+                        </div>
+                        <div class="text-center ">
+                            <h5><b>Promo Sampai: {{promo.end_period|date:"d M Y"}}</b></h5>
+                            <h5><b>Sisa Kuota: {{promo.kuota|intcomma}}</b></h5>
+                        </div>
+                    </div>
+                    <div style="min-height: 30px">
+
+                    </div>
+                </div>
+            {% endif %}
+            
+        {% endfor %}
+    
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon " aria-hidden="true"></span>
+      <span class="visually-hidden ">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+      <span class="carousel-control-next-icon text-dark" aria-hidden="true"></span>
+      <span class="visually-hidden text-dark">Next</span>
+    </button>
+  </div>
+  <div>
+    <h5 class="text-dark">
+        Kuota Terbatas, jangan sampai kehabisan!<br>
+        Kode voucher hanya berlaku untuk 1 toko yah.
+    </h5>
+</div>
+{% endif %}

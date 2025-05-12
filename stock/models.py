@@ -62,6 +62,7 @@ class Cabang(models.Model):
     lisensi_grace = models.DateTimeField(null=True,blank=True)
     paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,default="",related_name="paket_cabang",null=True,blank=True)
     last_update_kuota = models.DateTimeField(blank=True,null=True)
+    kode_referal = models.CharField(max_length=5,verbose_name="Diisi kode prefix user")
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
