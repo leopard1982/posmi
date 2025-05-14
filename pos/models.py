@@ -26,6 +26,7 @@ class TotalPenjualan(models.Model):
 
 class Penjualan(models.Model):
     nota = models.UUIDField(auto_created=True,editable=False,default=uuid.uuid4,primary_key=True)
+    no_nota = models.CharField(max_length=15)
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT)
     user = models.ForeignKey(User,on_delete=models.RESTRICT,related_name="user_login",blank=True,null=True)
     customer = models.ForeignKey(Customer,on_delete=models.RESTRICT,related_name="customer_penjualan",blank=True,null=True)
@@ -38,25 +39,6 @@ class Penjualan(models.Model):
     customer = models.CharField(max_length=200,default="",blank=True,null=True)
     tgl_bayar = models.DateTimeField(null=True,blank=True)
     reprint_nota = models.IntegerField(default=0)
-
-    # def save(self,*args,**kwargs):
-        # tanggalnya = datetime.date(datetime.datetime.now().year,datetime.datetime.now().month,datetime.datetime.now().day)
-        # penjualan = Penjualan.objects.all().filter(Q(updated_at__contains=tanggalnya) & Q(is_paid=True)).aggregate(total=Sum('total'))
-        # super(Penjualan,self).save(*args,**kwargs)
-        # # print(self.updated_at)
- 
- 
-        # try:
-        #     totalpenjualan = TotalPenjualan.objects.get(Q(cabang=self.cabang) & Q(tanggal=tanggalnya))
-        #     totalpenjualan.total=penjualan['total']
-        #     totalpenjualan.save()
-        # except:
-        #     totalpenjualan = TotalPenjualan()
-        #     totalpenjualan.cabang = self.cabang
-        #     totalpenjualan.tanggal= tanggalnya
-        #     totalpenjualan.total = penjualan['total']
-        #     totalpenjualan.save()    
-        
 
     def __str__(self):
         if self.is_paid:

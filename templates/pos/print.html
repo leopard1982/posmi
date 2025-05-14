@@ -71,6 +71,9 @@
             <div style="font-size: 11px;text-align: left;" class="px-1">
                 pembeli: <span class="fw-bold">{{penjualan.customer|title|truncatechars:"20"}}</span>
             </div>
+            <div style="font-size: 11px;text-align: left;" class="px-1">
+                no. nota: <span class="fw-bold">{{penjualan.no_nota}}</span>
+            </div>
         </div>
         <div>
             <div class="fw-bold text-center pt-2 border-top border-dark"></div>
@@ -97,8 +100,11 @@
             *****
         </div>
         <div style="font-size:11px" class="text-center">
-            <span class="fw-bold">Nomor Transaksi:</span><br>
             <span class="fw-bold">{{penjualan.nota}}</span>
+            {% if user.userprofile.cabang.paket %}
+            {% else %}
+            <br><span>https://posmi.pythonanywhere.com</span>
+            {% endif%}
         </div>
         <div class="fw-bold text-center mb-5">
             ***** <br>

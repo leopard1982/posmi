@@ -11,6 +11,7 @@ class Promo(models.Model):
     end_period = models.DateField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     kuota = models.IntegerField(default=0)
+    is_tambah_kuota = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.kode} - {self.nama} - {self.is_active} - {self.end_period.strftime("%d/%m/%Y")} - {self.kuota}"

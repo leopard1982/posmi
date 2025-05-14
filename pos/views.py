@@ -60,11 +60,16 @@ def index(request):
     tanggal = datetime.datetime.now()
     cabang_available=False
     jumlah_grace = 0
+    jumlah_transaksi=0
     bisa_transaksi=False
     if request.user.is_authenticated:
+        jumlah_transaksi = request.user.userprofile.cabang.kuota_transaksi
         cabang_available = cek_expired_kuota(request.user.userprofile.cabang.id)
+        print(cabang_available)
         bisa_transaksi=cek_expired_kuota(request.user.userprofile.cabang.id)
+        print(bisa_transaksi)
         jumlah_grace=cek_jumlah_grace(request.user.userprofile.cabang.id)
+        print(jumlah_grace)
         user = User.objects.get(username=request.user.username)
         toko = request.user.userprofile.cabang.nama_toko
         if request.method=="POST":
@@ -165,7 +170,8 @@ def index(request):
         'cabang_available':cabang_available,
         'jumlah_grace':jumlah_grace,
         'bisa_transaksi':bisa_transaksi,
-        'promo_list':promo_list
+        'promo_list':promo_list,
+        'jumlah_transaksi':jumlah_transaksi
     }
     return render(request,'pos/pos.html',context)
 
@@ -409,10 +415,12 @@ def bayarTransaksi(request):
             penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
             if request.method=="POST":
                 try:
+                    no_nota = penjualan.cabang.no_nota
                     penjualan.is_paid=True
                     penjualan.metode=int(request.POST['metode'])
                     penjualan.customer=request.POST['pembeli']
                     penjualan.tgl_bayar = datetime.datetime.now()
+                    penjualan.no_nota = str(no_nota).zfill(15)
                     penjualan.save()
 
                     penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
