@@ -196,7 +196,7 @@ def paymentResponse(request):
             
         if(referensi_cek):
             cabang = Cabang.objects.get(prefix=str(request.POST['referensi']).lower())
-            cabang.wallet += int(harga*5/100)
+            cabang.wallet = cabang.wallet +  int(harga*5/100)
             cabang.save()
         
         
