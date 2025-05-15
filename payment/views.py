@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 import datetime
 from django.db.models import Q
+from promo.views import cekKodeToko,cekKodeVoucher
+from promo.models import Promo, PromoUsed
 
 
 def prosesPayment(noTransaksi,jumlah):
@@ -104,7 +106,10 @@ def paymentRequest(request):
             'tipe':tipe,
             'pkt':pkt
         }
-        return render(request,'registrasi/registrasi.html',context)
+        if (tipe == "tr"):
+            return render(request,'registrasi/registrasi.html',context)
+        else:
+            return render(request,'registrasi/registrasi_bayar.html',context)
     return HttpResponseRedirect('/')
 
 def paymentResponse(request):
@@ -118,6 +123,8 @@ def paymentResponse(request):
     jumlah_transaksi=0
     lisensi_grace=None
     lisensi_expired=None
+    kode_referal = None
+    harga = 0
 
     print(pkt)
     if pkt==0:
@@ -125,6 +132,10 @@ def paymentResponse(request):
         if(tipe!="tr"):
             lisensi_expired = datetime.datetime.now() + datetime.timedelta(days=30)
             lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+            if tipe=="sm":
+                harga = DaftarPaket.objects.get(nama="Bisnis Kecil").harga_per_bulan
+            elif tipe =="med":
+                harga = DaftarPaket.objects.get(nama="Bisnis Medium").harga_per_bulan
         else:
             lisensi_expired = datetime.datetime.now() + datetime.timedelta(days=7)
             lisensi_grace = lisensi_expired
@@ -132,19 +143,34 @@ def paymentResponse(request):
         print('pkt1')
         lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=13)
         lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+        if tipe=="sm":
+                harga = DaftarPaket.objects.get(nama="Bisnis Kecil").harga_per_tiga_bulan
+        elif tipe =="med":
+                harga = DaftarPaket.objects.get(nama="Bisnis Medium").harga_per_tiga_bulan
     elif pkt==2:
         print('pkt2')
         lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=26)
         lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+        if tipe=="sm":
+                harga = DaftarPaket.objects.get(nama="Bisnis Kecil").harga_per_enam_bulan
+        elif tipe =="med":
+                harga = DaftarPaket.objects.get(nama="Bisnis Medium").harga_per_enam_bulan
     elif pkt==3:
         print('pkt3')
         lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=52)
         lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
+        if tipe=="sm":
+                harga = DaftarPaket.objects.get(nama="Bisnis Kecil").harga_per_tahun
+        elif tipe =="med":
+                harga = DaftarPaket.objects.get(nama="Bisnis Medium").harga_per_tahun
     elif pkt==4:
         print('pkt4')
         lisensi_expired = datetime.datetime.now() + datetime.timedelta(weeks=104)
         lisensi_grace = lisensi_expired + datetime.timedelta(days=7)
-
+        if tipe=="sm":
+                harga = DaftarPaket.objects.get(nama="Bisnis Kecil").harga_per_dua_tahun
+        elif tipe =="med":
+                harga = DaftarPaket.objects.get(nama="Bisnis Medium").harga_per_dua_tahun
     if tipe=="tr":
         jumlah_transaksi=100 #default jumlah transaksi adalah 100 kalau trial
         daftarpaket = None
@@ -155,7 +181,27 @@ def paymentResponse(request):
         daftarpaket=DaftarPaket.objects.get(nama="Bisnis Medium")
         jumlah_transaksi=daftarpaket.max_transaksi
 
+    
+
     if request.method=="POST":
+        referensi_cek = cekKodeToko(str(request.POST['referensi']).lower())
+        voucher_cek = cekKodeVoucher(str(request.POST['voucher']).lower())
+
+        if(voucher_cek):
+            promo = Promo.objects.get(kode=str(request.POST['voucher']).lower())
+            harga -= promo.disc
+            promo.kuota-=1
+            promo.save()
+
+            
+        if(referensi_cek):
+            cabang = Cabang.objects.get(prefix=str(request.POST['referensi']).lower())
+            cabang.wallet += int(harga*5/100)
+            cabang.save()
+        
+        
+
+
         kode_toko = request.POST['kode_toko']
         nama_toko = request.POST['nama_toko']
         nama_cabang = request.POST['nama_cabang']
@@ -182,6 +228,12 @@ def paymentResponse(request):
             cabang.lisensi_grace=lisensi_grace
             cabang.kuota_transaksi=jumlah_transaksi
             cabang.save()
+
+            if voucher_cek:
+                promoused = PromoUsed()
+                promoused.promo=promo
+                promoused.cabang=cabang
+                promoused.save()
 
             print(cabang)
 
@@ -503,3 +555,6 @@ def upgradeLisensi(request):
     except Exception as ex:
         print(ex)
         return HttpResponseRedirect(asal)
+    
+
+    

@@ -188,8 +188,13 @@ def infoToko(request):
                 return HttpResponseRedirect('/cms/')
             
             forminfotoko = FormInfoToko(instance=request.user.userprofile.cabang)
+            cabang = request.user.userprofile.cabang
+            wallet = cabang.wallet
+            kode_toko = cabang.prefix
             context = {
-                'forms':forminfotoko
+                'forms':forminfotoko,
+                'wallet':wallet,
+                'kode_toko':kode_toko
             }
             return render(request,'administrator/components/info_toko.html',context)
         else:

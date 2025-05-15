@@ -1,3 +1,4 @@
+{% load humanize %}
 <div>
     <div class="mt-3 h2 fw-bold">
         Informasi Toko Saya
@@ -6,7 +7,27 @@
         <span class="fs-6">Toko Saya &rarr; Informasi Toko</span>
         <span style="font-size: 13px;font-weight: bold;">Update Terakhir: {{user.userprofile.cabang.updated_at|date:"d/m/y"}}</span>
     </div>
+    <div class="my-3">
+        <div style="border: 1px solid grey; padding: 10px;border-radius: 5px;background-color: white;box-shadow: 5px 5px 5px lightgrey;display: flex;align-items: center;justify-content: space-between;">
+            <div>    
+                <div style="font-size: 20px;">
+                    Wallet Bonus: <span class="text-primary">Rp.{{wallet|intcomma}}</span>
+                </div>
+                <div style="font-style: italic;">
+                    Referensikan Toko Lain untuk menambah wallet
+                </div>
+            </div>
+            <button class="ms-3 btn btn-sm btn-success">tarik wallet</button>
+        </div>
+        
+    </div>
     <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
+        <div style="font-size: 20px;margin-top: 20px;margin-bottom: 10px;border-top: 1px solid grey;border-bottom: 1px solid grey;">
+            <span>Kode Toko: <span style="font-weight: bold;">{{kode_toko}}</span></span>
+            <br><span style="font-style: italic;font-size: 15px;">bagikan kode toko sebagai referensi untuk mendapatkan bonus 5% setiap pembayaran untuk  pembelian dari Toko yang sobat refensikan, berlaku selamanya.</span>
+            <br><span style="font-style: italic;font-size: 15px;">penarikan dana dari wallet akan langsung masuk rekening sobat, jangan lupa untuk mendaftarkan rekening sobat yah.</span>
+            
+        </div>
         {{forms.as_div}}
         {% csrf_token %}
         <button type="submit" class="btn btn-primary px-3 rounded-pill">
