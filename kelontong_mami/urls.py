@@ -25,6 +25,7 @@ urlpatterns = [
     path('cms/',include('cms.urls')),
     path('payment/',include('payment.urls')),
     path('promo/',include('promo.urls')),
+    path('tutorial/',include('cara.urls')),
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT})
 ]

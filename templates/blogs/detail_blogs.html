@@ -1,0 +1,25 @@
+{% extends 'base-landing.html'%}
+{% load static %}
+{% load humanize %}
+
+{% block contents %}
+<div class="container my-5">
+    <h2 class="text-center">{{tutorial.judul|title}}</h2>
+    <h5 class="text-center">{{tutorial.created_by}}</h5>
+    <h5 class="text-center">{{tutorial.created_at|date:"d/M/Y h:i:s"}}</h5>
+    <div style="text-align: justify;font-size: 20px;margin-top: 20px;margin-bottom: 20px;">
+        {{tutorial.artikel|linebreaksbr}}
+    </div>
+    <div style="margin-top: 30px;">
+        <h3>Gambar Pendukung:</h3>
+        <div class="row p-2 justify-content-center">
+            {% for image in images %}
+                <div class="col-6 p-2 d-flex-justify-content-start">
+                    <span>{{forloop.counter}}</span>
+                    <img src="{{image.image.url}}" class="w-100 rounded shadow">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

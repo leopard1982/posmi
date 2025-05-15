@@ -9,6 +9,7 @@ import datetime
 from django.contrib.auth import authenticate,login,logout
 from cms.views import addLog
 from promo.models import Promo
+from cara.models import Tutorial,TutorialComment,TutorialImage
 
 DAFTAR_PAKET = []
 
@@ -62,6 +63,28 @@ def index(request):
     jumlah_grace = 0
     jumlah_transaksi=0
     bisa_transaksi=False
+    tutorial = Tutorial.objects.all()[:3]
+    image = []
+    tutorialimage = TutorialImage.objects.all().filter(tutorial__in=tutorial)
+    
+    # print(dict(tutorial))
+    for tutor in tutorial:
+        print(type(tutor))
+        for imagenya in tutorialimage:
+            if(imagenya.tutorial==tutor):
+                data = {
+                    'tutorial':tutor,
+                    'image':imagenya.image
+                }
+                
+                break
+        comment = TutorialComment.objects.all().filter(tutorial=tutor).count()
+        data['comment']=comment
+        image.append(data)
+    
+    
+        
+    
     if request.user.is_authenticated:
         jumlah_transaksi = request.user.userprofile.cabang.kuota_transaksi
         cabang_available = cek_expired_kuota(request.user.userprofile.cabang.id)
@@ -171,7 +194,9 @@ def index(request):
         'jumlah_grace':jumlah_grace,
         'bisa_transaksi':bisa_transaksi,
         'promo_list':promo_list,
-        'jumlah_transaksi':jumlah_transaksi
+        'jumlah_transaksi':jumlah_transaksi,
+        'image_tutorial':image,
+        # 'tutorialimage':tutorialimage
     }
     return render(request,'pos/pos.html',context)
 
