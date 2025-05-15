@@ -64,6 +64,7 @@ class Cabang(models.Model):
     last_update_kuota = models.DateTimeField(blank=True,null=True)
     kode_referal = models.CharField(max_length=5,verbose_name="Diisi kode prefix user",blank=True,null=True)
     wallet = models.PositiveBigIntegerField(default=0)
+    no_nota = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
