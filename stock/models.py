@@ -63,7 +63,6 @@ class Cabang(models.Model):
     paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,default="",related_name="paket_cabang",null=True,blank=True)
     last_update_kuota = models.DateTimeField(blank=True,null=True)
     kode_referal = models.CharField(max_length=5,verbose_name="Diisi kode prefix user",blank=True,null=True)
-    no_nota = models.IntegerField(default=1,blank=True,null=True)
     wallet = models.PositiveBigIntegerField(default=0)
 
     def __str__(self):
