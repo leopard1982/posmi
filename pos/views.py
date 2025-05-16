@@ -445,8 +445,12 @@ def bayarTransaksi(request):
                     penjualan.metode=int(request.POST['metode'])
                     penjualan.customer=request.POST['pembeli']
                     penjualan.tgl_bayar = datetime.datetime.now()
-                    penjualan.no_nota = str(no_nota).zfill(15)
+                    penjualan.no_nota = str(no_nota).zfill(5)
                     penjualan.save()
+
+                    cabangnya = penjualan.cabang
+                    cabangnya.no_nota+=1
+                    cabangnya.save()
 
                     penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
                     for barang in penjualandetail:
