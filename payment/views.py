@@ -217,10 +217,13 @@ def paymentResponse(request):
 
             
         if(referensi_cek):
-            # simpan tambahan dana ke wallet
-            cabang_penerima = Cabang.objects.get(prefix=str(request.POST['referensi']).lower())
-            cabang_penerima.wallet = cabang_penerima.wallet +  int(harga*5/100)
-            cabang_penerima.save(force_update=True)
+            try:
+                # simpan tambahan dana ke wallet
+                cabang_penerima = Cabang.objects.get(prefix=str(request.POST['referensi']).lower())
+                cabang_penerima.wallet = cabang_penerima.wallet +  int(harga*5/100)
+                cabang_penerima.save(force_update=True)
+            except:
+                pass
 
         kode_toko = request.POST['kode_toko']
         nama_toko = request.POST['nama_toko']
@@ -247,22 +250,26 @@ def paymentResponse(request):
             cabang.lisensi_expired=lisensi_expired
             cabang.lisensi_grace=lisensi_grace
             cabang.kuota_transaksi=jumlah_transaksi
-            cabang.kode_referal = str(request.POST['referensi']).lower()
+            try:
+                cabang.kode_referal = str(request.POST['referensi']).lower()
+            except:
+                pass
             cabang.no_nota=1
             cabang.save()
 
-            if cek_voucher['status']:
-                promoused = PromoUsed()
-                promoused.promo=promo
-                promoused.cabang=cabang
-                promoused.save()
+            if 'voucher' in request.POST:
+                if cek_voucher['status']:
+                    promoused = PromoUsed()
+                    promoused.promo=promo
+                    promoused.cabang=cabang
+                    promoused.save()
 
-            detailwallet = DetailWalet()
-            detailwallet.cabang=cabang_penerima
-            detailwallet.cabang_referensi=cabang
-            detailwallet.jumlah=int(harga*5/100)
-            detailwallet.keterangan="registrasi toko"
-            detailwallet.save()
+                detailwallet = DetailWalet()
+                detailwallet.cabang=cabang_penerima
+                detailwallet.cabang_referensi=cabang
+                detailwallet.jumlah=int(harga*5/100)
+                detailwallet.keterangan="registrasi toko"
+                detailwallet.save()
 
             print(cabang)
 
