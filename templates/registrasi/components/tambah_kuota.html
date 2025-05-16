@@ -23,6 +23,13 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="d-flex justify-content-start my-2">
+            <div style="min-width: 193px;max-width: 193px;padding-top: 5px;">Kode Voucher:</div>
+            <div class="w-100"><input placeholder="silakan masukkan kode voucher" class="form-control" type="text" name="voucher" hx-get="{% url 'request_kode_voucher'%}?tipe=add&toko={{kode_toko}}" hx-trigger="keyup" hx-target="#validasi_voucher"></div>
+        </div>
+        <div id="validasi_voucher" class="text-end">
+
+        </div>
         <div id="biaya" class="mt-4"></div>
         <div class="mt-4">
             Apakah akan di proses?

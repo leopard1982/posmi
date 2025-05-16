@@ -436,9 +436,48 @@ def tambahKuota(request):
         asal="/"
 
     try:
+        voucher = request.POST['voucher']
         kode_toko=request.GET['id']
+        disc = 0
+        
+        cek_voucher = cekKodeVoucher(kode=voucher,toko=kode_toko,tipe="add")
         jumlah_kuota = request.POST['jumlah_kuota']
+
         cabang = Cabang.objects.get(prefix=kode_toko)
+
+        harga=int(jumlah_kuota)*10000/50
+
+        if cek_voucher['status']:
+            # voucher masih bisa
+            disc=cek_voucher['disc']
+
+            # cek harga
+            harga = harga-disc
+            if harga<0:
+                harga=1000
+
+            # hitung wallet bonus
+            walet = int(harga*5/100)
+
+            # update data voucher berkurang 1
+            promo = Promo.objects.get(kode=voucher)
+            promo.kuota -= 1
+            promo.save()
+
+            # simpan siapa pemakai voucher
+            promoused = PromoUsed()
+            promoused.cabang=cabang
+            promoused.promo=promo
+            promoused.save()
+
+            # simpan tambahan wallet untuk referal
+            kode_ref = cabang.kode_referal
+            reff = Cabang.objects.get(prefix=kode_ref)
+            reff.wallet = reff.wallet+walet
+            reff.save()
+
+        jumlah_kuota = request.POST['jumlah_kuota']
+        
         cabang.kuota_transaksi+=int(jumlah_kuota)
         cabang.save()
         messages.add_message(request,messages.SUCCESS,f"Selamat kuota transaksi untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah bertambah {jumlah_kuota} menjadi sebanyak: {cabang.kuota_transaksi} transaksi. ")
