@@ -207,10 +207,13 @@ def paymentResponse(request):
             }
 
         if(cek_voucher['status']):
-            promo = Promo.objects.get(kode=str(request.POST['voucher']).lower())
-            harga -= promo.disc
-            promo.kuota-=1
-            promo.save()
+            try:
+                promo = Promo.objects.get(kode=str(request.POST['voucher']).lower())
+                harga -= promo.disc
+                promo.kuota-=1
+                promo.save()
+            except:
+                pass
 
             
         if(referensi_cek):
