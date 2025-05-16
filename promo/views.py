@@ -12,17 +12,20 @@ def getPromo(request):
     }
     return render(request,'promo/list_promo.html',context)
 
-def cekKodeVoucher(kode,cabang=None):
+def cekKodeVoucher(kode,cabang=None,tipe=None):
     kode = kode
     try:
-        promo = Promo.objects.get(Q(kode=str(kode).lower()) & Q(end_period__gte=datetime.datetime.now()) & Q(is_active=True) & Q(kuota__gte=1))
+        if tipe=='reg':
+            promo = Promo.objects.get(Q(kode=str(kode).lower()) & Q(end_period__gte=datetime.datetime.now()) & Q(is_active=True) & Q(kuota__gte=1) &Q(is_registrasi=True))
         if(cabang):
             try:
                 promoused = PromoUsed.objects.get(Q(cabang=cabang) & Q(promo=promo))
-            except:
+            except Exception as ex:
+                print(ex)
                 return False
         return True
-    except:
+    except Exception as ex:
+        print(ex)
         return False
     
 def cekKodeToko(kode):
@@ -35,9 +38,14 @@ def cekKodeToko(kode):
     
 def requestKodeVoucher(request):
     kode = request.GET['voucher']
+    tipe = request.GET['tipe']
+    # tipe: reg=registrasi
+    # tipe: upg=upgrade
+    # tipe: add=tambah kuota
+    # tipe: pnj=perpanjangan lisensi
     if len(kode)==0:
         return HttpResponse('')
-    available = cekKodeVoucher(kode)
+    available = cekKodeVoucher(kode=kode,tipe=tipe)
     if available:
         return HttpResponse("<span class='text-success fw-bold'>Kode Voucher Bisa Dipakai! Segera Daftar Sebelum Voucher Habis!</span>")
     else:
