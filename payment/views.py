@@ -243,12 +243,12 @@ def paymentResponse(request):
                 promoused.cabang=cabang
                 promoused.save()
 
-                detailwallet = DetailWalet()
-                detailwallet.cabang=cabang_penerima
-                detailwallet.cabang_referensi=cabang
-                detailwallet.jumlah=int(harga*5/100)
-                detailwallet.keterangan="registrasi toko"
-                detailwallet.save()
+            detailwallet = DetailWalet()
+            detailwallet.cabang=cabang_penerima
+            detailwallet.cabang_referensi=cabang
+            detailwallet.jumlah=int(harga*5/100)
+            detailwallet.keterangan="registrasi toko"
+            detailwallet.save()
 
             print(cabang)
 
