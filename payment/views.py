@@ -186,7 +186,11 @@ def paymentResponse(request):
     
 
     if request.method=="POST":
-        referensi_cek = cekKodeToko(str(request.POST['referensi']).lower())
+        try:
+            referensi_cek = cekKodeToko(str(request.POST['referensi']).lower())
+        except:
+            referensi_cek = False
+            
         voucher = str(request.POST['voucher']).lower()
         if voucher!="":
             cek_voucher = cekKodeVoucher(kode=voucher,tipe="add")
