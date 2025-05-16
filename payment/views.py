@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.conf import settings
 import midtransclient
-from stock.models import DaftarPaket,prefixGenerator, Cabang, UserProfile
+from stock.models import DaftarPaket,prefixGenerator, Cabang, UserProfile, LogTransaksi
 from django.contrib import messages
 from django.contrib.auth.models import User
 import datetime
@@ -9,7 +9,6 @@ from django.db.models import Q
 from promo.views import cekKodeToko,cekKodeVoucher
 from promo.models import Promo, PromoUsed
 from pos.models import DetailWalet
-
 
 def prosesPayment(noTransaksi,jumlah):
     midtrans_server = settings.MIDTRANS_SERVER
@@ -541,9 +540,15 @@ def tambahKuota(request):
                     print(ex)
 
         jumlah_kuota = request.POST['jumlah_kuota']
-        
         cabang.kuota_transaksi+=int(jumlah_kuota)
         cabang.save()
+
+        logtransaksi = LogTransaksi()
+        logtransaksi.cabang=cabang
+        logtransaksi.keterangan=f"pembelian kuota {jumlah_kuota}"
+        logtransaksi.transaksi="kuota transaksi"
+        logtransaksi.save()
+        
         messages.add_message(request,messages.SUCCESS,f"Selamat kuota transaksi untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah bertambah {jumlah_kuota} menjadi sebanyak: {cabang.kuota_transaksi} transaksi. ")
         return HttpResponseRedirect('/')
     except Exception as ex:
