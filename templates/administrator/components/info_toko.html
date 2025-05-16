@@ -1,4 +1,47 @@
 {% load humanize %}
+<!-- Modal Detail Wallet-->
+<div class="modal fade" id="staticWallet" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropWallet" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropWallet">Detail Transaksi Referensi</h5>
+          
+        </div>
+        <div class="modal-body">
+            <table id="detailwallet" class="display">
+                <thead>
+                    <tr>
+                        <th style="font-size: 15px;">No.</th>
+                        <th style="font-size: 15px;">Toko</th>
+                        <th style="font-size: 15px;">Keterangan</th>
+                        <th style="font-size: 15px;">Jumlah</th>
+                        <th style="font-size: 15px;">Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wallet in detailwallet %}
+                    <tr>
+                        <td style="font-size: 15px;">{{forloop.counter}}</td>
+                        <td style="font-size: 15px;">{{wallet.cabang_referensi.nama_toko}} ({{wallet.cabang_referensi.prefix}})</td>
+                        <td style="font-size: 15px;">{{wallet.keterangan}}</td>
+                        <td style="font-size: 15px;">Rp.{{wallet.jumlah|intcomma}}</td>
+                        <td style="font-size: 15px;">{{wallet.created_at|date:"d/M/Y"}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+    new DataTable('#detailwallet');
+</script>
+
 <div>
     <div class="mt-3 h2 fw-bold">
         Informasi Toko Saya
@@ -17,7 +60,11 @@
                     Referensikan Toko Lain untuk menambah wallet
                 </div>
             </div>
-            <button class="ms-3 btn btn-sm btn-success">tarik wallet</button>
+            <div>
+                <button class="btn btn-info btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#staticWallet">detail wallet</button>
+                <button class="ms-3 btn btn-sm btn-success">tarik wallet</button>
+            </div>
+            
         </div>
         
     </div>

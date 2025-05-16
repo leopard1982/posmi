@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.contrib import messages
-from pos.models import Penjualan, Barang
+from pos.models import Penjualan, Barang, DetailWalet
 from django.db.models import Q,Sum,Count
 import datetime
 from django.contrib.auth.models import User
@@ -175,6 +175,7 @@ def index(request):
     
 def infoToko(request):
     if request.user.is_authenticated:
+        detailwallet=None
         if request.user.is_superuser:
             if(request.method=="POST"):
                 cabang = Cabang.objects.get(id=request.user.userprofile.cabang.id)
@@ -184,17 +185,20 @@ def infoToko(request):
                 cabang.telpon = request.POST['telpon']
                 cabang.keterangan = request.POST['keterangan']
                 cabang.save()
+                
                 messages.add_message(request,messages.SUCCESS,"Data Informasi Toko Berhasil Diubah.")
                 return HttpResponseRedirect('/cms/')
             
             forminfotoko = FormInfoToko(instance=request.user.userprofile.cabang)
             cabang = request.user.userprofile.cabang
+            detailwallet = DetailWalet.objects.all().filter(cabang=cabang)
             wallet = cabang.wallet
             kode_toko = cabang.prefix
             context = {
                 'forms':forminfotoko,
                 'wallet':wallet,
-                'kode_toko':kode_toko
+                'kode_toko':kode_toko,
+                'detailwallet':detailwallet
             }
             return render(request,'administrator/components/info_toko.html',context)
         else:

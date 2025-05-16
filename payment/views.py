@@ -8,6 +8,7 @@ import datetime
 from django.db.models import Q
 from promo.views import cekKodeToko,cekKodeVoucher
 from promo.models import Promo, PromoUsed
+from pos.models import DetailWalet
 
 
 def prosesPayment(noTransaksi,jumlah):
@@ -125,6 +126,7 @@ def paymentResponse(request):
     lisensi_expired=None
     kode_referal = None
     harga = 0
+    cabang_penerima = None
 
     print(pkt)
     if pkt==0:
@@ -195,12 +197,10 @@ def paymentResponse(request):
 
             
         if(referensi_cek):
-            cabang = Cabang.objects.get(prefix=str(request.POST['referensi']).lower())
-            cabang.wallet = cabang.wallet +  int(harga*5/100)
-            cabang.save(force_update=True)
-        
-        
-
+            # simpan tambahan dana ke wallet
+            cabang_penerima = Cabang.objects.get(prefix=str(request.POST['referensi']).lower())
+            cabang_penerima.wallet = cabang_penerima.wallet +  int(harga*5/100)
+            cabang_penerima.save(force_update=True)
 
         kode_toko = request.POST['kode_toko']
         nama_toko = request.POST['nama_toko']
@@ -227,6 +227,7 @@ def paymentResponse(request):
             cabang.lisensi_expired=lisensi_expired
             cabang.lisensi_grace=lisensi_grace
             cabang.kuota_transaksi=jumlah_transaksi
+            cabang.kode_referal = str(request.POST['referensi']).lower()
             cabang.save()
 
             if voucher_cek:
@@ -234,6 +235,13 @@ def paymentResponse(request):
                 promoused.promo=promo
                 promoused.cabang=cabang
                 promoused.save()
+
+                detailwallet = DetailWalet()
+                detailwallet.cabang=cabang_penerima
+                detailwallet.cabang_referensi=cabang
+                detailwallet.jumlah=int(harga*5/100)
+                detailwallet.keterangan="registrasi toko"
+                detailwallet.save()
 
             print(cabang)
 
@@ -436,18 +444,29 @@ def tambahKuota(request):
         asal="/"
 
     try:
-        voucher = request.POST['voucher']
+        try:
+            voucher = request.POST['voucher']
+        except:
+            voucher=""
         kode_toko=request.GET['id']
         disc = 0
         
-        cek_voucher = cekKodeVoucher(kode=voucher,toko=kode_toko,tipe="add")
+        if voucher!="":
+            cek_voucher = cekKodeVoucher(kode=voucher,toko=kode_toko,tipe="add")
+        else:
+            cek_voucher = {
+                'status':False,
+                'disc':0
+            }
         jumlah_kuota = request.POST['jumlah_kuota']
 
         cabang = Cabang.objects.get(prefix=kode_toko)
 
         harga=int(jumlah_kuota)*10000/50
+        disc=0
 
         if cek_voucher['status']:
+            print('ok')
             # voucher masih bisa
             disc=cek_voucher['disc']
 
@@ -456,25 +475,42 @@ def tambahKuota(request):
             if harga<0:
                 harga=1000
 
-            # hitung wallet bonus
-            walet = int(harga*5/100)
+        # hitung wallet bonus
+        walet = int(harga*5/100)
+                
+        try:
+                    # update data voucher berkurang 1
+                    promo = Promo.objects.get(kode=voucher)
+                    promo.kuota -= 1
+                    promo.save()
 
-            # update data voucher berkurang 1
-            promo = Promo.objects.get(kode=voucher)
-            promo.kuota -= 1
-            promo.save()
+                    # simpan siapa pemakai voucher
+                    promoused = PromoUsed()
+                    promoused.cabang=cabang
+                    promoused.promo=promo
+                    promoused.save()
+        except Exception as ex:
+                    print(ex)
 
-            # simpan siapa pemakai voucher
-            promoused = PromoUsed()
-            promoused.cabang=cabang
-            promoused.promo=promo
-            promoused.save()
 
-            # simpan tambahan wallet untuk referal
-            kode_ref = cabang.kode_referal
-            reff = Cabang.objects.get(prefix=kode_ref)
-            reff.wallet = reff.wallet+walet
-            reff.save()
+        # simpan tambahan wallet untuk referal (kalau ada)
+        try:
+                    print(f'penambahan wallet di cabang {cabang.nama_cabang} dengan kode referal {cabang.kode_referal}')
+                    kode_ref = cabang.kode_referal
+                    reff = Cabang.objects.get(prefix=kode_ref)
+                    reff.wallet = reff.wallet+walet
+                    reff.save()
+
+                    print('sekarang menambahkan detail wallet')
+                    detailwallet = DetailWalet()
+                    detailwallet.cabang=reff
+                    detailwallet.cabang_referensi=cabang
+                    detailwallet.jumlah=walet
+                    detailwallet.keterangan="penambahan kuota transaksi"
+                    detailwallet.save()
+                    print('detail wallet sudah ditambahkan')
+        except Exception as ex:
+                    print(ex)
 
         jumlah_kuota = request.POST['jumlah_kuota']
         
@@ -482,7 +518,8 @@ def tambahKuota(request):
         cabang.save()
         messages.add_message(request,messages.SUCCESS,f"Selamat kuota transaksi untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah bertambah {jumlah_kuota} menjadi sebanyak: {cabang.kuota_transaksi} transaksi. ")
         return HttpResponseRedirect('/')
-    except:
+    except Exception as ex:
+        print(ex)
         return HttpResponseRedirect(asal)
     
 def hitungExpired(request):

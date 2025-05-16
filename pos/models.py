@@ -79,3 +79,10 @@ class PenjualanDetail(models.Model):
 
     class Meta:
         unique_together = ['penjualan','barang']
+
+class DetailWalet(models.Model):
+    cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,null=True,blank=True,related_name="cabang_referal")
+    cabang_referensi = models.ForeignKey(Cabang,on_delete=models.RESTRICT,null=True,blank=True,related_name="cabang_referensi")
+    keterangan = models.CharField(max_length=200,default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    jumlah = models.PositiveIntegerField(default=0)
