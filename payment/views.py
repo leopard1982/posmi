@@ -187,9 +187,16 @@ def paymentResponse(request):
 
     if request.method=="POST":
         referensi_cek = cekKodeToko(str(request.POST['referensi']).lower())
-        voucher_cek = cekKodeVoucher(str(request.POST['voucher']).lower())
+        voucher = str(request.POST['voucher']).lower()
+        if voucher!="":
+            cek_voucher = cekKodeVoucher(kode=voucher,toko=kode_toko,tipe="add")
+        else:
+            cek_voucher = {
+                'status':False,
+                'disc':0
+            }
 
-        if(voucher_cek):
+        if(cek_voucher['status']):
             promo = Promo.objects.get(kode=str(request.POST['voucher']).lower())
             harga -= promo.disc
             promo.kuota-=1
@@ -230,7 +237,7 @@ def paymentResponse(request):
             cabang.kode_referal = str(request.POST['referensi']).lower()
             cabang.save()
 
-            if voucher_cek:
+            if cek_voucher['status']:
                 promoused = PromoUsed()
                 promoused.promo=promo
                 promoused.cabang=cabang
