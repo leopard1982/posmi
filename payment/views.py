@@ -235,6 +235,7 @@ def paymentResponse(request):
             cabang.lisensi_grace=lisensi_grace
             cabang.kuota_transaksi=jumlah_transaksi
             cabang.kode_referal = str(request.POST['referensi']).lower()
+            cabang.no_nota=1
             cabang.save()
 
             if cek_voucher['status']:
