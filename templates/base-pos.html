@@ -14,7 +14,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico'%}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if user.is_authenticated %}POSMI [{{user.userprofile.nama_lengkap}}]{% else %} POSMI APP{% endif %}</title>
+    <title>{% if user.is_authenticated %}POSMI [{{user.username|upper}}]{% else %} POSMI APP{% endif %}</title>
     <style>
         body {
             font-family: "Poppins", sans-serif;
