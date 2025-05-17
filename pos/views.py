@@ -414,6 +414,18 @@ def loginkan(request):
                 addLog(user,user.userprofile.cabang,"login",f"login berhasil")
                 return HttpResponseRedirect('/')
             else:
+                # cek di cabang ada atau tidak.
+                try:
+                    cabang = Cabang.objects.get(email=username)
+                    username=f"{cabang.prefix}1"
+                    user=authenticate(username=username,password=password)
+                    if(user):
+                        login(request,user)
+                        messages.add_message(request,messages.SUCCESS,f"Selamat datang {user.userprofile.nama_lengkap}")
+                        addLog(user,user.userprofile.cabang,"login",f"login berhasil")
+                        return HttpResponseRedirect('/')
+                except:
+                    pass            
                 addLog("","","login",f"login dengan user {username} dan password {password} gagal")
                 messages.add_message(request,messages.SUCCESS,f"Username dan Password tidak sesuai, silakan ulangi kembali.")
         try:
