@@ -48,10 +48,10 @@
                 
                 <div class="d-none d-xl-block d-lg-block col-12 col-xl-3 col-lg-3 col-md-3 border rounded border-white p-2" style="height: 90px; background-color: rgb(65,118,144);">
                     <div class="text-white fw-bold fs-6  align-items-center d-flex justify-content-center pt-2">
-                        {{toko}}
+                        {{toko|upper}}
                     </div>
                     <div class="text-white fs-6">
-                        {{user.userprofile.cabang.nama_cabang}}
+                        {{user.userprofile.cabang.nama_cabang|upper}}
                     </div>
                 </div> 
                 <div class="col-12 col-xl-6 col-lg-6 col-md-12">
@@ -72,7 +72,7 @@
                             {% endif %}
                         </span>
                         <span>
-                            {{user.userprofile.nama_lengkap|truncatechars:12}} [{{user.username}}]
+                            {{user.userprofile.nama_lengkap|upper|truncatechars:12}} [{{user.username}}]
                             <br>
                                 <button class="btn btn-sm btn-danger px-2 rounded-pill " data-bs-toggle="modal" data-bs-target="#staticProfile" style="padding-top:0;padding-bottom: 0;padding-left: 20px !important;padding-right: 20px !important;">profile</button>
                             <br>

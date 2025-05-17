@@ -219,7 +219,7 @@
         </table>
     {% else %}
         <div class="fst-italic mt-5 text-center" style="font-size: 15px;">
-            Belum ada barang dalam penjualan, silakan <b>{{user.username}}</b> tekan tombol <b>pending</b> untuk melihat transaksi yang belum dilakukan pembayaran, atau tekan tombol <b>tambah barang</b> untuk menambah barang secara manual, atau arahkan barcode scanner untuk mulai penjualan. 
+            Belum ada barang dalam penjualan, silakan <b>{{user.userprofile.nama_lengkap|upper}}</b> tekan tombol <b>pending</b> untuk melihat transaksi yang belum dilakukan pembayaran, atau tekan tombol <b>tambah barang</b> untuk menambah barang secara manual, atau arahkan barcode scanner untuk mulai penjualan. 
             <br><br>
             {% if user.is_superuser %}
             Silakan tekan tombol <b>Admin</b> untuk melakukan administrasi data.
