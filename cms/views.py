@@ -293,6 +293,7 @@ def editBarang(request):
                     barang.harga_ecer=int(request.POST['harga_ecer'])
                     barang.harga_grosir=int(request.POST['harga_grosir'])
                     barang.harga_beli = int(request.POST['harga_beli'])
+                    barang.keterangan = request.POST['keterangan']
                     barang.save()
                     addLog(request.user,request.user.userprofile.cabang,"edit barang",f"Edit Barang {barang.nama} ({barang.id})Berhasil")
                     messages.add_message(request,messages.SUCCESS,f"Update Informasi '{barang.nama}' Berhasil.")
