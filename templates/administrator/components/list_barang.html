@@ -42,7 +42,7 @@
         </thead>
         <tbody>
             {% for barang in barangs %}
-            <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
+            <tr>
                 <td>{{forloop.counter}}</td>
                 <td>{{barang.nama}}<br><span style="font-size: 12px;font-weight: bold;">({{barang.barcode}})</span></td>
                 <td class="text-center">{{barang.satuan}}</td>
@@ -57,6 +57,9 @@
                     <button hx-get="{% url 'hapus_barang'%}?id={{barang.id}}" hx-target="#mainpage" href="#" class="bth btn-sm btn-danger m-1 text-white"><i class="fa fa-trash text-white" aria-hidden="true"></i></button>
                     <button hx-get="{% url 'edit_barang'%}?id={{barang.id}}" hx-target="#mainpage" href="#" class="bth btn-sm btn-info m-1"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
                 </td>
+            </tr>
+            <tr style="padding-bottom: 15px;border-bottom: 1px solid lightgrey;">
+                <td colspan="11"><b>Keterangan:</b>{{barang.keterangan|upper}}</td>
             </tr>
             {% endfor%}
         </tbody>
