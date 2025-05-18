@@ -68,7 +68,7 @@
                 <span>{{penjualan.tgl_bayar|date:"d/m/Y h:m"}}</span>
             </div>
             <div  class="d-flex justify-content-start px-1" style="font-size: 11px;">
-                <span>kasir: <span class="fw-bold">{{penjualan.user.userprofile.nama_lengkap|title|truncatechars:"20"}}</span></span>
+                <span>kasir: <span class="fw-bold">{{penjualan.user.userprofile.nama_lengkap|title|truncatechars:"20"}} ({{penjualan.user.username}})</span></span>
             </div>
             <div style="font-size: 11px;text-align: left;" class="px-1">
                 pembeli: <span class="fw-bold">{{penjualan.customer|title|truncatechars:"20"}}</span>
