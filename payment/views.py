@@ -287,6 +287,7 @@ def paymentResponse(request):
             userprofile.user=user
             userprofile.cabang=cabang
             userprofile.nama_lengkap=pemilik_toko
+            userprofile.is_active=True
             userprofile.save()
 
             messages.add_message(request,messages.SUCCESS,f"Selamat Untuk User Admin {kode_toko}1 berhasil dibuat. Silakan Login.")

@@ -634,6 +634,7 @@ def tambahKasir(request):
                 userprofile.user=usernya
                 userprofile.cabang=cabang
                 userprofile.nama_lengkap=nama_lengkap
+                userprofile.is_active=True
                 userprofile.save()
                 
                 return HttpResponseRedirect('/cms/kasir/')
