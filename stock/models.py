@@ -99,6 +99,7 @@ class UserProfile(models.Model):
     nama_lengkap = models.CharField(max_length=30,default="")
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,related_name="cabang_user")
     foto = models.ImageField(upload_to="foto_profile",blank=True,null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -158,6 +159,7 @@ class UploadBarangList(models.Model):
     harga_grosir = models.IntegerField(default=0)
     min_beli_grosir = models.IntegerField(default=0)
     harga_beli = models.IntegerField(default=0)
+    keterangan = models.CharField(max_length=200,default="",null=True,blank=True)
 
 class LogTransaksi(models.Model):
     transaksi=models.CharField(max_length=100,default="")

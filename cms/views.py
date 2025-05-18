@@ -364,6 +364,10 @@ def tambahBarang(request):
                         except Exception as ex:
                             # print(ex)
                             harga_beli=0
+                        try:
+                            keterangan = data['keterangan']
+                        except:
+                            keterangan=None
 
                         informasi = {
                             'barcode':barcode,
@@ -373,7 +377,8 @@ def tambahBarang(request):
                             'harga_ecer':harga_ecer,
                             'harga_grosir':harga_grosir,
                             'harga_beli':harga_beli,
-                            'min_beli_grosir':min_beli_grosir
+                            'min_beli_grosir':min_beli_grosir,
+                            'keterangan':keterangan
                         }
                         # print(informasi)
                         list_informasi.append(informasi)
@@ -387,6 +392,7 @@ def tambahBarang(request):
                         uploadbaranglist.harga_grosir=harga_grosir
                         uploadbaranglist.min_beli_grosir=min_beli_grosir
                         uploadbaranglist.harga_beli=harga_beli
+                        uploadbaranglist.keterangan=keterangan
                         uploadbaranglist.save()
 
                     except Exception as ex:
@@ -445,6 +451,7 @@ def konfirmasiUpload(request):
                         barang.harga_grosir = baranglist.harga_grosir
                         barang.min_beli_grosir = baranglist.min_beli_grosir
                         barang.harga_beli = baranglist.harga_beli
+                        barang.keterangan = baranglist.keterangan
                         barang.save()
                     except Exception as ex:
                         print(ex)
@@ -458,6 +465,7 @@ def konfirmasiUpload(request):
                         barang.harga_grosir = baranglist.harga_grosir
                         barang.min_beli_grosir = baranglist.min_beli_grosir
                         barang.harga_beli = baranglist.harga_beli
+                        barang.keterangan = baranglist.keterangan
                         barang.save()
                 addLog(request.user,request.user.userprofile.cabang,"tambah barang",f"Menambahkan  {len(uploadbaranglist)} Barang Berhasil.")
                 uploadbarang.delete()
@@ -518,6 +526,7 @@ def downloadBarang(request):
             harga_grosir=[]
             min_beli_grosir=[]
             harga_beli=[]
+            keterangan=[]
 
             barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang).order_by('nama')
             for barang in barangs:
@@ -529,6 +538,7 @@ def downloadBarang(request):
                 harga_ecer.append(barang.harga_ecer)
                 harga_grosir.append(barang.harga_grosir)
                 min_beli_grosir.append(barang.min_beli_grosir)
+                keterangan.append(barang.keterangan)
 
             df = pandas.DataFrame({
                 'barcode':barcode,
@@ -538,7 +548,8 @@ def downloadBarang(request):
                 'harga_beli':harga_beli,
                 'harga_ecer':harga_ecer,
                 'harga_grosir':harga_grosir,
-                'min_beli_grosir':min_beli_grosir
+                'min_beli_grosir':min_beli_grosir,
+                'keterangan':keterangan
             })
 
             lokasi_file = os.path.join(settings.BASE_DIR,f'media/download/barang/{request.user.userprofile.cabang.token}.xlsx')
