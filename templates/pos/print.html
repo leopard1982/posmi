@@ -64,8 +64,8 @@
             <span>{{alamat_toko}}</span><br>
             <span>{{telpon_toko}}</span><br>
             <span class="fw-bold">------------------------------</span>
-            <div class="d-flex justify-content-end px-1" style="font-size: 11px;">
-                <span>{{penjualan.tgl_bayar|date:"d/m/Y h:m"}}</span>
+            <div class="text-start px-1" style="font-size: 11px;">
+                <span>tanggal: <span class="fw-bold">{{penjualan.tgl_bayar|date:"d/m/Y h:i:s"}}</span></span>
             </div>
             <div  class="text-start px-1" style="font-size: 11px;">
                 <span>kasir: <span class="fw-bold">{{penjualan.user.userprofile.nama_lengkap|title|truncatechars:"15"}} ({{penjualan.user.username}})</span></span>
