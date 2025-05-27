@@ -470,6 +470,7 @@ def hitungBiayaKuota(request):
         return HttpResponse('<span style="width:270px">Perkiraan Biaya adalah:</span> Rp.0.00')
 
 def tambahKuota(request):
+    import datetime
     try:
         asal = request.META['HTTP_REFERER']
     except Exception as ex:
@@ -548,6 +549,13 @@ def tambahKuota(request):
         jumlah_kuota = request.POST['jumlah_kuota']
         cabang.kuota_transaksi+=int(jumlah_kuota)
         cabang.save()
+
+        user = User.objects.get(username=f"{cabang.prefix}1")
+        userprofile = UserProfile.objects.get(user=user)
+
+        message = f"Halo Sobat {userprofile.nama_lengkap}!\n\nTerima kasih atas pembelian {jumlah_kuota:,} kuota transaksi dengan pembayaran sebesar: Rp.{harga:,} pada tanggal: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+
+        posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=cabang.email)
 
         logtransaksi = LogTransaksi()
         logtransaksi.cabang=cabang
