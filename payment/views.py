@@ -9,6 +9,7 @@ from django.db.models import Q
 from promo.views import cekKodeToko,cekKodeVoucher
 from promo.models import Promo, PromoUsed
 from pos.models import DetailWalet
+from posmimail import testMail
 
 def prosesPayment(noTransaksi,jumlah):
     midtrans_server = settings.MIDTRANS_SERVER
@@ -289,6 +290,10 @@ def paymentResponse(request):
             userprofile.nama_lengkap=pemilik_toko
             userprofile.is_active=True
             userprofile.save()
+
+            message = f"Halo Sobat {pemilik_toko}!\n\nSelamat bergabung di aplikasi posmi. Informasi toko sobat adalah sebagai berikut:\nNama Toko: {nama_toko}\nNama Cabang: {cabang}\nAlamat Toko: {alamat_toko}\nKode Toko: {kode_toko}\nEmail Toko: {email_toko}\n\nUntuk user administrator bisa login menggunakan user {user} atau menggunakan email {email_toko}. Password yang telah dibuat adalah [{password}] dan harap disimpan baik-baik.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+
+            testMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=email_toko)
 
             messages.add_message(request,messages.SUCCESS,f"Selamat Untuk User Admin {kode_toko}1 berhasil dibuat. Silakan Login.")
 
