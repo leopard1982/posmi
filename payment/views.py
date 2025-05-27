@@ -553,7 +553,7 @@ def tambahKuota(request):
         user = User.objects.get(username=f"{cabang.prefix}1")
         userprofile = UserProfile.objects.get(user=user)
 
-        message = f"Halo Sobat {userprofile.nama_lengkap}!\n\nTerima kasih atas pembelian {jumlah_kuota:,} kuota transaksi dengan pembayaran sebesar: Rp.{harga:,} pada tanggal: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+        message = f"Halo Sobat {userprofile.nama_lengkap}!\n\nTerima kasih atas pembelian {int(jumlah_kuota):,} kuota transaksi dengan pembayaran sebesar: Rp.{int(harga):,} pada tanggal: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
 
         posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=cabang.email)
 
