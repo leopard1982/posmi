@@ -14,6 +14,7 @@ import pandas
 from stock.models import UploadBarang,UploadBarangList,LogTransaksi
 import uuid
 import random
+from posmimail import posmiMail
 
 
 
@@ -637,6 +638,9 @@ def tambahKasir(request):
                 userprofile.nama_lengkap=nama_lengkap
                 userprofile.is_active=True
                 userprofile.save()
+
+                message = f"Selamat!\n\nUser {nama_lengkap} dengan username {usernya} dan password {pass1} berhasil ditambahkan.\n\nUser sudah aktif dan sudah bisa untuk melakukan transaksi penjualan.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+                posmiMail("Penambahan User Kasir",message=message,address=cabang.email)
                 
                 return HttpResponseRedirect('/cms/kasir/')
             except Exception as ex:
