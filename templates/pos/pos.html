@@ -166,7 +166,7 @@
                 <th>No.</th>
                 <th>Nama Barang</th>
                 <th class="text-center">Jumlah</th>
-                <th class="text-end">Harga</th>
+                <th class="text-end" style="width: 300px;">Harga</th>
                 <!-- <th class="text-end">Total</th> -->
             </thead>
             <tbody>
@@ -187,7 +187,27 @@
                             </div>
 
                         </td>
-                        <td class="fw-bold text-end" style="font-size: 15px;">Rp. {{jual.harga|intcomma}}.00</td>
+                        <td class="fw-bold text-end" style="font-size: 15px;">
+                            <div class="d-flex justify-content-end">
+                                <div class="w-100 py-1 justify-content-end">
+                                    {% if jual.is_open %}
+                                        Rp. <input type="number" hx-get="{% url 'update_barang_satuan'%}?nota={{nota}}&id={{jual.id}}" hx-trigger="keyup delay:5s" hx-target="body" name="harga_baru" required value="{{jual.harga}}" min="0" style="width: 150px;" id="">.00
+                                    {% else %}
+                                        Rp. {{jual.harga|intcomma}}.00
+                                    {% endif %}
+                                </div>
+                                {% if user.is_superuser %}
+                                    <div style="font-size: 20px;width: 30px;text-align: center;">
+                                        {% if jual.is_open %}
+                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=0" style="text-decoration: none;color: red;"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+                                        {% else %}
+                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=1" style="text-decoration: none;color:blue"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                        {% endif %}
+                                    </div>
+                                {% endif%}
+                            </div>
+                            
+                        </td>
                         <!-- <td class="fw-bold text-end" style="font-size: 15px;">Rp. {{jual.total|intcomma}}.00</td> -->
                     </tr>
                     <tr class="border-bottom border-secondary">
@@ -196,7 +216,7 @@
                             {{jual.jumlah|intcomma}} x @Rp.{{jual.harga|intcomma}}.00
                         </td>
                         <td class="fs-6 fw-bold text-end" colspan="2" style="background-color: lightgrey;">
-                            Rp. {{jual.total|intcomma}}.00
+                            Rp. {{jual.total|intcomma}}.00           
                         </td>
                     </tr>
                 {% endfor %}

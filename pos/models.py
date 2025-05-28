@@ -52,21 +52,30 @@ class PenjualanDetail(models.Model):
     barang = models.ForeignKey(Barang,on_delete=models.RESTRICT)
     jumlah = models.IntegerField(default=0)
     harga = models.BigIntegerField(default=0,blank=True,null=True)
+    harga_awal = models.BigIntegerField(default=0,blank=True,null=True)
     total = models.BigIntegerField(default=0,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_open = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.penjualan.nota} - {self.barang} - {self.jumlah} - {self.harga} - {self.total}"
 
     def save(self,*args,**kwargs):
-        jumlah = self.jumlah
-        jumlah_min = self.barang.min_beli_grosir
-        
-        if(jumlah>=jumlah_min):
-            self.harga = self.barang.harga_grosir
+        if not self.is_open:
+            jumlah = self.jumlah
+            jumlah_min = self.barang.min_beli_grosir
+            
+            if(jumlah>=jumlah_min):
+                self.harga = self.barang.harga_grosir
+            else:
+                self.harga = self.barang.harga_ecer
+            # jika tidak editan maka harga awal disamakan dengan harga kalau dia sudah grosir juga
+            self.harga_awal=self.harga
         else:
-            self.harga = self.barang.harga_ecer
+            # jika editan maka harga awal disesuaikan dengan harga eccer
+            self.harga_awal=self.barang.harga_ecer
+
         self.total = self.jumlah*self.harga
         super(PenjualanDetail,self).save(*args,**kwargs)
 

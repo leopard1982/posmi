@@ -526,3 +526,63 @@ def printTransaksi(request,nota):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login untuk bisa mencetak transaksi.")
         return HttpResponseRedirect('/')
+    
+def gantiStatusOpen(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            try:
+                id = request.GET['id']
+                nota = request.GET['nota']
+                status = int(request.GET['status'])
+
+                penjualandetail = PenjualanDetail.objects.get(id=id)
+                if status == 0:
+                    penjualandetail.is_open=False
+                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode edit harga dan untuk mengembalikan ke harga semula silakan tekan tombol refresh di sampingnya.")
+                elif status ==1:
+                    penjualandetail.is_open=True
+                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode harga normal kembali.")
+                penjualandetail.save()
+
+                return HttpResponseRedirect(f'/?nota={nota}')
+            except:
+                return HttpResponseRedirect('/')
+        else:
+            messages.add_message(request,messages.SUCCESS,"Hanya Admin yang berhak melakukan update harga.")
+            return HttpResponseRedirect('/')    
+        
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login untuk bisa mencetak transaksi.")
+        return HttpResponseRedirect('/')
+    
+
+def updateBarangSatuan(request):
+    try:
+        page=request.META['HTTP_REFERER']
+    except:
+        page="/"
+    
+    if request.user.is_authenticated:
+        try:
+            nota = request.GET['nota']
+            id_barang = int(request.GET['id'])
+            update_harga = int(request.GET['harga_baru'])
+            try:
+                penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
+                penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(id=id_barang))
+                harga_awal = penjualandetail.harga
+                penjualandetail.harga = update_harga
+                penjualandetail.save()
+                messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} sudah diupdate dari harga asli: Rp.{int(harga_awal):,} menjadi harga Rp.{int(update_harga):,} dan untuk mengembalikan ke harga semula silakan tekan tombol refresh di sampingnya.")
+            except Exception as ex:
+                print(ex)
+                messages.add_message(request,messages.SUCCESS,'Kode Barang atau Nomor Nota tidak sesuai.')
+            return HttpResponseRedirect(page)    
+        except Exception as ex:
+            print(ex)
+            messages.add_message(request,messages.SUCCESS,'Data kode barang atau nota belum dimasukkan.')
+            nota = None
+            id_barang = None
+    else:
+        messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
+    return HttpResponseRedirect(page)
