@@ -538,10 +538,11 @@ def gantiStatusOpen(request):
                 penjualandetail = PenjualanDetail.objects.get(id=id)
                 if status == 0:
                     penjualandetail.is_open=False
-                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode edit harga dan untuk mengembalikan ke harga semula silakan tekan tombol refresh di sampingnya.")
+                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode harga normal kembali.")
                 elif status ==1:
                     penjualandetail.is_open=True
-                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode harga normal kembali.")
+                    
+                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode edit harga dan untuk mengembalikan ke harga semula silakan tekan tombol refresh di sampingnya. Harga akan update otomatis setelah 5 Sobat melakukan pengetikan harga.")
                 penjualandetail.save()
 
                 return HttpResponseRedirect(f'/?nota={nota}')
