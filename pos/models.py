@@ -70,8 +70,8 @@ class PenjualanDetail(models.Model):
                 self.harga = self.barang.harga_grosir
             else:
                 self.harga = self.barang.harga_ecer
-            # jika tidak editan maka harga awal disamakan dengan harga kalau dia sudah grosir juga
-            self.harga_awal=self.harga
+            # jika tidak editan maka harga awal dinolkan
+            self.harga_awal=0
         else:
             # jika editan maka harga awal disesuaikan dengan harga eccer
             self.harga_awal=self.barang.harga_ecer
