@@ -542,7 +542,9 @@ def gantiStatusOpen(request):
                 elif status ==1:
                     penjualandetail.is_open=True
                     
-                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode edit harga dan untuk mengembalikan ke harga semula silakan tekan tombol refresh di sampingnya. Harga akan update otomatis 5 Detik setelah Sobat melakukan pengetikan harga.")
+                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} mengunakan metode edit harga, dengan minimal harga Rp.1,00.")
+                    messages.add_message(request,messages.SUCCESS,"Harga akan update otomatis diupdate oleh sistem 5 Detik setelah Sobat melakukan pengetikan harga. ")
+                    messages.add_message(request,messages.SUCCESS,"Untuk mengembalikan ke harga semula silakan tekan tombol refresh berwarna merah di samping. ")
                 penjualandetail.save()
 
                 return HttpResponseRedirect(f'/?nota={nota}')
@@ -575,7 +577,8 @@ def updateBarangSatuan(request):
                     harga_awal = penjualandetail.harga
                     penjualandetail.harga = update_harga
                     penjualandetail.save()
-                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} sudah diupdate dari harga asli: Rp.{int(harga_awal):,} menjadi harga Rp.{int(update_harga):,} dan untuk mengembalikan ke harga semula silakan tekan tombol refresh di sampingnya.")
+                    messages.add_message(request,messages.SUCCESS,f"Harga barang {penjualandetail.barang.nama} sudah diupdate dari harga asli: Rp.{int(harga_awal):,} menjadi harga Rp.{int(update_harga):,}.")
+                    messages.add_message(request,messages.SUCCESS,"Untuk mengembalikan ke harga semula silakan tekan tombol refresh berwarna merah di samping.")
                     messages.add_message(request,messages.SUCCESS,"Silakan Sobat Cek terlebih dahulu 1 per 1 harga manual sebelum melakukan pembayaran. Terima kasih.")
                 except Exception as ex:
                     print(ex)
