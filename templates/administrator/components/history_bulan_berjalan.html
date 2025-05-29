@@ -1,4 +1,25 @@
 {% load humanize %}
+<!-- Modal -->
+<div class="modal fade" id="staticDetailTransaksi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticDetailTransaksiLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticDetailTransaksiLabel">Detail Transaksi</h5>
+          
+        </div>
+        <div class="modal-body">
+          <div id="detailTransaksi">
+
+          </div>
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Understood</button>
+        </div> -->
+      </div>
+    </div>
+</div>
+
 <div>
     <div class="mt-3 h2 fw-bold">
         History Transaksi Bulan {{bulannya}} {{tahunnya}}
@@ -12,7 +33,7 @@
         <thead>
             <tr>
                 <th>No.</th>
-                <th>Nota</th>
+                <th>ID Transaksi</th>
                 <th>Items</th>
                 <th>Jumlah</th>
                 <th>Customer</th>
@@ -24,7 +45,10 @@
             {% for trx in transaksi %}
             <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
                 <td>{{forloop.counter}}</td>
-                <td>{{trx.nota}}</td>
+                <td  style="font-size: 14px;">
+                    {{trx.nota}}<br>
+                    <a hx-get="{% url 'detail_penjualan_histori' trx.nota %}" hx-trigger="click" hx-target="#detailTransaksi" data-bs-toggle="modal" data-bs-target="#staticDetailTransaksi" href="" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
+                </td>
                 <td>{{trx.items}}</td>
                 <td>Rp.{{trx.total|intcomma}}.00</td>
                 <td>{{trx.customer}}</td>

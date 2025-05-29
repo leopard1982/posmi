@@ -15,7 +15,7 @@ from stock.models import UploadBarang,UploadBarangList,LogTransaksi
 import uuid
 import random
 from posmimail import posmiMail
-
+from pos.models import Penjualan,PenjualanDetail
 
 
 def bulannya(bulannya):
@@ -648,3 +648,12 @@ def tambahKasir(request):
                 return HttpResponseRedirect('/cms/kasir/tambah/')
     else:
         return render(request,'administrator/components/tambah_user.html')
+    
+def detailPenjualan(request,id):
+    penjualan = Penjualan.objects.get(nota=id)
+    penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+    context = {
+        'penjualan':penjualan,
+        'penjualan_detail':penjualan_detail
+    }
+    return render(request,'administrator/components/detail_transaksi.html',context)
