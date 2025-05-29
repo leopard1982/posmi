@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate,login,logout
 from cms.views import addLog
 from promo.models import Promo
 from cara.models import Tutorial,TutorialComment,TutorialImage
+from cms.models import Testimoni
 
 DAFTAR_PAKET = []
 
@@ -177,6 +178,8 @@ def index(request):
     bisnis_kecil = DaftarPaket.objects.get(nama="Bisnis Kecil")
     bisnis_medium = DaftarPaket.objects.get(nama="Bisnis Medium")
 
+    testimoni = Testimoni.objects.all().filter(is_verified=True)
+
     context = {
         'penjualandetail':penjualandetail,
         'nota':nota,
@@ -196,7 +199,7 @@ def index(request):
         'promo_list':promo_list,
         'jumlah_transaksi':jumlah_transaksi,
         'image_tutorial':image,
-        # 'tutorialimage':tutorialimage
+        'list_testimoni':testimoni
     }
     return render(request,'pos/pos.html',context)
 

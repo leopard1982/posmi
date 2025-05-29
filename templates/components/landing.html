@@ -466,83 +466,75 @@
 </div>
 
 <!-- dikasih carousel di sini -->
-  <div id="myCarousel" class="container carousel slide container" data-bs-ride="carousel">
+  <div id="myCarousel1" class="container carousel carousel1 slide container" data-bs-ride="carousel">
     <div class="carousel-inner w-100">
-        <div class="carousel-item active">
-            <div class="col-md-3">
-                <div class="card card-body">
-                    test 7 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat aliquid temporibus accusantium eius nostrum vero dolorum odit ducimus placeat suscipit nihil, iste voluptas repellendus, cum porro quae id, non ipsum?
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                  test6 Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore eveniet vitae natus sapiente cupiditate totam voluptatem porro animi illum consequuntur cum molestiae sunt labore nemo minus excepturi repudiandae, sed quidem!
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                  test5 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis blanditiis fuga quia reprehenderit facere cumque esse at nisi est, aliquid officia similique itaque iusto nam, corporis cupiditate incidunt. Distinctio, quas.
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                    test4 Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sed impedit vel iste debitis aperiam aliquid itaque, deserunt officia magnam maiores dolores repellendus sit amet quod reiciendis illum quae voluptates earum.
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                  test2 Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus libero quod ea quo inventore? Quis quisquam beatae distinctio, ratione deleniti provident, recusandae rerum similique qui aperiam cum! Ducimus, quis similique.
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                  test Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora atque repellat et exercitationem, impedit consectetur aut nobis, excepturi odio obcaecati, dolor quo sed repellendus. Aut cupiditate corporis dolor harum nesciunt.
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                  test 8 Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum eum molestiae asperiores in accusantium a at quaerat molestias, nulla ad facilis doloremque animi dolorem officia? Eaque iusto ea laudantium debitis.
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="col-md-3">
-                <div class="card card-body">
-                  test 9 Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, doloribus porro quasi libero laboriosam aut quae veritatis molestias quod delectus eos repellat obcaecati, ad quo corrupti ut. Iure, ipsum soluta!
-            </div>
-        </div>
+      {% for testimoni in list_testimoni %}
+        {% if forloop.first %}
+          <div class="carousel-item active carousel-item1">
+              <div class="col-md-3">
+                  <div class="card card-body justify-content-center w-100" style="height: 300px;min-height: 300px;max-height: 300px;border:none;padding:10px  ">
+                    <div class="p-2 border-top border-bottom rounded border-primary border-5 w-100 vh-100 d-flex align-items-center" >
+                      <h5 class="text-center w-100">
+                        "{{testimoni.testimoni}}"
+                      </h5>
+                    </div>
+                    <div class="mt-2">
+                      <h5 class="fw-bold text-center text-success">
+                        {{testimoni.cabang.nama_toko}} 
+                      </h5>
+                    </div>
+                    <div class="mb-2">
+                      <h6 class="fw-bold text-center">
+                        Bergabung: {{testimoni.cabang.created_at|date:"d/M/Y"}}
+                      </h6>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        {% else %}
+          <div class="carousel-item carousel-item1">
+              <div class="col-md-3">
+                  <div class="card card-body justify-content-center w-100" style="height: 300px;min-height: 300px;max-height: 300px;border:none;padding:10px">
+                    <div class="p-2 border-top border-bottom rounded border-primary border-5 w-100 vh-100 d-flex align-items-center" >
+                      <h5 class="text-center w-100">
+                        "{{testimoni.testimoni}}"
+                      </h5>
+                    </div>
+                    <div class="mt-2">
+                      <h5 class="fw-bold text-center text-success">
+                        {{testimoni.cabang.nama_toko}}
+                      </h5>
+                    </div>
+                    <div class="mb-2">
+                      <h6 class="fw-bold text-center">
+                        Bergabung: {{testimoni.cabang.created_at|date:"d/M/Y"}}
+                      </h6>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        {% endif%}
+      {% endfor %}
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel1" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel1" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
     </button>
   </div>
   <script>
-    $('.carousel .carousel-item').each(function () {
-var minPerSlide = 4;
-var next = $(this).next();
-if (!next.length) {
-next = $(this).siblings(':first');
-}
-next.children(':first-child').clone().appendTo($(this));
+    $('.carousel1 .carousel-item1').each(function () {
+    var minPerSlide = 4;
+    var next = $(this).next();
+    if (!next.length) {
+    next = $(this).siblings(':first');
+    }
+    next.children(':first-child').clone().appendTo($(this));
 
-for (var i = 0; i < minPerSlide; i++) { next=next.next(); if (!next.length) { next=$(this).siblings(':first'); } next.children(':first-child').clone().appendTo($(this)); } });
+    for (var i = 0; i < minPerSlide; i++) { next=next.next(); if (!next.length) { next=$(this).siblings(':first'); } next.children(':first-child').clone().appendTo($(this)); } });
   </script>
 </section>
 
