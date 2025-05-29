@@ -44,7 +44,7 @@
                     <a hx-get="{% url 'detail_penjualan_histori' trx.nota %}" hx-trigger="click" hx-target="#detailTransaksi" data-bs-toggle="modal" data-bs-target="#staticDetailTransaksi" href="" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
                 </td>
                 <td>{{trx.items}}</td>
-                <td>Rp.{{trx.total|intcomma}}.00</td>
+                <td>Rp.{{trx.total|intcomma}}</td>
                 <td>{{trx.customer}}</td>
                 <td>{{trx.user.username}}</td>
                 <td >{{trx.tgl_bayar|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{trx.tgl_bayar|date:"h:m:s"}}</span></td>

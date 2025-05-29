@@ -30,23 +30,28 @@
     <tr>
         <td colspan="2" class="border border-primary" style="background-color: blue;color: white;vertical-align: top;font-weight: bold;text-align: center;">Detail:</td>
     </tr>
-    
-    <tr class="border border-primary">
+    <tr>
         <td colspan="2">
-            <div class="w-100" style="min-height: 200px;max-height: 200px;overflow-y: scroll;">
-                <div>
-                    <table class="table">
-                        <tr style="border-bottom: 1px solid blue;">
-                            <th>Kode</th>
-                            <th>Nama</th>
-                            <th>Harga</th>
-                            <th>Total</th>
-                        </tr>
+            <table class="table">
+                <tr style="border-bottom: 1px solid blue;">
+                    <th style="min-width: 75px;max-width: 75px;">Kode</th>
+                    <th style="min-width: 75px;max-width: 75px;">Nama</th>
+                    <th style="min-width: 45px;max-width: 45px;">Harga</th>
+                    <th>Total</th>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr class="border border-primary" >
+        <td colspan="2">
+            <div class="w-100" style="min-height: 130px;max-height: 130px;overflow-y: scroll;">
+                <div >
+                    <table class="table" >
                         {% for detail in penjualan_detail%}
                         <tr>
-                            <td style="font-size: 13px;">{{detail.barang.barcode}}</td>
-                            <td style="font-size: 13px;">{{detail.barang.nama}}</td>
-                            <td style="font-size: 13px;">{{detail.harga|intcomma}}<br>x{{detail.jumlah|intcomma}}</td>
+                            <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.barcode}}</td>
+                            <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.nama}}</td>
+                            <td style="min-width: 60px;max-width: 60px;;font-size: 13px;">{{detail.harga|intcomma}}<br>x{{detail.jumlah|intcomma}}</td>
                             <td style="font-size: 13px;">{{detail.total|intcomma}}</td>
                         </tr>
                         {% endfor%}
