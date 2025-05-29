@@ -47,7 +47,7 @@
                 <td>{{forloop.counter}}</td>
                 <td  style="font-size: 14px;">
                     {{trx.nota}}<br>
-                    <a hx-get="{% url 'detail_penjualan_histori' trx.nota %}" hx-trigger="click" hx-target="#detailTransaksi" data-bs-toggle="modal" data-bs-target="#staticDetailTransaksi" href="" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
+                    <button hx-get="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" hx-trigger="click" hx-target="#detailTransaksi" data-bs-toggle="modal" data-bs-target="#staticDetailTransaksi" href="" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</button>
                 </td>
                 <td>{{trx.items}}</td>
                 <td>Rp.{{trx.total|intcomma}}</td>
@@ -69,7 +69,8 @@
         new DataTable('#datasetTrxBulanBerjalan',{
             language: {
                 search: "Pencarian Data: ",
-            }
+            },
+            pageLength: 100
         });
     </script>
     {% else %}

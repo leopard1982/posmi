@@ -649,8 +649,9 @@ def tambahKasir(request):
     else:
         return render(request,'administrator/components/tambah_user.html')
     
-def detailPenjualan(request,id):
-    penjualan = Penjualan.objects.get(nota=id)
+def detailPenjualan(request):
+    nota = request.GET['id']
+    penjualan = Penjualan.objects.get(nota=nota)
     penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
     context = {
         'penjualan':penjualan,

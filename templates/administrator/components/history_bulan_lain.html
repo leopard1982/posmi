@@ -38,7 +38,7 @@
         <tbody>
             {% for trx in transaksi %}
             <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
-                <td>{{forloop.counter}}</td>
+                <td>{{forloop.counter}} </td>
                 <td  style="font-size: 14px;">
                     {{trx.nota}}<br>
                     <a hx-get="{% url 'detail_penjualan_histori' trx.nota %}" hx-trigger="click" hx-target="#detailTransaksi" data-bs-toggle="modal" data-bs-target="#staticDetailTransaksi" href="" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
@@ -63,7 +63,8 @@
         new DataTable('#datasetTrxBulanLain',{
             language: {
                 search: "Pencarian Data: ",
-            }
+            },
+            pageLength: 100
         });
     </script>
 </div>
