@@ -33,6 +33,7 @@
                 <th>Customer</th>
                 <th>Kasir</th>
                 <th>Tanggal</th>
+                <th class="text-center">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -48,6 +49,14 @@
                 <td>{{trx.customer}}</td>
                 <td>{{trx.user.username}}</td>
                 <td >{{trx.tgl_bayar|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{trx.tgl_bayar|date:"h:m:s"}}</span></td>
+                <td class="text-center">
+                    {% if trx.is_void %}
+                        <span class="text-danger fw-bold fst-italic">Batal</span>
+                    {% else %}
+                        <span class="text-success fw-bold">Sukses</span><br>
+                        <a href="#" class="btn btn-sm btn-danger rounded-pill">Batalkan</a>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor%}
         </tbody>

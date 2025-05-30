@@ -40,6 +40,8 @@ class Penjualan(models.Model):
     tgl_bayar = models.DateTimeField(null=True,blank=True)
     reprint_nota = models.IntegerField(default=0)
     cetak_kuitansi = models.IntegerField(default=0)
+    is_void = models.BooleanField(default=False,blank=True,null=True)
+    alasan_void = models.CharField(max_length=200,null=True,blank=True)
 
     def __str__(self):
         if self.is_paid:
