@@ -81,8 +81,15 @@
 
 
 <div class="d-flex justify-content-center container mb-5">
-    <a href="{% url 'reprint_transaksi' penjualan.nota %}" class="btn ms-3 btn-primary btn-sm">Reprint Nota</A>
-    <a href="{% url 'print_kuitansi' penjualan.nota %}" class="btn ms-3 btn-success btn-sm">Print Kuitansi A4</a>
+    {% if penjualan.is_void %}
+        <div class="text-danger text-center">
+            <span>Transaksi Dibatalkan (void) pada {{penjualan.updated_at|data:"d/M/Y"}}</span><br>
+            <span>alasan: {{transaksi.alasan_void|title}}</span>
+        </div>
+    {% else %}
+        <a href="{% url 'reprint_transaksi' penjualan.nota %}" class="btn ms-3 btn-primary btn-sm">Reprint Nota</A>
+        <a href="{% url 'print_kuitansi' penjualan.nota %}" class="btn ms-3 btn-success btn-sm">Print Kuitansi A4</a>
+    {% endif %}
 </div>
 
 {% endblock %}

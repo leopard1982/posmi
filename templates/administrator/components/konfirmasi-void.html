@@ -1,0 +1,17 @@
+<div class="container py-3">
+    <div class="border border-danger rounded p-2">
+        <div class="text-danger text-center">Apakah transaksi <br><b>ID: {{nota}}</b><br>akan dibatalkan (void)?</div>
+        <div class="mt-2">
+            <form action="{{callback}}" class="px-4" method="post">
+                <input type="text" name="alasan" required class="form-control" placeholder="alasan void" id="">
+                <div class="d-flex justify-content-center py-2">
+                    <button type="submit" class="mx-2 btn btn-sm btn-danger">Batalkan</button>
+                    <button  class="mx-2 btn btn-sm btn-secondary" hx-target="#konfirmasiVoid" hx-get="{% url 'tidak_void'%}" hx-trigger="click">Tidak</button>
+                    
+                    <!-- <a href="#" class="mx-2 btn btn-sm btn-secondary">Tidak</button> -->
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>

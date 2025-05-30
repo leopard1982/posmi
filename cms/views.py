@@ -662,3 +662,14 @@ def detailPenjualan(request):
     except Exception as ex:
         print(ex)
         return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+
+def konfirmasiVoid(request):
+    id_nota = request.GET['id']
+    context = {
+        'callback':'/',
+        'nota':id_nota
+    }
+    return render(request,'administrator/components/konfirmasi-void.html',context)
+
+def tidakVoid(request):
+    return HttpResponse("")
