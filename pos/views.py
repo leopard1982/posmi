@@ -84,7 +84,7 @@ def index(request):
         image.append(data)
     
     
-        
+    limapenjualan = Penjualan.objects.all().filter(Q(user=request.user) & Q(is_paid=True)).order_by('-tgl_bayar')[:5]
     
     if request.user.is_authenticated:
         jumlah_transaksi = request.user.userprofile.cabang.kuota_transaksi
@@ -199,7 +199,8 @@ def index(request):
         'promo_list':promo_list,
         'jumlah_transaksi':jumlah_transaksi,
         'image_tutorial':image,
-        'list_testimoni':testimoni
+        'list_testimoni':testimoni,
+        'limapenjualan':limapenjualan
     }
     return render(request,'pos/pos.html',context)
 

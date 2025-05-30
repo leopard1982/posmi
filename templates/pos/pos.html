@@ -128,6 +128,16 @@
                 <span class="fw-bold fs-6">ID: <span class="fs-">{{nota}}</span></span>
             </div>
             <div class="text-end">
+                <div class="dropdown">
+                    <button class="btn btn-success dropdown-toggle btn-sm mt-2" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                      5 Trx
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {% for trans in limapenjualan %}
+                        <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">ID: {{trans.nota}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
                 <a href="{% url 'index_pos'%}" class="btn-sm btn-info btn mx-1 mt-2">+Baru</a>
                 {% if jumlah_penjualan_pending > 0 %}
                     <a href="#" class="btn-sm btn-warning btn mt-2 mx-1"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">Pending&rarr;</a>
@@ -137,7 +147,17 @@
             </div>
         </div>
         {% else %}
-        <div class="text-end my-2">
+        <div class="text-end my-2 d-flex justify-content-end">
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle btn-sm mt-2" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                  5 Trx
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    {% for trans in limapenjualan %}
+                    <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">ID: {{trans.nota}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
             {% if jumlah_penjualan_pending > 0 %}
                 <a href="#" class="btn-sm btn-warning btn mt-2 mx-1" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">Pending&rarr;</a>
             {% endif%}
