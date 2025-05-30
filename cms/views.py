@@ -664,12 +664,20 @@ def detailPenjualan(request):
         return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
 
 def konfirmasiVoid(request):
-    id_nota = request.GET['id']
-    context = {
-        'callback':'/',
-        'nota':id_nota
-    }
-    return render(request,'administrator/components/konfirmasi-void.html',context)
+    try:
+        id_nota = request.GET['id']
+        penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
+        penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+        context = {
+            'callback':'/',
+            'nota':id_nota,
+            'penjualan':penjualan,
+            'penjualan_detail':penjualan_detail
+        }
+        return render(request,'administrator/components/konfirmasi-void.html',context)
+    except Exception as ex:
+        print(ex)
+        return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
 
 def tidakVoid(request):
-    return HttpResponse("")
+    return HttpResponse("/cms/")

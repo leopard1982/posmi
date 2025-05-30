@@ -65,7 +65,7 @@
                         <span class="text-danger fw-bold fst-italic">Batal</span>
                     {% else %}
                         <span class="text-success fw-bold">Sukses</span><br>
-                        <a href="#" hx-get="{% url 'konfirmasi_void'%}?id={{trx.nota}}" hx-trigger="click" hx-target="#konfirmasiVoid" class="btn btn-sm btn-danger rounded-pill p-0 px-2">Batalkan</a>
+                        <a href="{% url 'konfirmasi_void'%}?id={{trx.nota}}"  class="btn btn-sm btn-danger rounded-pill p-0 px-2">Batalkan</a>
                     {% endif %}
                 </td>
             </tr>
