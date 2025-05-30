@@ -633,3 +633,41 @@ def reprintTransaksi(request,nota):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login untuk bisa mencetak transaksi.")
         return HttpResponseRedirect('/')
+    
+
+def printKuitansi(request,nota):
+    if request.user.is_authenticated:
+        try:
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user))
+            penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+            nama_toko = request.user.userprofile.cabang.nama_toko
+            alamat_toko = request.user.userprofile.cabang.alamat_toko
+            telpon_toko = request.user.userprofile.cabang.telpon
+            total = int(penjualan.total)
+            penjualan.cetak_kuitansi += 1
+            penjualan.save()
+
+            id_pemilik = f"{penjualan.cabang.prefix}1"
+            nama_pemilik = User.objects.get(username=id_pemilik).userprofile.nama_lengkap
+
+            if penjualan.metode==0:
+                bayar="cash"
+            else:
+                bayar="transfer"
+            context = {
+                'penjualan':penjualan,
+                'penjualandetail':penjualandetail,
+                'nama_toko':nama_toko,
+                'alamat_toko':alamat_toko,
+                'telpon_toko':telpon_toko,
+                'bayar':bayar,
+                'total':total,
+                'nama_pemilik':nama_pemilik
+            }
+            return render(request,'pos/print_kuitansi.html',context)
+        except Exception as ex:
+            messages.add_message(request,messages.SUCCESS,'Nota yang akan dicetak tidak diketemukan..')
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login untuk bisa mencetak transaksi.")
+        return HttpResponseRedirect('/')

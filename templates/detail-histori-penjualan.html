@@ -82,7 +82,7 @@
 
 <div class="d-flex justify-content-center container mb-5">
     <a href="{% url 'reprint_transaksi' penjualan.nota %}" class="btn ms-3 btn-primary btn-sm">Reprint Nota</A>
-    <button type="button" class="btn ms-3 btn-success btn-sm">Reprint A4</button>
+    <a href="{% url 'print_kuitansi' penjualan.nota %}" class="btn ms-3 btn-success btn-sm">Print Kuitansi A4</a>
 </div>
 
 {% endblock %}
