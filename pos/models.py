@@ -29,7 +29,7 @@ class Penjualan(models.Model):
     no_nota = models.CharField(max_length=15)
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT)
     user = models.ForeignKey(User,on_delete=models.RESTRICT,related_name="user_login",blank=True,null=True)
-    customer = models.ForeignKey(Customer,on_delete=models.RESTRICT,related_name="customer_penjualan",blank=True,null=True)
+    # customer = models.ForeignKey(Customer,on_delete=models.RESTRICT,related_name="customer_penjualan",blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     total = models.DecimalField(max_digits=12,decimal_places=2,default=0)

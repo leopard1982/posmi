@@ -134,7 +134,8 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         {% for trans in limapenjualan %}
-                        <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">ID: {{trans.nota}}</a></li>
+                        <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">No. Nota: {{trans.no_nota}}<br>Cust: {{trans.customer}}<br>Total: Rp.{{trans.total|intcomma}}</a></li>
+                        <hr>
                         {% endfor %}
                     </ul>
                 </div>
@@ -154,7 +155,8 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     {% for trans in limapenjualan %}
-                    <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">ID: {{trans.nota}}</a></li>
+                    <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">No. Nota: {{trans.no_nota}}<br>Cust: {{trans.customer}}<br>Total: Rp.{{trans.total|intcomma}}</a></li>
+                    <hr>
                     {% endfor %}
                 </ul>
             </div>
