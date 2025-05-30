@@ -62,7 +62,7 @@
         <div class="fs-3 fw-bold text-center mb-3">
             KUITANSI PEMBAYARAN
             {% if penjualan.cetak_kuitansi > 1 %}
-            <br><span class="fs-6">(REPRINT #{{penjualan.cetak_kuitansi}})</span>
+            <br><span class="fs-6">(REPRINT #{{penjualan.cetak_kuitansi|add:"-1"}})</span>
             {% endif %}
         </div>
         <div class="fs-5 mb-3 py-2 border-bottom border-top border-dark">
