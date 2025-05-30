@@ -65,7 +65,7 @@
                         <span class="text-danger fw-bold fst-italic">Batal</span>
                     {% else %}
                         <span class="text-success fw-bold">Sukses</span><br>
-                        <a href="{% url 'konfirmasi_void'%}?id={{trx.nota}}"  class="btn btn-sm btn-danger rounded-pill p-0 px-2">Batalkan</a>
+                        <a target="_blank" href="{% url 'konfirmasi_void'%}?id={{trx.nota}}"  class="btn btn-sm btn-danger rounded-pill p-0 px-2">Batalkan</a>
                     {% endif %}
                 </td>
             </tr>
@@ -86,6 +86,11 @@
             },
             pageLength: 10
         });
+    </script>
+    <script>
+        var blurred = false;
+        window.onblur = function() { blurred = true; };
+        window.onfocus = function() { blurred && (location.reload()); };
     </script>
     {% else %}
     <div class="text-center fst-italic mt-3">
