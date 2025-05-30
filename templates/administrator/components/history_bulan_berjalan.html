@@ -47,7 +47,7 @@
                 <td>{{forloop.counter}}</td>
                 <td  style="font-size: 14px;">
                     {{trx.nota}}<br>
-                    <button hx-get="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" hx-trigger="click" hx-target="#detailTransaksi" data-bs-toggle="modal" data-bs-target="#staticDetailTransaksi" href="" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</button>
+                    <a target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
                 </td>
                 <td>{{trx.items}}</td>
                 <td>Rp.{{trx.total|intcomma}}</td>
@@ -70,7 +70,7 @@
             language: {
                 search: "Pencarian Data: ",
             },
-            pageLength: 100
+            pageLength: 10
         });
     </script>
     {% else %}

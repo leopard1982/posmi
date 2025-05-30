@@ -650,11 +650,15 @@ def tambahKasir(request):
         return render(request,'administrator/components/tambah_user.html')
     
 def detailPenjualan(request):
-    nota = request.GET['id']
-    penjualan = Penjualan.objects.get(nota=nota)
-    penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-    context = {
-        'penjualan':penjualan,
-        'penjualan_detail':penjualan_detail
-    }
-    return render(request,'administrator/components/detail_transaksi.html',context)
+    try:
+        nota = request.GET['id']
+        penjualan = Penjualan.objects.get(Q(nota=nota) & Q(cabang=request.user.userprofile.cabang))
+        penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+        context = {
+            'penjualan':penjualan,
+            'penjualan_detail':penjualan_detail
+        }
+        return render(request,'detail-histori-penjualan.html',context)
+    except Exception as ex:
+        print(ex)
+        return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
