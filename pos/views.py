@@ -83,9 +83,11 @@ def index(request):
         data['comment']=comment
         image.append(data)
     
-    
-    limapenjualan = Penjualan.objects.all().filter(Q(user=request.user) & Q(is_paid=True)).order_by('-tgl_bayar')[:5]
-    
+    try:
+        limapenjualan = Penjualan.objects.all().filter(Q(user=request.user) & Q(is_paid=True)).order_by('-tgl_bayar')[:5]
+    except:
+        limapenjualan = None
+
     if request.user.is_authenticated:
         jumlah_transaksi = request.user.userprofile.cabang.kuota_transaksi
         cabang_available = cek_expired_kuota(request.user.userprofile.cabang.id)
