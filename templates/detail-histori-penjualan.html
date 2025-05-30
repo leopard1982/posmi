@@ -83,7 +83,7 @@
 <div class="d-flex justify-content-center container mb-5">
     {% if penjualan.is_void %}
         <div class="text-danger text-center">
-            <span>Transaksi Dibatalkan (void) pada {{penjualan.updated_at|data:"d/M/Y"}}</span><br>
+            <span>Transaksi Dibatalkan (void) pada {{penjualan.updated_at|date:"d/M/Y"}}</span><br>
             <span>alasan: {{transaksi.alasan_void|title}}</span>
         </div>
     {% else %}

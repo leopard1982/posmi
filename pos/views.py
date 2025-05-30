@@ -504,7 +504,7 @@ def bayarTransaksi(request):
 def printTransaksi(request,nota):
     if request.user.is_authenticated:
         try:
-            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user))
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user)  & Q(is_void=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
             nama_toko = request.user.userprofile.cabang.nama_toko
             alamat_toko = request.user.userprofile.cabang.alamat_toko
@@ -604,7 +604,7 @@ def updateBarangSatuan(request):
 def reprintTransaksi(request,nota):
     if request.user.is_authenticated:
         try:
-            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user))
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user)  & Q(is_void=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
             nama_toko = request.user.userprofile.cabang.nama_toko
             alamat_toko = request.user.userprofile.cabang.alamat_toko
@@ -638,7 +638,7 @@ def reprintTransaksi(request,nota):
 def printKuitansi(request,nota):
     if request.user.is_authenticated:
         try:
-            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user))
+            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user) & Q(is_void=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
             nama_toko = request.user.userprofile.cabang.nama_toko
             alamat_toko = request.user.userprofile.cabang.alamat_toko
