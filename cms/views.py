@@ -30,7 +30,7 @@ def bulannya(bulannya):
     elif bulannya==5:
         return "Mei"
     elif bulannya==6:
-        return "April"
+        return "Juni"
     elif bulannya==7:
         return "Juli"
     elif bulannya==8:
