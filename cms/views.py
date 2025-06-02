@@ -116,7 +116,7 @@ def index(request):
             print(liga_kasir)
 
             # mengisi jumlah pembayaran cash vs transfer
-            liga_metode = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year)).values('metode').annotate(jumlah=Count('metode')).order_by()
+            liga_metode = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year) & Q(is_void=False)).values('metode').annotate(jumlah=Count('metode')).order_by()
             print(liga_metode)
             jumlah_metode = []
             # apakah metode cash?
