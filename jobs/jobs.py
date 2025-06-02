@@ -6,6 +6,7 @@ def updateKuota():
     for cab in cabang:
         try:
             cab.kuota_transaksi = cab.paket.max_transaksi
+            cab.no_nota=1
             cab.save()
         except:
             pass
