@@ -585,120 +585,160 @@ def viewLog(request):
         return HttpResponseRedirect('/login/')
     
 def daftarKasir(request):
-    list_user = User.objects.all().filter(userprofile__cabang=request.user.userprofile.cabang)
-    context = {
-        'list_user':list_user
-    }
-    return render(request,'administrator/components/list_user.html',context)
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            list_user = User.objects.all().filter(userprofile__cabang=request.user.userprofile.cabang)
+            context = {
+                'list_user':list_user
+            }
+            return render(request,'administrator/components/list_user.html',context)
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
 
 def tambahKasir(request):
-    if request.method=="POST":
-        pass1 = request.POST['password1']
-        pass2 = request.POST['password2']
-        print(pass1)
-        print(pass2)
-        if pass1!=pass2:
-            messages.add_message(request,messages.SUCCESS,'Penambahan kasir gagal, password dan konfirmasinya tidak sama. Silakan ulangi kembali.')
-            return render(request,'administrator/components/tambah_user.html')
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                pass1 = request.POST['password1']
+                pass2 = request.POST['password2']
+                print(pass1)
+                print(pass2)
+                if pass1!=pass2:
+                    messages.add_message(request,messages.SUCCESS,'Penambahan kasir gagal, password dan konfirmasinya tidak sama. Silakan ulangi kembali.')
+                    return render(request,'administrator/components/tambah_user.html')
+                else:
+                    try:
+                        nama_lengkap = request.POST['nama_lengkap']
+                        id_cabang = request.user.userprofile.cabang.id
+                        cabang = Cabang.objects.get(id=id_cabang)
+                        jumlah_kasir = cabang.jumlah_kasir+1
+                        userid = f"{cabang.prefix}{jumlah_kasir}"
+                        print(userid)
+                        try:
+                            usernya = User()
+                            usernya.username=userid
+                            usernya.password=pass1
+                            usernya.save()
+                            usernya.set_password(pass1)
+                            usernya.save()
+
+
+                            cabang.jumlah_kasir=cabang.jumlah_kasir+1
+                            cabang.save()
+                        except:
+                            jumlah_kasir = cabang.jumlah_kasir+2
+                            userid = f"{cabang.prefix}{jumlah_kasir}"
+                            usernya = User()
+                            usernya.username=userid
+                            usernya.password=pass1
+                            usernya.save()
+                            usernya.set_password(pass1)
+                            usernya.save()
+
+                            cabang.jumlah_kasir=cabang.jumlah_kasir+2
+                            cabang.save()
+
+                        userprofile = UserProfile()
+                        userprofile.user=usernya
+                        userprofile.cabang=cabang
+                        userprofile.nama_lengkap=nama_lengkap
+                        userprofile.is_active=True
+                        userprofile.save()
+
+                        message = f"Selamat!\n\nUser {nama_lengkap} dengan username {usernya} dan password {pass1} berhasil ditambahkan.\n\nUser sudah aktif dan sudah bisa untuk melakukan transaksi penjualan.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+                        posmiMail("Penambahan User Kasir",message=message,address=cabang.email)
+                        
+                        return HttpResponseRedirect('/cms/kasir/')
+                    except Exception as ex:
+                        print(ex)
+                        return HttpResponseRedirect('/cms/kasir/tambah/')
+            else:
+                return render(request,'administrator/components/tambah_user.html')
         else:
-            try:
-                nama_lengkap = request.POST['nama_lengkap']
-                id_cabang = request.user.userprofile.cabang.id
-                cabang = Cabang.objects.get(id=id_cabang)
-                jumlah_kasir = cabang.jumlah_kasir+1
-                userid = f"{cabang.prefix}{jumlah_kasir}"
-                print(userid)
-                try:
-                    usernya = User()
-                    usernya.username=userid
-                    usernya.password=pass1
-                    usernya.save()
-                    usernya.set_password(pass1)
-                    usernya.save()
-
-
-                    cabang.jumlah_kasir=cabang.jumlah_kasir+1
-                    cabang.save()
-                except:
-                    jumlah_kasir = cabang.jumlah_kasir+2
-                    userid = f"{cabang.prefix}{jumlah_kasir}"
-                    usernya = User()
-                    usernya.username=userid
-                    usernya.password=pass1
-                    usernya.save()
-                    usernya.set_password(pass1)
-                    usernya.save()
-
-                    cabang.jumlah_kasir=cabang.jumlah_kasir+2
-                    cabang.save()
-
-                userprofile = UserProfile()
-                userprofile.user=usernya
-                userprofile.cabang=cabang
-                userprofile.nama_lengkap=nama_lengkap
-                userprofile.is_active=True
-                userprofile.save()
-
-                message = f"Selamat!\n\nUser {nama_lengkap} dengan username {usernya} dan password {pass1} berhasil ditambahkan.\n\nUser sudah aktif dan sudah bisa untuk melakukan transaksi penjualan.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
-                posmiMail("Penambahan User Kasir",message=message,address=cabang.email)
-                
-                return HttpResponseRedirect('/cms/kasir/')
-            except Exception as ex:
-                print(ex)
-                return HttpResponseRedirect('/cms/kasir/tambah/')
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
     else:
-        return render(request,'administrator/components/tambah_user.html')
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
     
 def detailPenjualan(request):
-    try:
-        nota = request.GET['id']
-        penjualan = Penjualan.objects.get(Q(nota=nota) & Q(cabang=request.user.userprofile.cabang))
-        penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-        context = {
-            'penjualan':penjualan,
-            'penjualan_detail':penjualan_detail
-        }
-        return render(request,'detail-histori-penjualan.html',context)
-    except Exception as ex:
-        print(ex)
-        return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            try:
+                nota = request.GET['id']
+                penjualan = Penjualan.objects.get(Q(nota=nota) & Q(cabang=request.user.userprofile.cabang))
+                penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+                context = {
+                    'penjualan':penjualan,
+                    'penjualan_detail':penjualan_detail
+                }
+                return render(request,'detail-histori-penjualan.html',context)
+            except Exception as ex:
+                print(ex)
+                return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
 
 def konfirmasiVoid(request):
-    try:
-        id_nota = request.GET['id']
-        penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
-        penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-        context = {
-            'callback':f'/cms/void/ok/?id={id_nota}',
-            'nota':id_nota,
-            'penjualan':penjualan,
-            'penjualan_detail':penjualan_detail
-        }
-        return render(request,'administrator/components/konfirmasi-void.html',context)
-    except Exception as ex:
-        print(ex)
-        return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            try:
+                id_nota = request.GET['id']
+                penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
+                penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+                context = {
+                    'callback':f'/cms/void/ok/?id={id_nota}',
+                    'nota':id_nota,
+                    'penjualan':penjualan,
+                    'penjualan_detail':penjualan_detail
+                }
+                return render(request,'administrator/components/konfirmasi-void.html',context)
+            except Exception as ex:
+                print(ex)
+                return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
 
 def tidakVoid(request):
     return HttpResponse("/cms/")
 
 def okeVoid(request):
-    try:
-        if request.method == "POST":
-            alasan = request.POST['alasan']
-            id_nota = request.GET['id']
-            penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
-            penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-            for jual in penjualan_detail:
-                barang = jual.barang
-                barang.stok += jual.jumlah
-                barang.save()
-            penjualan.is_void=True
-            penjualan.alasan_void=alasan
-            penjualan.save()
-            
-            messages.add_message(request,messages.SUCCESS,f'Nota dengan id: {id_nota} berhasil dibatalkan (void).')
-        return HttpResponseRedirect('/cms/')
-    except Exception as ex:
-        print(ex)
-        return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            try:
+                if request.method == "POST":
+                    alasan = request.POST['alasan']
+                    id_nota = request.GET['id']
+                    penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
+                    penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+                    for jual in penjualan_detail:
+                        barang = jual.barang
+                        barang.stok += jual.jumlah
+                        barang.save()
+                    penjualan.is_void=True
+                    penjualan.alasan_void=alasan
+                    penjualan.save()
+                    
+                    messages.add_message(request,messages.SUCCESS,f'Nota dengan id: {id_nota} berhasil dibatalkan (void).')
+                return HttpResponseRedirect('/cms/')
+            except Exception as ex:
+                print(ex)
+                return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
