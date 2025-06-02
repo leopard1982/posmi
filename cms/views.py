@@ -669,7 +669,7 @@ def konfirmasiVoid(request):
         penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
         penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
         context = {
-            'callback':'/',
+            'callback':f'/cms/void/ok/?id={id_nota}',
             'nota':id_nota,
             'penjualan':penjualan,
             'penjualan_detail':penjualan_detail
@@ -681,3 +681,24 @@ def konfirmasiVoid(request):
 
 def tidakVoid(request):
     return HttpResponse("/cms/")
+
+def okeVoid(request):
+    try:
+        if request.method == "POST":
+            alasan = request.POST['alasan']
+            id_nota = request.GET['id']
+            penjualan = Penjualan.objects.get(Q(nota=id_nota) & Q(cabang=request.user.userprofile.cabang))
+            penjualan_detail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+            for jual in penjualan_detail:
+                barang = jual.barang
+                barang.stok += jual.jumlah
+                barang.save()
+            penjualan.is_void=True
+            penjualan.alasan_void=alasan
+            penjualan.save()
+            
+            messages.add_message(request,messages.SUCCESS,f'Nota dengan id: {id_nota} berhasil dibatalkan (void).')
+        return HttpResponseRedirect('/cms/')
+    except Exception as ex:
+        print(ex)
+        return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")

@@ -78,7 +78,7 @@
         <div class="mt-2">
             <form action="{{callback}}" class="px-4" method="post">
                 {% csrf_token %}
-                <input type="text" name="alasan"  class="form-control" placeholder="alasan void" id="">
+                <input type="text" required minlength="5" name="alasan"  class="form-control" placeholder="alasan void" id="">
                 <div class="d-flex justify-content-center py-2">
                     <button type="submit" class="mx-2 btn btn-sm btn-danger">Ya, Batalkan</button>
                     <a href="#" onclick="window.open('', '_self', ''); window.close();" class="mx-2 btn btn-sm btn-secondary">Kembali &rarr;</a>
