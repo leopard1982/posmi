@@ -102,6 +102,8 @@ class UserProfile(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_admin = models.BooleanField(default=False)
+    is_kasir = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.user} - {self.cabang}"
