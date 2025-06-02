@@ -82,11 +82,16 @@
 
 <div class="d-flex justify-content-center container mb-5">
     {% if penjualan.is_void %}
-        <div class="text-danger text-center">
+        <div class="text-danger text-center fw-bold my-2 p-2 rounded border-danger border w-75">
             <span>Transaksi Dibatalkan (void) pada {{penjualan.updated_at|date:"d/M/Y"}}</span><br>
-            <span>alasan: {{transaksi.alasan_void|title}}</span>
+            <span>Alasan: [{{penjualan.alasan_void|title}}]</span>
+            <div class="justify-content-center my-3">
+                <button class="btn btn-primary rounded-pill btn-sm px-3" onclick="javascript:window.close()">Tutup</button>
+            </div>
         </div>
+        
     {% else %}
+        <button class="btn btn-secondary  btn-sm px-3 ms-3" onclick="javascript:window.close()">Tutup</button>
         <a href="{% url 'reprint_transaksi' penjualan.nota %}" class="btn ms-3 btn-primary btn-sm">Reprint Nota</A>
         <a href="{% url 'print_kuitansi' penjualan.nota %}" class="btn ms-3 btn-success btn-sm">Print Kuitansi A4</a>
     {% endif %}
