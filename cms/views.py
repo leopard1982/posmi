@@ -731,6 +731,7 @@ def okeVoid(request):
                     for jual in penjualan_detail:
                         barang = jual.barang
                         barang.stok += jual.jumlah
+                        barang.jumlah_dibeli -= jual.jumlah
                         barang.save()
                     penjualan.is_void=True
                     penjualan.alasan_void=alasan
