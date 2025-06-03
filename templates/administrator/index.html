@@ -549,7 +549,7 @@
                                                     Sisa Kuota Transaksi</div>
                                                 <div class="h5 mb-0 font-weight-bold text-gray-800 d-flex justify-content-between">
                                                     <span>{{user.userprofile.cabang.kuota_transaksi|intcomma}}</span>
-                                                    <a href="#" class="btn btn-sm btn-info">Tambah Kuota?</a>
+                                                    <a target="_blank" href="{% url 'tambah_kuota_admin' user.userprofile.cabang.prefix%}" class="btn btn-sm btn-info">Tambah Kuota?</a>
                                                 </div>
                                             </div>
                                             <!-- <div class="col-auto">

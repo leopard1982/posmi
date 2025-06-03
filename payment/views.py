@@ -679,5 +679,3 @@ def upgradeLisensi(request):
         print(ex)
         return HttpResponseRedirect(asal)
     
-
-    

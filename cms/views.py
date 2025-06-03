@@ -4,6 +4,8 @@ from pos.models import Penjualan, Barang, DetailWalet
 from django.db.models import Q,Sum,Count
 import datetime
 from django.contrib.auth.models import User
+
+from promo.models import Promo, PromoUsed
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
 from stock.models import Cabang,UserProfile
 from django.urls import reverse
@@ -18,6 +20,7 @@ from posmimail import posmiMail
 from pos.models import Penjualan,PenjualanDetail
 from django.contrib.auth import authenticate
 from cms.models import GantiEmail
+from payment.views import cekKodeToko,cekKodeVoucher,cekLisensi,getAdmin
 
 
 def bulannya(bulannya):
@@ -801,3 +804,39 @@ def konfirmasiEmail(request,id):
         'pesan':pesan
     }
     return render(request,'konfirmasi-perubahan-email.html',context)    
+
+
+    
+def tambahKuotaAdmin(request,id):
+    asal = "/cms/"
+    print(id)
+    try:
+        kode_toko = id    
+        info_registrasi="Penambahan Kuota"
+        list_kuota=[data for data in range(50,1500,50)]
+        list_biaya = []
+        try:
+            cabang = Cabang.objects.get(prefix=kode_toko)
+            
+            info_registrasi="Penambahan Kuota"
+            
+            nama_admin = getAdmin(kode_toko)
+            context = {
+                'kode_toko':kode_toko,
+                'cabang':cabang,
+                'nama_admin':nama_admin,
+                'info_registrasi':info_registrasi,
+                'list_kuota':list_kuota,
+                'asal':asal,
+                'list_biaya':list_biaya,
+                'tipe':"kuota",
+            }
+            return render(request,'registrasi/cek_lisensi.html',context)
+        except Exception as ex:
+            print(ex)
+            messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")    
+            return HttpResponseRedirect("/cms/")        
+    except Exception as ex:
+        print(ex)
+        messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")
+        return HttpResponseRedirect("/cms/")
