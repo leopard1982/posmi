@@ -31,6 +31,48 @@
 </head>
 
 <body id="page-top">
+    <!-- Modal Ganti Email-->
+    <div class="modal fade" id="staticGantiEmail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticGantiEmailLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="staticGantiEmailLabel">Ganti Email Toko</h5>
+            </div>
+            <form action="{% url 'ganti_email'%}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="d-flex justify-content-start">
+                        <div style="min-width: 150px;">Email Lama:</div>
+                        <div class="fw-bold">{{user.userprofile.cabang.email|lower}}</div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-start">
+                        <div style="min-width: 150px;padding-top: 5px;">Email Baru:</div>
+                        <div class="fw-bold"><input type="email" name="email_baru" required class="form-control" placeholder="@"></div>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-start">
+                        <div style="min-width: 150px;padding-top: 5px;">Password:</div>
+                        <div class="fw-bold"><input type="password" name="password" required class="form-control" placeholder="password"></div>
+                    </div>
+                    <hr>
+                    <div style="font-size: 14px;text-align: justify;padding: 5px;border-radius: 5px;">
+                        <div class="border border-primary rounded p-2">
+                            Note:<br>
+                            Untuk melakukan penggantian email harus memasukkan password. Setelah klik ganti Email, silakan cek email untuk konfirmasi perubahan email.
+                        </div>
+    
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Ganti Email</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+
     <!-- Page Wrapper -->
     <div id="wrapper">
 
@@ -423,8 +465,19 @@
                         <!-- Page Heading -->
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <div class="h3 mb-0 text-gray-800">
-                                {{user.userprofile.cabang.nama_toko}} (<i>{{user.userprofile.cabang.nama_cabang}}</i>)<br>
-                                <span style="font-size: 15px;font-weight: bold;">{{user.userprofile.cabang.alamat_toko}}</span>
+                                {{user.userprofile.cabang.nama_toko}} (<i>{{user.userprofile.cabang.nama_cabang|title}}</i>)<br>
+                                <div class="d-flex justify-content-start">
+                                    <div style="font-size: 15px;min-width: 60px;">Alamat</div> 
+                                    <div style="font-size: 15px;font-weight: bold;">: {{user.userprofile.cabang.alamat_toko|title}}</div>
+                                </div>
+                                <div class="d-flex justify-content-start">
+                                    <div style="font-size: 15px;min-width: 60px;">Email</div> 
+                                    <div style="font-size: 15px;font-weight: bold;">: {{user.userprofile.cabang.email|lower}}</div>
+                                </div>
+                                <div class="d-flex justify-content-start">
+                                    <div style="font-size: 15px;min-width: 60px;"></div> 
+                                    <div style="font-size: 15px;font-weight: bold;padding-left: 7px;padding-top: 5px;"> <a href="#" class="btn btn-sm btn-info px-4 p-0" data-bs-toggle="modal" data-bs-target="#staticGantiEmail">Ubah Email Toko</a></div>
+                                </div>
                             </div>
                             <div class="p-2">
                                 
@@ -435,6 +488,9 @@
                                         </div>    
                                         <div class="mt-2" style="font-size: 14px;">
                                             max. {{user.userprofile.cabang.paket.max_transaksi|intcomma}} transaksi/bulan
+                                        </div>
+                                        <div>
+                                            <a href="#" class="btn btn-sm btn-success rounded w-100">upgrade bisnis medium</a>
                                         </div>
                                     {% else %}
                                         <div class="p-2 rounded fs-5 border border-success border-2 text-success text-center">
@@ -450,6 +506,9 @@
                                     </div>
                                     <div class="mt-2" style="font-size: 14px;">
                                             max. 100 transaksi/bulan
+                                    </div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-success rounded w-100">upgrade paket bisnis</a>
                                     </div>
                                 {% endif %}    
                             </div>

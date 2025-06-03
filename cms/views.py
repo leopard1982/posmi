@@ -16,6 +16,8 @@ import uuid
 import random
 from posmimail import posmiMail
 from pos.models import Penjualan,PenjualanDetail
+from django.contrib.auth import authenticate
+from cms.models import GantiEmail
 
 
 def bulannya(bulannya):
@@ -742,3 +744,56 @@ def okeVoid(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+    
+def gantiEmail(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                email_baru = request.POST['email_baru']
+                password = request.POST['password']
+
+                user = request.user
+                if authenticate(username=user.username,password=password):
+                    # cek email apakah pernah ada
+                    try:
+                        cabang = Cabang.objects.get(email=email_baru)
+                        messages.add_message(request,messages.SUCCESS,"Email sudah pernah didaftarkan di POSMI, silakan menggunakan email lain.")
+                        return HttpResponseRedirect('/cms/')
+                    except:
+                        gantiemail = GantiEmail()
+                        gantiemail.cabang = request.user.userprofile.cabang
+                        gantiemail.clicked = False
+                        gantiemail.email_baru = email_baru
+                        gantiemail.save()
+                        addLog(request.user,request.user.userprofile.cabang,"Ganti Email Toko",f"Request ganti email toko {request.user.userprofile.cabang.nama_toko} menjadi {email_baru}")
+                        message = f"Sobat {request.user.userprofile.nama_lengkap},\n\n\nSobat telah melakukan permintaan perubahan email pada {datetime.datetime.now().strftime('%d/%h/%Y')}.\n\nSilakan klik link berikut ini untuk melanjutkan perubahan email:\n\nhttps://posmi.pythonanywhere.com/cms/{gantiemail.id}/ \n\nSebagai catatan, untuk link ini hanya bisa diakses 1 kali saja dan akan expired dalam 1 jam.\n\nApabila ada kendala, segera hubungi kami. Terima kasih sudah mempercayakan aplikasi kasir menggunakan POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+                        posmiMail("PERUBAHAN EMAIL TOKO",message,email_baru)
+                        messages.add_message(request,messages.SUCCESS,f"Permintaan perubahan email sudah berhasil. Silakan sobat cek email baru {email_baru} dan klik tautan (link) untuk konfirmasi perubahan email. Terima kasih. ")
+                else:
+                    messages.add_message(request,messages.SUCCESS,"Silakan ulangi kembali, password admin untuk toko tidak sesuai.")
+            return HttpResponseRedirect('/cms/')
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+def konfirmasiEmail(request,id):
+    try:
+        id_email = id
+        gantiemail = GantiEmail.objects.get(Q(id=id_email) & Q(clicked=False) & Q(expired__gt=datetime.datetime.now()))
+        gantiemail.clicked=True
+        gantiemail.save()
+
+        cabang = Cabang.objects.get(id=gantiemail.cabang.id)
+        cabang.email = gantiemail.email_baru.lower()
+        cabang.save()
+        pesan = f"Penggantian email untuk toko {cabang.nama_toko} sudah berhasil. Saat ini email sudah berubah menjadi {cabang.email}. Terima kasih kepercayaan Sobat menggunakan POSMI."
+    except Exception as ex:
+        print(ex)
+        pesan = f"Link sudah tidak berlaku lagi. Silakan melakukan permintaan penggantian email kembali dari aplikasi POSMI. Terima kasih."
+    context = {
+        'pesan':pesan
+    }
+    return render(request,'konfirmasi-perubahan-email.html',context)    
