@@ -796,7 +796,6 @@ def konfirmasiEmail(request,id):
         addLog(gantiemail.user,cabang,"Ganti Email Toko","Ganti Email Toko Berhasil.")
     except Exception as ex:
         print(ex)
-        addLog(gantiemail.user,cabang,"Ganti Email Toko","Ganti Email Toko Gagal.")
     pesan = f"Penggantian email sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
     context = {
         'pesan':pesan
