@@ -791,11 +791,11 @@ def konfirmasiEmail(request,id):
         cabang.email = gantiemail.email_baru.lower()
         cabang.save()
         print('email cabang sudah diupdate')
-        pesan = f"Penggantian email untuk toko {cabang.nama_toko} sudah berhasil. Saat ini email sudah berubah menjadi {cabang.email}. Terima kasih kepercayaan Sobat menggunakan POSMI."
+        
         print('pesan oke')
     except Exception as ex:
         print(ex)
-        pesan = f"Link sudah tidak berlaku lagi. Silakan melakukan permintaan penggantian email kembali dari aplikasi POSMI. Terima kasih."
+    pesan = f"Penggantian email untuk toko {cabang.nama_toko} sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
     context = {
         'pesan':pesan
     }
