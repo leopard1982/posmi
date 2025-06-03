@@ -795,7 +795,7 @@ def konfirmasiEmail(request,id):
         print('pesan oke')
     except Exception as ex:
         print(ex)
-    pesan = f"Penggantian email untuk toko {cabang.nama_toko} sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
+    pesan = f"Penggantian email sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
     context = {
         'pesan':pesan
     }
