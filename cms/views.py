@@ -785,11 +785,14 @@ def konfirmasiEmail(request,id):
         gantiemail = GantiEmail.objects.get(Q(id=id_email) & Q(clicked=False) & Q(expired__gt=datetime.datetime.now()))
         gantiemail.clicked=True
         gantiemail.save()
+        print('status ganti email sudah diupdate')
 
         cabang = Cabang.objects.get(id=gantiemail.cabang.id)
         cabang.email = gantiemail.email_baru.lower()
         cabang.save()
+        print('email cabang sudah diupdate')
         pesan = f"Penggantian email untuk toko {cabang.nama_toko} sudah berhasil. Saat ini email sudah berubah menjadi {cabang.email}. Terima kasih kepercayaan Sobat menggunakan POSMI."
+        print('pesan oke')
     except Exception as ex:
         print(ex)
         pesan = f"Link sudah tidak berlaku lagi. Silakan melakukan permintaan penggantian email kembali dari aplikasi POSMI. Terima kasih."
