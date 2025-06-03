@@ -495,7 +495,7 @@
                                             max. {{user.userprofile.cabang.paket.max_transaksi|intcomma}} transaksi/bulan
                                         </div>
                                         <div>
-                                            <a href="#" class="btn btn-sm btn-success rounded w-100">upgrade bisnis medium</a>
+                                            <a target="_blank" href="{% url 'upgrade_paket_admin' user.userprofile.cabang.prefix %}" class="btn btn-sm btn-success rounded w-100">upgrade paket bisnis</a>
                                         </div>
                                     {% else %}
                                         <div class="p-2 rounded fs-5 border border-success border-2 text-success text-center">
@@ -513,7 +513,7 @@
                                             max. 100 transaksi/bulan
                                     </div>
                                     <div>
-                                        <a href="#" class="btn btn-sm btn-success rounded w-100">upgrade paket bisnis</a>
+                                        <a target="_blank" href="{% url 'upgrade_paket_admin' user.userprofile.cabang.prefix %}" class="btn btn-sm btn-success rounded w-100">upgrade paket bisnis</a>
                                     </div>
                                 {% endif %}    
                             </div>

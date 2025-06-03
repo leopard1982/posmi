@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 from promo.models import Promo, PromoUsed
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
-from stock.models import Cabang,UserProfile
+from stock.models import Cabang,UserProfile,DaftarPaket
 from django.urls import reverse
 from django.http import FileResponse
 from django.conf import settings
@@ -840,3 +840,140 @@ def tambahKuotaAdmin(request,id):
         print(ex)
         messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")
         return HttpResponseRedirect("/cms/")
+    
+
+def upgradePaketAdmin(request,id):
+    asal = '/cms/'
+    print(id)
+    try:
+        kode_toko = id    
+        info_registrasi="Upgrade ke Paket Bisnis Kecil atau Medium"
+        tipe = "upgrade" 
+        info_registrasi=""
+        list_kuota=[data for data in range(50,1500,50)]
+        list_biaya = []
+        try:
+            cabang = Cabang.objects.get(prefix=kode_toko)
+            
+            if cabang.paket== None:
+                info_registrasi="Upgrade ke Paket Bisnis Kecil atau Medium"
+                daftarpaket = DaftarPaket.objects.all().filter(nama__in=['Bisnis Kecil','Bisnis Medium'])
+                sisa_uang=0
+                for daftar in daftarpaket:
+                    data = {
+                            "id":daftar.paket,
+                            'nama':daftar.nama,
+                        }
+                    biaya_list=[]
+                    if int(daftar.harga_per_bulan-sisa_uang)>0:
+                        biaya_data = {
+                            'nama':'bulanan',
+                            'info': '1 bulanan',
+                            'data':int(daftar.harga_per_bulan-sisa_uang)
+                        }
+                        biaya_list.append(biaya_data)
+                    if int(daftar.harga_per_tiga_bulan-sisa_uang)>0:
+                        biaya_data = {
+                            'nama':'tigabulanan',
+                            'info':'3 bulanan',
+                            'data':int(daftar.harga_per_tiga_bulan-sisa_uang)
+                        }
+                        biaya_list.append(biaya_data)
+                    if int(daftar.harga_per_enam_bulan-sisa_uang)>0:
+                        biaya_data = {
+                            'nama':'enambulanan',
+                            'info':'6 bulanan',
+                            'data':int(daftar.harga_per_enam_bulan-sisa_uang)
+                        }
+                        biaya_list.append(biaya_data)
+                    if int(daftar.harga_per_tahun-sisa_uang)>0:
+                        biaya_data = {
+                            'nama':'tahunan',
+                            'info':'1 tahunan',
+                            'data':int(daftar.harga_per_tahun-sisa_uang)
+                        }
+                        biaya_list.append(biaya_data)
+                    if int(daftar.harga_per_dua_tahun-sisa_uang)>0:
+                        biaya_data = {
+                            'nama':'duatahunan',
+                            'info':'2 tahunan',
+                            'data':int(daftar.harga_per_dua_tahun-sisa_uang)
+                        }
+                        biaya_list.append(biaya_data)
+                    data['biaya']=biaya_list
+                    list_biaya.append(data)
+                print(list_biaya)
+            elif cabang.paket.nama=="Bisnis Kecil":
+                    info_registrasi="Upgrade ke Paket Bisnis Medium"
+                    daftarpaket = DaftarPaket.objects.all().filter(nama__in=['Bisnis Medium'])
+                    sisa_hari = int((cabang.lisensi_expired-datetime.datetime.now()).days)
+                    sisa_uang = 0
+                    # cek apakah sisa hari masih bulanan?
+                    sisa_uang = (cabang.paket.harga_per_tahun/365)*sisa_hari
+                    for daftar in daftarpaket:
+                        data = {
+                                "id":str(daftar.paket),
+                                'nama':daftar.nama,
+                        }
+                        
+                        biaya_list=[]
+                        if int(daftar.harga_per_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'bulanan',
+                                'info': '1 bulanan',
+                                'data':int(daftar.harga_per_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_tiga_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'tigabulanan',
+                                'info':'3 bulanan',
+                                'data':int(daftar.harga_per_tiga_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_enam_bulan-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'enambulanan',
+                                'info':'6 bulanan',
+                                'data':int(daftar.harga_per_enam_bulan-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_tahun-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'tahunan',
+                                'info':'1 tahunan',
+                                'data':int(daftar.harga_per_tahun-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        if int(daftar.harga_per_dua_tahun-sisa_uang)>0:
+                            biaya_data = {
+                                'nama':'duatahunan',
+                                'info':'2 tahunan',
+                                'data':int(daftar.harga_per_dua_tahun-sisa_uang)
+                            }
+                            biaya_list.append(biaya_data)
+                        data['biaya']=biaya_list
+                        print(data)
+                        list_biaya.append(data)
+            else:
+                messages.add_message(request,messages.SUCCESS,f"Paket untuk {cabang.nama_toko} sudah Medium tidak bisa melakukan upgrade. Yang bisa dilakukan adalah menambah kuota transaksi penjualan. Terima kasih.")
+                return HttpResponseRedirect('/')         
+            nama_admin = getAdmin(kode_toko)
+            context = {
+                'kode_toko':kode_toko,
+                'cabang':cabang,
+                'nama_admin':nama_admin,
+                'info_registrasi':info_registrasi,
+                'tipe':tipe,
+                'list_kuota':list_kuota,
+                'asal':asal,
+                'list_biaya':list_biaya
+            }
+            return render(request,'registrasi/cek_lisensi.html',context)
+        except Exception as ex:
+            print(ex)
+            messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")    
+    except Exception as ex:
+        print(ex)
+        messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")
+        return HttpResponseRedirect("/")

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import index, infoToko, daftarBarang, transaksiBulanBerjalan,transaksiBulanLain,profilSaya
 from .views import editBarang, tambahBarang,downloadTemplate,konfirmasiUpload, hapusBarang, downloadBarang
 from .views import viewLog,daftarKasir,tambahKasir,detailPenjualan,konfirmasiVoid,tidakVoid,okeVoid
-from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin
+from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin
 
 urlpatterns = [
     path('', index,name='index_cms'),
@@ -26,5 +26,6 @@ urlpatterns = [
     path('void/ok/',okeVoid,name="oke_void"),
     path('email/',gantiEmail,name="ganti_email"),
     path('<str:id>/',konfirmasiEmail,name="konfirmasi_email"),
-    path('kuota/<str:id>/',tambahKuotaAdmin,name="tambah_kuota_admin")
+    path('kuota/<str:id>/',tambahKuotaAdmin,name="tambah_kuota_admin"),
+    path('paket/<str:id>/',upgradePaketAdmin,name="upgrade_paket_admin"),
 ]
