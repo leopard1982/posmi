@@ -468,10 +468,11 @@
                     </div>
                     <div id="mainpage">
                         <!-- Page Heading -->
+                         <hr class="border  border-5">
                         <div class="d-sm-flex align-items-center justify-content-between mb-4">
                             <div class="h3 mb-0 text-gray-800">
                                 {{user.userprofile.cabang.nama_toko}} (<i>{{user.userprofile.cabang.nama_cabang|title}}</i>)<br>
-                                <div class="d-flex justify-content-start">
+                                <div class="d-flex justify-content-start mt-2">
                                     <div style="font-size: 15px;min-width: 60px;">Alamat</div> 
                                     <div style="font-size: 15px;font-weight: bold;">: {{user.userprofile.cabang.alamat_toko|title}}</div>
                                 </div>
@@ -518,6 +519,7 @@
                                 {% endif %}    
                             </div>
                         </div>
+                        <hr class="border border-1">
 
                         <!-- Content Row -->
                         <div class="row">
