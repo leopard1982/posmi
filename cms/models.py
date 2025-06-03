@@ -2,6 +2,7 @@ from django.db import models
 from stock.models import Cabang
 import uuid
 import datetime
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Testimoni(models.Model):
@@ -20,8 +21,9 @@ class GantiEmail(models.Model):
     id = models.UUIDField(auto_created=True,editable=False,primary_key=True,default=uuid.uuid4)
     expired = models.DateTimeField(blank=True,null=True)
     clicked = models.BooleanField(default=False)
-    cabang = models.ForeignKey(Cabang,on_delete=models.DO_NOTHING)
+    cabang = models.ForeignKey(Cabang,on_delete=models.DO_NOTHING,related_name="cabang_konfirmasi",blank=True,null=True)
     email_baru = models.CharField(max_length=200,blank=True,null=True)
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_konfirmasi",blank=True,null=True)
 
     def save(self,*args,**kwargs):
         self.expired = datetime.datetime.now() + datetime.timedelta(hours=1)

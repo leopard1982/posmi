@@ -764,6 +764,7 @@ def gantiEmail(request):
                         gantiemail.cabang = request.user.userprofile.cabang
                         gantiemail.clicked = False
                         gantiemail.email_baru = email_baru
+                        gantiemail.user = request.user
                         gantiemail.save()
                         addLog(request.user,request.user.userprofile.cabang,"Ganti Email Toko",f"Request ganti email toko {request.user.userprofile.cabang.nama_toko} menjadi {email_baru}")
                         message = f"Sobat {request.user.userprofile.nama_lengkap},\n\n\nSobat telah melakukan permintaan perubahan email pada {datetime.datetime.now().strftime('%d/%h/%Y')}.\n\nSilakan klik link berikut ini untuk melanjutkan perubahan email:\n\nhttps://posmi.pythonanywhere.com/cms/{gantiemail.id}/ \n\nSebagai catatan, untuk link ini hanya bisa diakses 1 kali saja dan akan expired dalam 1 jam.\n\nApabila ada kendala, segera hubungi kami. Terima kasih sudah mempercayakan aplikasi kasir menggunakan POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
@@ -787,14 +788,15 @@ def konfirmasiEmail(request,id):
         gantiemail.save()
         print('status ganti email sudah diupdate')
 
-        cabang = Cabang.objects.get(id=gantiemail.cabang.id)
+        cabang = gantiemail.cabang
         cabang.email = gantiemail.email_baru.lower()
         cabang.save()
         print('email cabang sudah diupdate')
         
-        print('pesan oke')
+        addLog(gantiemail.user,cabang,"Ganti Email Toko","Ganti Email Toko Berhasil.")
     except Exception as ex:
         print(ex)
+        addLog(gantiemail.user,cabang,"Ganti Email Toko","Ganti Email Toko Gagal.")
     pesan = f"Penggantian email sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
     context = {
         'pesan':pesan

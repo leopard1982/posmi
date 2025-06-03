@@ -429,6 +429,11 @@
                                     Log Transaksi
                                 </a>
                                 <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" hx-get="{% url 'view_log'%}" hx-target="#mainpage" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Ganti Password
+                                </a>
+                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
@@ -523,8 +528,9 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 15px !important;">
                                                     Lisensi Expired Tanggal</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    {{user.userprofile.cabang.lisensi_expired|date:"d/M/Y"}}
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800 d-flex justify-content-between">
+                                                    <span>{{user.userprofile.cabang.lisensi_expired|date:"d/M/Y"}}</span>
+                                                    <a href="#" class="btn btn-sm btn-info">Perpanjang Lisensi?</a>
                                                 </div>
                                             </div>
                                             <!-- <div class="col-auto">
@@ -541,8 +547,9 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 15px !important;">
                                                     Sisa Kuota Transaksi</div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                    {{user.userprofile.cabang.kuota_transaksi|intcomma}} 
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800 d-flex justify-content-between">
+                                                    <span>{{user.userprofile.cabang.kuota_transaksi|intcomma}}</span>
+                                                    <a href="#" class="btn btn-sm btn-info">Tambah Kuota?</a>
                                                 </div>
                                             </div>
                                             <!-- <div class="col-auto">
