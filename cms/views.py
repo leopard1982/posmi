@@ -978,3 +978,45 @@ def upgradePaketAdmin(request,id):
         print(ex)
         messages.add_message(request,messages.SUCCESS,"Kode Toko Tidak Ditemukan.")
         return HttpResponseRedirect("/")
+    
+def gantiPassword(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method=="POST":
+                print(request.POST)
+                
+
+            user_id = request.GET['id']
+
+            cabang = request.user.userprofile.cabang
+            user = User.objects.get(id=user_id)
+
+            try:
+                user_identifier = int(user.username[-1])
+
+                if user_identifier==1:
+                    status_logout=1
+                else:
+                    status_logout=0
+            except:
+                # langsung jadikan 1
+                status_logout=1
+
+            try:
+                userprofile = UserProfile.objects.get(Q(user=user) & Q(cabang=cabang))
+                context = {
+                    'username':user.username,
+                    'nama_lengkap':userprofile.nama_lengkap,
+                    'callback': f'/cms/pass/change/?logout={status_logout}&id={user_id}'
+                }
+                return render(request,'administrator/components/ganti-password.html',context)
+            except:
+                return HttpResponse("<center><div style='font-style:italic;margin-top:30px;font-weight:bold'>Anda tidak memiliki hak akses.</div></center>")
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+
+    
