@@ -425,10 +425,15 @@ def loginkan(request):
             password = request.POST['password']
             user = authenticate(username=username,password=password)
             if(user):
-                login(request,user)
-                messages.add_message(request,messages.SUCCESS,f"Selamat datang {user.userprofile.nama_lengkap}")
-                addLog(user,user.userprofile.cabang,"login",f"login berhasil")
-                return HttpResponseRedirect('/')
+                if user.userprofile.is_active:
+                    login(request,user)
+                    messages.add_message(request,messages.SUCCESS,f"Selamat datang {user.userprofile.nama_lengkap}")
+                    addLog(user,user.userprofile.cabang,"login",f"login berhasil")
+                    return HttpResponseRedirect('/')
+                else:
+                    messages.add_message(request,messages.SUCCESS,f"Pengguna {user.userprofile.nama_lengkap} telah dinonaktifkan. Silakan menghubungi Pemilik toko untuk konfirmasi.")
+                    addLog(user,user.userprofile.cabang,"login",f"pengguna dinonaktifkan, tidak bisa login.")
+                    return HttpResponseRedirect('/')
             else:
                 # cek di cabang ada atau tidak.
                 try:

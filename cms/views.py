@@ -1029,13 +1029,18 @@ def updateStatusKasir(request):
                 user = User.objects.get(id=user_id)
 
                 if user.userprofile.cabang == cabang:
-                    if status==1:
-                        user.userprofile.is_active=False
-                        messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil dinonaktifkan.")
-                    else:
-                        user.userprofile.is_active=True
-                        messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil diaktifkan kembali.")
-                    user.userprofile.save()
+                    try:
+                        print(user.username)
+                        if int(user.username[-1])>1:
+                            if status==1:
+                                user.userprofile.is_active=False
+                                messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil dinonaktifkan.")
+                            else:
+                                user.userprofile.is_active=True
+                                messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil diaktifkan kembali.")
+                            user.userprofile.save()
+                    except Exception as ex:
+                        print(ex)
             except Exception as ex:
                 print(ex)
                 pass
