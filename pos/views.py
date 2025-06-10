@@ -225,7 +225,8 @@ def hapusItems(request):
                 penjualandetail = PenjualanDetail.objects.all().filter(Q(penjualan=penjualan))
                 if len(penjualandetail)==0:
                     penjualan.delete()
-                    messages.add_message(request,messages.SUCCESS,f'Transaksi dihapus karena tidak ada barang.')
+                    messages.add_message(request,messages.SUCCESS,f'Silakan bertransaksi kembali dengan Tambah Barang.')
+                    return HttpResponseRedirect('/')
                 else:
                     messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah dihapus.')
                 
