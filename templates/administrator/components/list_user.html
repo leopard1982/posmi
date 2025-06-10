@@ -42,7 +42,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-info mx-2 m-1 rounded"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> update pengguna</button>
+                        <button class="btn btn-sm btn-info mx-2 m-1 rounded" hx-get="{% url 'detail_pengguna'%}?id={{usernya.id}}" hx-trigger="click" hx-target="#mainpage"><i class="fa fa-pencil-square-o"  aria-hidden="true"></i> update pengguna</button>
                         {% if usernya.is_superuser %} 
                         {% else %}
                             {% if usernya.userprofile.is_active %}

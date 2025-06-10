@@ -4,7 +4,7 @@ from pos.models import Penjualan, Barang, DetailWalet
 from django.db.models import Q,Sum,Count
 import datetime
 from django.contrib.auth.models import User
-
+from django.core.files.storage import default_storage
 from promo.models import Promo, PromoUsed
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
 from stock.models import Cabang,UserProfile,DaftarPaket
@@ -21,6 +21,7 @@ from pos.models import Penjualan,PenjualanDetail
 from django.contrib.auth import authenticate
 from cms.models import GantiEmail
 from payment.views import cekKodeToko,cekKodeVoucher,cekLisensi,getAdmin
+from django.contrib.auth import logout
 
 
 def bulannya(bulannya):
@@ -1034,9 +1035,11 @@ def updateStatusKasir(request):
                         if int(user.username[-1])>1:
                             if status==1:
                                 user.userprofile.is_active=False
+                                addLog(request.user,cabang,"Status Pengguna",f"Status Pengguna {user.username} berhasil di non aktfikan")
                                 messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil dinonaktifkan.")
                             else:
                                 user.userprofile.is_active=True
+                                addLog(request.user,cabang,"Status Pengguna",f"Status Pengguna {user.username} berhasil di aktifkan kembali")
                                 messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil diaktifkan kembali.")
                             user.userprofile.save()
                     except Exception as ex:
@@ -1052,4 +1055,149 @@ def updateStatusKasir(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+
+def detailPengguna(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:    
+            try:
+                user_id = request.GET['id']
+                cabang = request.user.userprofile.cabang
+                user = User.objects.get(id=user_id)
+
+                if user.userprofile.cabang == cabang:
+                    try:
+                        context = {
+                            'pengguna':user
+                        }
+                        return render(request,'administrator/components/detail_pengguna.html',context=context)
+                    except Exception as ex:
+                        print(ex)
+                        messages.add_message(request,messages.SUCCESS,"Anda Tidak memiliki hak akses.")
+            except Exception as ex:
+                print(ex)
+                pass
+            return HttpResponseRedirect('/cms/kasir/')
+        
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+
+def updateFoto(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:    
+            try:
+                user_id = request.GET['id']
+                cabang = request.user.userprofile.cabang
+                user = User.objects.get(id=user_id)
+
+                if user.userprofile.cabang == cabang:
+                    try:
+                        # simpan files
+                        if request.method == "POST":
+                            file = request.FILES['foto']
+                            namafile = str(uuid.uuid4()) + "." + str(file.name).split('.')[-1]
+                            lokasi = os.path.join(settings.BASE_DIR,'media/foto_profile/')
+                            file_name = default_storage.save(str(lokasi)+str(namafile),file)
+
+                            user.userprofile.foto = 'foto_profile/'+namafile
+                            user.userprofile.save()
+                            messages.add_message(request,messages.SUCCESS,'Penggantian foto sudah berhasil.')
+                            addLog(request.user,cabang,"Ganti Foto",f"Ganti Foto Profile Pengguna {user.username} Berhasil.")
+                            return HttpResponseRedirect(f'/cms/user/detail/?id={user_id}')
+                    except Exception as ex:
+                        print(ex)
+                        addLog(request.user,cabang,"Ganti Foto",f"Ganti Foto Profile Pengguna {user.username} Gagal.")
+                        messages.add_message(request,messages.SUCCESS,"Anda Tidak memiliki hak akses.")
+            except Exception as ex:
+                print(ex)
+                pass
+            return HttpResponseRedirect('/cms/kasir/')
+        
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
     
+def updateNama(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:    
+            try:
+                user_id = request.GET['id']
+                cabang = request.user.userprofile.cabang
+                user = User.objects.get(id=user_id)
+
+                if user.userprofile.cabang == cabang:
+                    try:
+                        # simpan files
+                        if request.method == "POST":
+                            pengguna = request.POST['pengguna']
+                            user.userprofile.nama_lengkap = pengguna
+                            user.userprofile.save()
+                            messages.add_message(request,messages.SUCCESS,f'Penggantian nama pengguna {user.username} sudah berhasil.')
+                            addLog(request.user,cabang,"Ganti Nama",f"Ganti Nama Pengguna {user.username} Berhasil")
+                            return HttpResponseRedirect(f'/cms/user/detail/?id={user_id}')
+                    except Exception as ex:
+                        addLog(request.user,cabang,"Ganti Nama",f"Ganti Nama Pengguna {user.username} Gagal.")
+                        messages.add_message(request,messages.SUCCESS,"Anda Tidak memiliki hak akses.")
+            except Exception as ex:
+                print(ex)
+                pass
+            return HttpResponseRedirect('/cms/kasir/')
+        
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+def updatePassword(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:    
+            try:
+                user_id = request.GET['id']
+                cabang = request.user.userprofile.cabang
+                user = User.objects.get(id=user_id)
+
+                if user.userprofile.cabang == cabang:
+                    try:
+                        # simpan files
+                        if request.method == "POST":
+                            password1 = request.POST['password1']
+                            password2 = request.POST['password2']
+                            if(password1==password2):
+                                user.set_password(password1)
+                                user.save()
+                                if int(user.username[-1])==1:
+                                    logout(request)
+                                    messages.add_message(request,messages.SUCCESS,'Penggantian Password sudah berhasil. Silakan login kembali menggunakan password baru.')
+                                    return HttpResponseRedirect('/')
+                                else:
+                                    messages.add_message(request,messages.SUCCESS,f'Penggantian Password sudah berhasil untuk Pengguna {user.username}.')
+                                try:
+                                    addLog(request.user,cabang,"Ganti Password",f"Ganti Password Pengguna {user.username} Berhasil")
+                                except:
+                                    addLog(user,cabang,"Ganti Password",f"Ganti Password Pengguna {user.username} Berhasil")
+                            else:
+                                addLog(request.user,cabang,"Ganti Password",f"Ganti Password Pengguna {user.username} Gagal.")
+                                messages.add_message(request,messages.SUCCESS,'Penggantian Password Tidak berhasil. Password Baru dan Konfirmasinya tidak sama.')
+                            return HttpResponseRedirect(f'/cms/user/detail/?id={user_id}')
+                    except Exception as ex:
+                        print(ex)
+                        messages.add_message(request,messages.SUCCESS,"Anda Tidak memiliki hak akses.")
+            except Exception as ex:
+                print(ex)
+                pass
+            return HttpResponseRedirect('/cms/kasir/')
+        
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
