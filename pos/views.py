@@ -312,6 +312,7 @@ def ubahItems(request):
             except Exception as ex:
                 print(ex)
                 messages.add_message(request,messages.SUCCESS,'Kode Barang atau Nomor Nota tidak sesuai.')
+                return HttpResponseRedirect('/')
             return HttpResponseRedirect(page)    
         except Exception as ex:
             print(ex)
@@ -369,6 +370,7 @@ def tambahBarang(request):
                 messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah ditambah 1.')
             except:
                 messages.add_message(request,messages.SUCCESS,'Kode Barang atau Nomor Nota tidak sesuai.')
+                return HttpResponseRedirect('/')
             return HttpResponseRedirect(f"?nota={nota}")    
         else:
             penjualan = Penjualan()
