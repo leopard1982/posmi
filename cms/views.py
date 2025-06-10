@@ -672,7 +672,7 @@ def tambahKasir(request):
     
 def detailPenjualan(request):
     if request.user.is_authenticated:
-        if request.user.is_superuser:
+        if request.user.userprofile.is_active:
             try:
                 nota = request.GET['id']
                 penjualan = Penjualan.objects.get(Q(nota=nota) & Q(cabang=request.user.userprofile.cabang))
@@ -686,7 +686,7 @@ def detailPenjualan(request):
                 print(ex)
                 return HttpResponse("<center><h4 style='margin-top:200px;font-style:italic'>Maaf tidak memiliki akses.</h4></center>")
         else:
-            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            messages.add_message(request,messages.SUCCESS,"Pengguna telah dinonaktifkan, silakan hubungi pemilik toko untuk konfirmasi.")
             return HttpResponseRedirect('/')
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
