@@ -1099,8 +1099,9 @@ def updateFoto(request):
                         if request.method == "POST":
                             file = request.FILES['foto']
                             namafile = str(uuid.uuid4()) + "." + str(file.name).split('.')[-1]
-                            lokasi = os.path.join(settings.BASE_DIR,'media/foto_profile/')
-                            file_name = default_storage.save(str(lokasi)+str(namafile),file)
+                            lokasi = os.path.join(settings.BASE_DIR,f'media/foto_profile/{namafile}')
+                            print(lokasi)
+                            file_name = default_storage.save(lokasi,file)
 
                             user.userprofile.foto = 'foto_profile/'+namafile
                             user.userprofile.save()
