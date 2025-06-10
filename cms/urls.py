@@ -2,7 +2,7 @@ from django.urls import path
 from .views import index, infoToko, daftarBarang, transaksiBulanBerjalan,transaksiBulanLain,profilSaya
 from .views import editBarang, tambahBarang,downloadTemplate,konfirmasiUpload, hapusBarang, downloadBarang
 from .views import viewLog,daftarKasir,tambahKasir,detailPenjualan,konfirmasiVoid,tidakVoid,okeVoid
-from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin,gantiPassword
+from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin,gantiPassword,updateStatusKasir
 
 urlpatterns = [
     path('', index,name='index_cms'),
@@ -28,5 +28,6 @@ urlpatterns = [
     path('<str:id>/',konfirmasiEmail,name="konfirmasi_email"),
     path('kuota/<str:id>/',tambahKuotaAdmin,name="tambah_kuota_admin"),
     path('paket/<str:id>/',upgradePaketAdmin,name="upgrade_paket_admin"),
-    path('pass/change/',gantiPassword,name="ganti_password")
+    path('pass/change/',gantiPassword,name="ganti_password"),
+    path('kasir/status/',updateStatusKasir,name='update_status_kasir')
 ]

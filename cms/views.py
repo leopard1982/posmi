@@ -1019,4 +1019,32 @@ def gantiPassword(request):
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
 
+def updateStatusKasir(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:    
+            try:
+                user_id = request.GET['id']
+                status = int(request.GET['status'])
+                cabang = request.user.userprofile.cabang
+                user = User.objects.get(id=user_id)
+
+                if user.userprofile.cabang == cabang:
+                    if status==1:
+                        user.userprofile.is_active=False
+                        messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil dinonaktifkan.")
+                    else:
+                        user.userprofile.is_active=True
+                        messages.add_message(request,messages.SUCCESS,f"Pengguna {user.username} berhasil diaktifkan kembali.")
+                    user.userprofile.save()
+            except Exception as ex:
+                print(ex)
+                pass
+            return HttpResponseRedirect('/cms/kasir/')
+        
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
     
