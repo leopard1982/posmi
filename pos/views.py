@@ -220,7 +220,7 @@ def hapusItems(request):
     except:
         page="/"
     
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
             nota = request.GET['nota']
             id_barang = request.GET['id']
@@ -248,7 +248,7 @@ def hapusItems(request):
             id_barang = None
             return HttpResponseRedirect(page)
     else:
-        messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
+        messages.add_message(request,messages.SUCCESS,'Pengguna telah dinonaktifkan. Silakan menghubungi pemilik toko untuk konfirmasi.')
         return HttpResponseRedirect(page)
 
 def tambahItems(request):
@@ -257,7 +257,7 @@ def tambahItems(request):
     except:
         page="/"
     
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
             nota = request.GET['nota']
             id_barang = request.GET['id']
@@ -277,7 +277,7 @@ def tambahItems(request):
             nota = None
             id_barang = None
     else:
-        messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
+        messages.add_message(request,messages.SUCCESS,'Pengguna telah dinonaktifkan. Silakan menghubungi pemilik toko untuk konfirmasi.')
     return HttpResponseRedirect(page)
 
 def ubahItems(request):
@@ -286,7 +286,7 @@ def ubahItems(request):
     except:
         page="/"
     
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
             nota = request.GET['nota']
             id_barang = int(request.GET['id'])
@@ -320,7 +320,7 @@ def ubahItems(request):
             nota = None
             id_barang = None
     else:
-        messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
+        messages.add_message(request,messages.SUCCESS,'Pengguna telah dinonaktifkan. Silakan menghubungi pemilik toko untuk konfirmasi.')
     return HttpResponseRedirect(page)
 
 def tambahBarang(request):
@@ -329,7 +329,7 @@ def tambahBarang(request):
     except:
         page="/"
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         user = User.objects.get(username=request.user.username)
         cabang = request.user.userprofile.cabang
         print(cabang.id)
@@ -385,7 +385,7 @@ def tambahBarang(request):
             penjualandetail.save()
             messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah ditambah 1.')
     else:
-        messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
+        messages.add_message(request,messages.SUCCESS,'Pengguna telah dinonaktifkan. Silakan menghubungi pemilik toko untuk konfirmasi.')
     try:
         return HttpResponseRedirect(f"/?nota={penjualan.nota}")
     except:
@@ -396,7 +396,7 @@ def hapusTransaksi(request):
         page=request.META['HTTP_REFERER']
     except:
         page="/"
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         print('hallo')
         try:
             nota = request.GET['nota']
@@ -413,7 +413,7 @@ def hapusTransaksi(request):
             messages.add_message(request,messages.SUCCESS,'Nota Penjualan tidak diketemukan...')
             return HttpResponseRedirect(page)
     else:
-        messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
+        messages.add_message(request,messages.SUCCESS,'Pengguna telah dinonaktifkan. Silakan menghubungi pemilik toko untuk konfirmasi.')
         return HttpResponseRedirect(page)
         
 def loginkan(request):
@@ -467,57 +467,59 @@ def logoutkan(request):
     return HttpResponseRedirect('/')
 
 def bayarTransaksi(request):
-    try:
-        nota = request.GET['nota']
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
-            penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
-            if request.method=="POST":
-                try:
-                    no_nota = penjualan.cabang.no_nota
-                    penjualan.is_paid=True
-                    penjualan.metode=int(request.POST['metode'])
-                    penjualan.customer=request.POST['pembeli']
-                    penjualan.tgl_bayar = datetime.datetime.now()
-                    penjualan.no_nota = str(no_nota).zfill(5)
-                    penjualan.save()
+            nota = request.GET['nota']
+            try:
+                penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
+                if request.method=="POST":
+                    try:
+                        no_nota = penjualan.cabang.no_nota
+                        penjualan.is_paid=True
+                        penjualan.metode=int(request.POST['metode'])
+                        penjualan.customer=request.POST['pembeli']
+                        penjualan.tgl_bayar = datetime.datetime.now()
+                        penjualan.no_nota = str(no_nota).zfill(5)
+                        penjualan.save()
 
-                    cabangnya = penjualan.cabang
-                    cabangnya.no_nota+=1
-                    cabangnya.save()
+                        cabangnya = penjualan.cabang
+                        cabangnya.no_nota+=1
+                        cabangnya.save()
 
-                    penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-                    for barang in penjualandetail:
-                        id_barang = barang.barang.id
-                        jumlah=barang.jumlah
-                        barangnya = Barang.objects.get(id=id_barang)
-                        barangnya.jumlah_dibeli+=jumlah
-                        barangnya.stok -= jumlah
-                        barangnya.save()
-                    addLog(request.user,request.user.userprofile.cabang,"pembayaran",f"Melakukan Pembayaran no. transaksi: {penjualan.nota}")
-                    cabang = Cabang.objects.get(id=request.user.userprofile.cabang.id)
-                    cabang.kuota_transaksi-=1
-                    cabang.save()
-                    return HttpResponseRedirect(f'/print/{nota}')
-                except Exception as ex:
-                    print(ex)
-                    messages.add_message(request,messages.SUCCESS,'Pembayaran Gagal Dilakukan.')
+                        penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+                        for barang in penjualandetail:
+                            id_barang = barang.barang.id
+                            jumlah=barang.jumlah
+                            barangnya = Barang.objects.get(id=id_barang)
+                            barangnya.jumlah_dibeli+=jumlah
+                            barangnya.stok -= jumlah
+                            barangnya.save()
+                        addLog(request.user,request.user.userprofile.cabang,"pembayaran",f"Melakukan Pembayaran no. transaksi: {penjualan.nota}")
+                        cabang = Cabang.objects.get(id=request.user.userprofile.cabang.id)
+                        cabang.kuota_transaksi-=1
+                        cabang.save()
+                        return HttpResponseRedirect(f'/print/{nota}')
+                    except Exception as ex:
+                        print(ex)
+                        messages.add_message(request,messages.SUCCESS,'Pembayaran Gagal Dilakukan.')
+            except Exception as ex:
+                # print(ex)
+                messages.add_message(request,messages.SUCCESS,"Nomor nota tidak diketemukan.")    
+                nota=None
         except Exception as ex:
             # print(ex)
-            messages.add_message(request,messages.SUCCESS,"Nomor nota tidak diketemukan.")    
             nota=None
-    except Exception as ex:
-        # print(ex)
-        nota=None
-        messages.add_message(request,messages.SUCCESS,"Nomor nota kosong.")
-    
-    if nota:
-        if request.method=="POST":
-            print(request.POST)
+            messages.add_message(request,messages.SUCCESS,"Nomor nota kosong.")
         
+        if nota:
+            if request.method=="POST":
+                print(request.POST)
+    else:
+        messages.add_message(request,messages.SUCCESS,"Pengguna telah dinonaktifkan dan tidak bisa melakukan transaksi. silakan hubungi Pemilik Toko.")
     return HttpResponseRedirect('/')
 
 def printTransaksi(request,nota):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
             penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user)  & Q(is_void=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
@@ -586,7 +588,7 @@ def updateBarangSatuan(request):
     except:
         page="/"
     
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
             nota = request.GET['nota']
             id_barang = int(request.GET['id'])
@@ -617,7 +619,7 @@ def updateBarangSatuan(request):
     return HttpResponseRedirect(page)
 
 def reprintTransaksi(request,nota):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated  and request.user.userprofile.is_active:
         try:
             penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user)  & Q(is_void=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
@@ -651,7 +653,7 @@ def reprintTransaksi(request,nota):
     
 
 def printKuitansi(request,nota):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.userprofile.is_active:
         try:
             penjualan = Penjualan.objects.get(Q(nota=nota) & Q(user=request.user) & Q(is_void=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
