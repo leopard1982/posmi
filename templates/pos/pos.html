@@ -199,7 +199,7 @@
                         <td class="fw-bold" style="font-size: 15px;">{{jual.barang.nama|title}} ({{jual.barang.satuan}})</td>
                         <td >
                             <div class="d-flex justify-content-center align-items-center">
-                                <!-- <a class="btn btn-primary m-2" href="{% url 'kurangi_items'%}?nota={{nota}}&id={{jual.barang.id}}">-</a> -->
+                                
                                 <form class="justify-content-center d-flex" action="{% url 'ubah_items'%}?nota={{nota}}&id={{jual.barang.id}}" method="post">
                                     {% csrf_token %}
                                     <input type="number" name="jumlah" id="" class="rounded text-center border-secondary form-control" value="{{jual.jumlah}}" min="0" >
@@ -221,12 +221,13 @@
                                 {% if user.is_superuser %}
                                     <div style="font-size: 20px;width: 30px;text-align: center;">
                                         {% if jual.is_open %}
-                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=0" style="text-decoration: none;color: red;"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=0" style="text-decoration: none;color: green;padding-left: 5px;"><i class="fa fa-refresh" aria-hidden="true"></i></a>
                                         {% else %}
-                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=1" style="text-decoration: none;color:blue"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=1" style="text-decoration: none;color:blue;padding-left: 5px;"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                                         {% endif %}
                                     </div>
                                 {% endif%}
+                                <a style="text-decoration: none;color: red;padding-left: 5px; font-size: 18px;" href="{% url 'hapus_items'%}?nota={{nota}}&id={{jual.barang.id}}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
                             </div>
                             
                         </td>

@@ -206,7 +206,7 @@ def index(request):
     }
     return render(request,'pos/pos.html',context)
 
-def kurangiItems(request):
+def hapusItems(request):
     try:
         page=request.META['HTTP_REFERER']
     except:
@@ -220,21 +220,17 @@ def kurangiItems(request):
                 penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
                 barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang=request.user.userprofile.cabang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang))
-                if penjualandetail.jumlah==1:
-                    penjualandetail.delete()
-                    penjualan.items-=1
-                    penjualan.save()
-                    messages.add_message(request,messages.SUCCESS,f'{barang.nama} dihapus karena dalam daftar menjadi nol.')
-                else:
-                    penjualandetail.jumlah -= 1
-                    penjualandetail.save()    
-                    messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah dikurangi 1.')
-                
-                if penjualan.items==0:
+                penjualandetail.delete()
+
+                penjualandetail = PenjualanDetail.objects.all().filter(Q(penjualan=penjualan))
+                if len(penjualandetail)==0:
                     penjualan.delete()
-                    return HttpResponseRedirect('/')
+                    messages.add_message(request,messages.SUCCESS,f'Transaksi dihapus karena tidak ada barang.')
+                else:
+                    messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah dihapus.')
                 
-            except:
+            except Exception as ex:
+                print(ex)
                 messages.add_message(request,messages.SUCCESS,'Kode Barang atau Nomor Nota tidak sesuai.')
             return HttpResponseRedirect(page)    
         except:
