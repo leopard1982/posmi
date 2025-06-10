@@ -137,7 +137,15 @@ def index(request):
             except Exception as ex:
                 if (kode):
                     messages.add_message(request,messages.SUCCESS,"Maaf barang dengan kode tersebut belum ada.")
-            return HttpResponseRedirect(f'/?nota={nota}')
+                    penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
+                    if len(penjualandetail)==0:
+                        penjualan.delete()
+                        return HttpResponseRedirect('/')
+                try:
+                    return HttpResponseRedirect(f'/?nota={nota}')
+                except:
+                    messages.add_message(request,messages.SUCCESS,"Silakan login untuk bisa melakukan transaksi.")
+                    return HttpResponseRedirect('/')
     else:
         user=None
 
