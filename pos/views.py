@@ -376,8 +376,11 @@ def tambahBarang(request):
             messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah ditambah 1.')
     else:
         messages.add_message(request,messages.SUCCESS,'Silakan login untuk bisa melakukan transaksi...')
-    return HttpResponseRedirect(f"/?nota={penjualan.nota}")
-
+    try:
+        return HttpResponseRedirect(f"/?nota={penjualan.nota}")
+    except:
+        return HttpResponseRedirect('/')
+    
 def hapusTransaksi(request):
     try:
         page=request.META['HTTP_REFERER']
