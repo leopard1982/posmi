@@ -20,7 +20,10 @@
             <div style="min-width: 300px; text-align: center;">
                 <form hx-post="{% url 'tambah_barang'%}" hx-target="#mainpage" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <span style="max-width: 300px;"><input class="form-control" type="file" name="file" accept=".xlsx,.xls" id="file" required ></span><br>
+                    <div class="d-flex justify-content-center" style="height: 50px;">
+                        <span class="pe-3 pt-2">Pilih File Template: </span>
+                        <input class="form-control w-50" style="height: 45px;" type="file" name="file" accept=".xlsx,.xls" id="file" required >
+                    </div>
                     <span><button type="submit" class="btn btn-primary my-2">Upload Barang</button></span><br>
                     <p style="font-size: 15px;text-align: left !important;">
                         <strong style="margin-left: 25px;">Catatan:</strong>  <br>

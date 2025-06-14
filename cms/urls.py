@@ -3,7 +3,7 @@ from .views import index, infoToko, daftarBarang, transaksiBulanBerjalan,transak
 from .views import editBarang, tambahBarang,downloadTemplate,konfirmasiUpload, hapusBarang, downloadBarang
 from .views import viewLog,daftarKasir,tambahKasir,detailPenjualan,konfirmasiVoid,tidakVoid,okeVoid
 from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin,gantiPassword,updateStatusKasir
-from .views import detailPengguna,updateFoto,updatePassword,updateNama
+from .views import detailPengguna,updateFoto,updatePassword,updateNama, tambahBarangSatuan
 
 urlpatterns = [
     path('', index,name='index_cms'),
@@ -19,6 +19,7 @@ urlpatterns = [
     path('barang/upload/',konfirmasiUpload,name='konfirmasi_upload'),
     path('barang/hapus/',hapusBarang,name="hapus_barang"),
     path('barang/download/',downloadBarang,name='download_barang'),
+    path('barang/add/',tambahBarangSatuan,name='tambah_barang_satuan'),
     path('log/',viewLog,name="view_log"),
     path('kasir/',daftarKasir,name="daftar_kasir"),
     path('kasir/tambah/',tambahKasir,name="tambah_kasir"),

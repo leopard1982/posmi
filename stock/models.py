@@ -125,19 +125,19 @@ class Customer(models.Model):
 
 class Barang(models.Model):
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,null=True,blank=True,related_name="cabang_toko")
-    barcode = models.CharField(max_length=100,default="0")
-    nama = models.CharField(max_length=200)
-    satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS")
-    stok = models.IntegerField(default=0)
-    harga_beli = models.IntegerField(default=0)
-    harga_ecer = models.IntegerField(default=0)
-    harga_grosir = models.IntegerField(default=0)
-    min_beli_grosir = models.IntegerField(default=0)
+    barcode = models.CharField(max_length=100,default="0",verbose_name="Barcode (Bisa Menggunakan Scanner)")
+    nama = models.CharField(max_length=200,verbose_name="Nama Barang")
+    satuan = models.CharField(max_length=20,choices=SATUAN,default="PCS",verbose_name="Satuan (PACK atau PCS)")
+    stok = models.IntegerField(default=0,verbose_name="Jumlah Stok Awal")
+    harga_beli = models.IntegerField(default=0,verbose_name="Harga Pembelian (Modal+Pajak)")
+    harga_ecer = models.IntegerField(default=0,verbose_name="Harga Eceran (satuan)")
+    harga_grosir = models.IntegerField(default=0,verbose_name="Harga Grosir (bisa disamakan dengan harga ecer)")
+    min_beli_grosir = models.IntegerField(default=0,verbose_name="Minimal pembelian untuk dihitung harga grosir")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User,on_delete=models.RESTRICT,blank=True,null=True)
     jumlah_dibeli = models.BigIntegerField(default=0)
-    keterangan = models.CharField(max_length=200,default="",null=True,blank=True)
+    keterangan = models.CharField(max_length=200,default="",null=True,blank=True,verbose_name="Keterangan Barang")
 
     def __str__(self):
         return f"{self.barcode} - {self.nama} - {self.satuan}"

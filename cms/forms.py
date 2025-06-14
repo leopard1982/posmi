@@ -137,9 +137,83 @@ class FormBarang(forms.ModelForm):
             'keterangan': forms.TextInput(
                 attrs= {
                     'class':'form-control my-2',
-                    'placeholder':"Isi Keterangan Barang",
+                    'placeholder':"Isi Keterangan Barang (Boleh dikosongkan)",
+                    'max_length':100
+                }
+            ),
+        }
+
+class FormInputBarang(forms.ModelForm):
+    class Meta:
+        model = Barang
+        fields = ['barcode','nama','satuan','stok','harga_beli','harga_ecer','harga_grosir','min_beli_grosir','keterangan']
+
+        widgets = {
+            'barcode': forms.TextInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Kode Barcode",
                     'max_length':100,
                     'required':'required'
+                }
+            ),
+            'nama': forms.TextInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Nama Barang",
+                    'max_length':200,
+                    'required':'required'
+                }
+            ),
+            'satuan': forms.Select(
+                attrs= {
+                    'class':'form-select my-2',
+                    'placeholder':"Isi Nama Alamat Toko",
+                    'max_length':30,
+                    'required':'required'
+                }
+            ),
+            'stok': forms.NumberInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Jumlah Stok",
+                    'max_length':15,
+                    'required':'required'
+                }
+            ),
+            'harga_beli': forms.NumberInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Harga Beli",
+                    'max_length':200,
+                }
+            ),
+            'harga_ecer': forms.NumberInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Harga Ecer",
+                    'max_length':200,
+                }
+            ),
+            'harga_grosir': forms.NumberInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Harga Grosir",
+                    'max_length':200,
+                }
+            ),
+            'min_beli_grosir': forms.NumberInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Jumlah Minimal Grosir",
+                    'max_length':200,
+                }
+            ),
+            'keterangan': forms.TextInput(
+                attrs= {
+                    'class':'form-control my-2',
+                    'placeholder':"Isi Keterangan Barang (bisa dikosongkan)",
+                    'max_length':100
                 }
             ),
         }

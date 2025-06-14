@@ -22,6 +22,7 @@ from django.contrib.auth import authenticate
 from cms.models import GantiEmail
 from payment.views import cekKodeToko,cekKodeVoucher,cekLisensi,getAdmin
 from django.contrib.auth import logout
+from .forms import FormInputBarang
 
 
 def bulannya(bulannya):
@@ -308,7 +309,6 @@ def editBarang(request):
                     print(ex)
                     addLog(request.user,request.user.userprofile.cabang,"edit barang",f"Edit Barang {barang.nama} ({barang.id}) Gagal")
                     messages.add_message(request,messages.SUCCESS,"Update Barang Gagal.")
-                return HttpResponseRedirect(reverse('daftar_barang'))
             try:
                 id_barang = request.GET['id']
                 barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))
@@ -503,19 +503,16 @@ def hapusBarang(request):
             try:
                 id=request.GET['id']
                 barang=Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(id=id))
+                info = f' dengan nama {barang.nama} dan barcode [{barang.barcode}] '
                 barang.delete()
-                messages.add_message(request,messages.SUCCESS,"Barang Berhasil Dihapus.")
+                messages.add_message(request,messages.SUCCESS,f"Barang {info} Berhasil Dihapus.")
                 addLog(request.user,request.user.userprofile.cabang,"hapus barang",f"Hapus Barang {barang.nama} ({barang.id}) Berhasil.")
             except Exception as ex:
                 print(ex)
                 addLog(request.user,request.user.userprofile.cabang,"hapus barang",f"Hapus Barang {barang.nama} ({barang.id}) Gagal.")
                 messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan hapus barang, barang yang sudah pernah dijual tidak dapat dihapus.")
             barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
-            context = {
-                    'barangs':barangs,
-                    'jumlah_barang':barangs.count()
-                }
-            return render(request,'administrator/components/list_barang.html',context)
+            return HttpResponseRedirect('/cms/')
         else:
                 messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
                 return HttpResponseRedirect('/')
@@ -1202,3 +1199,51 @@ def updatePassword(request):
     else:
         messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
         return HttpResponseRedirect('/login/')
+    
+def tambahBarangSatuan(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser: 
+            if request.method=="POST":
+                print(request.POST)
+                form = FormInputBarang(data=request.POST)
+                if form.is_valid():
+                    try:
+                        barang = Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(barcode=int(request.POST['barcode'])))
+                        form = FormInputBarang(data=request.POST)
+                        messages.add_message(request,messages.SUCCESS,f"Barang {barang.nama} gagal ditambahkan. Silakan cek apakah barcode sudah pernah dipakai dan sesuaikan kembali barcodenya. Terima kasih.")
+
+                    except Exception as ex:
+                        print(ex)
+                        barang = Barang()
+                        barang.barcode = int(request.POST['barcode'])
+                        barang.cabang = request.user.userprofile.cabang
+                        barang.created_by= request.user
+                        barang.harga_beli = request.POST['harga_beli']
+                        barang.harga_ecer = request.POST['harga_ecer']
+                        barang.harga_grosir = request.POST['harga_grosir']
+                        barang.min_beli_grosir = request.POST['min_beli_grosir']
+                        barang.keterangan = request.POST['keterangan']
+                        barang.nama = request.POST['nama']
+                        barang.satuan = request.POST['satuan']
+                        barang.save()
+                        messages.add_message(request,messages.SUCCESS,f"Barang {barang.nama} dengan barcode [{barang.barcode}] berhasil ditambahkan.")
+                        form = FormInputBarang()    
+                else:
+                    form = FormInputBarang(data=request.POST)
+                    messages.add_message(request,messages.SUCCESS,"Terjadi kesalahan data barang. Silakan ulangi kembali.")
+            else:
+                form = FormInputBarang()
+
+            context = {
+                'form':form
+            }
+
+            return render(request,'administrator/components/input_barang.html',context)
+        else:
+            messages.add_message(request,messages.SUCCESS,"Anda tidak memiliki ijin untuk mengkases halaman admin posmi.")
+            return HttpResponseRedirect('/')
+    else:
+        messages.add_message(request,messages.SUCCESS,"Silakan Login terlebih dahulu untuk bisa mengakses halaman admin posmi.")
+        return HttpResponseRedirect('/login/')
+    
+    
