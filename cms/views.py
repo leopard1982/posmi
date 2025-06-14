@@ -1210,7 +1210,7 @@ def tambahBarangSatuan(request):
                     try:
                         barang = Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(barcode=int(request.POST['barcode'])))
                         form = FormInputBarang(data=request.POST)
-                        messages.add_message(request,messages.SUCCESS,f"Barang {barang.nama} gagal ditambahkan. Silakan cek apakah barcode sudah pernah dipakai dan sesuaikan kembali barcodenya. Terima kasih.")
+                        messages.add_message(request,messages.SUCCESS,f"Barang {request.POST['nama']} gagal ditambahkan. Silakan cek apakah barcode sudah pernah dipakai dan sesuaikan kembali barcodenya. Terima kasih.")
 
                     except Exception as ex:
                         print(ex)

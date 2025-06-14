@@ -107,7 +107,7 @@ def index(request):
             kode = request.POST['kode']
             print(kode)
                 
-            if nota:
+            if nota != "":
                 penjualan= Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
             else:
                 cabang = request.user.userprofile.cabang
@@ -132,6 +132,8 @@ def index(request):
                         penjualandetail.penjualan=penjualan
                         penjualandetail.barang=barang
                         penjualandetail.save()
+                    
+                    return HttpResponseRedirect(f'/?nota={nota}')
                 else:
                     messages.add_message(request,messages.SUCCESS,"Maaf barang dengan kode tersebut belum ada.")    
             except Exception as ex:
@@ -152,26 +154,28 @@ def index(request):
     promo_list = Promo.objects.all().filter(Q(end_period__gte=datetime.datetime.now()) & Q(is_active=True) & Q(kuota__gt=0))
 
     try:
-        # diubah supaya bs fleksible
-        try:
-            nota = request.GET['nota']
-        except:
-            nota=""
-        print(nota)
-        if(nota):
+        if request.method != "POST":
+            print('ini bukan post')
+            # diubah supaya bs fleksible
+            try:
+                nota = request.GET['nota']
+            except:
+                nota=""
+        else:
+            print('ini post')
+            print(f'nota: {nota}')
+        
+        if(nota!=""):
             penjualan = Penjualan.objects.get(Q(nota=nota) & Q(is_paid=False))
             penjualandetail = PenjualanDetail.objects.all().filter(penjualan=penjualan)
-            nota = penjualan.nota
             total = int(penjualan.total)
             jumlah_item = penjualan.items
         else:
             penjualandetail=None
-            nota=""
             total=0
             jumlah_item=0
     except Exception as ex:
         penjualandetail=None
-        nota=""
         print(ex)
         total=0
         jumlah_item=0
@@ -189,6 +193,8 @@ def index(request):
     bisnis_medium = DaftarPaket.objects.get(nama="Bisnis Medium")
 
     testimoni = Testimoni.objects.all().filter(is_verified=True)
+
+    print(f"nota: {nota}")
 
     context = {
         'penjualandetail':penjualandetail,
@@ -262,13 +268,17 @@ def tambahItems(request):
             nota = request.GET['nota']
             id_barang = request.GET['id']
             try:
-                penjualan = Penjualan.objects.get(nota=nota)
+                if nota == "":
+                    penjualan = Penjualan()
+                else:
+                    penjualan = Penjualan.objects.get(nota=nota)
+                nota = penjualan.nota
                 barang = Barang.objects.get(Q(id=int(id_barang)) & Q(cabang=request.user.userprofile.cabang))
                 penjualandetail = PenjualanDetail.objects.get(Q(penjualan=penjualan) & Q(barang=barang) & Q(is_paid=False))
                 penjualandetail.jumlah += 1
                 penjualandetail.save()    
                 messages.add_message(request,messages.SUCCESS,f'Jumlah {barang.nama} telah ditambah 1.')
-                return HttpResponseRedirect(f"{page}?nota={nota}")
+                return HttpResponseRedirect(f"/?nota={nota}")
             except:
                 messages.add_message(request,messages.SUCCESS,'Kode Barang atau Nomor Nota tidak sesuai.')
             return HttpResponseRedirect(page)    
