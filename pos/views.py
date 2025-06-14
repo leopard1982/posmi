@@ -175,10 +175,7 @@ def index(request):
             total=0
             jumlah_item=0
     except Exception as ex:
-        penjualandetail=None
-        print(ex)
-        total=0
-        jumlah_item=0
+        return HttpResponseRedirect('/')
     try:
         barang = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
         jml_barang = barang.count()
