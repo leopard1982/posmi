@@ -293,7 +293,12 @@ def editBarang(request):
             if request.method=="POST":
                 try:
                     id_barang = request.GET['id']
-                    barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))
+                    
+                    try:
+                        barang = Barang.objects.get(Q(id=id_barang) & Q(cabang=request.user.userprofile.cabang))
+                    except:
+                        return HttpResponse(f"<div style='margin-top:100px;text-align:center;font-style:italic;font-weight:bold;font-size:15px'>Barang tidak ada dalam data toko {request.user.userprofile.cabang.nama_toko}.<br>Update Informasi Barang Tidak Dapat Dilakukan.<br><br><input type='button' value='Tutup Halaman Ini' onclick='window.close()'></div>")
+                    
                     barang.barcode=request.POST['barcode']
                     barang.nama=request.POST['nama']
                     barang.satuan=request.POST['satuan']
@@ -502,7 +507,13 @@ def hapusBarang(request):
         if request.user.is_superuser:
             try:
                 id=request.GET['id']
-                barang=Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(id=id))
+                
+                try:
+                    barang=Barang.objects.get(Q(cabang=request.user.userprofile.cabang) & Q(id=id))
+                except:
+                    messages.add_message(request,messages.SUCCESS,'Barang Gagal dihapus.')
+                    return HttpResponseRedirect('/cms/')
+                
                 info = f' dengan nama {barang.nama} dan barcode [{barang.barcode}] '
                 barang.delete()
                 messages.add_message(request,messages.SUCCESS,f"Barang {info} Berhasil Dihapus.")
