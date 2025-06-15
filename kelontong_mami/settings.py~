@@ -42,9 +42,9 @@ INSTALLED_APPS = [
     'promo',
     'cara',
     'cms',
-    # 'jazzmin',
-    # 'debug_toolbar',
 ]
+
+TEST = "TEST"
 
 
 
