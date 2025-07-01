@@ -553,7 +553,7 @@ def tambahKuota(request):
         user = User.objects.get(username=f"{cabang.prefix}1")
         userprofile = UserProfile.objects.get(user=user)
 
-        message = f"Halo Sobat {userprofile.nama_lengkap}!\n\nTerima kasih atas pembelian {int(jumlah_kuota):,} kuota transaksi dengan pembayaran sebesar: Rp.{int(harga):,} pada tanggal: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+        message = f"Halo Sobat {userprofile.nama_lengkap}!\n\nTerima kasih atas pembelian {int(jumlah_kuota):,} kuota transaksi dengan pembayaran sebesar: Rp.{int(harga):,} pada tanggal: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
 
         posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=cabang.email)
 
@@ -608,7 +608,7 @@ def hitungExpired(request):
                 tanggal_expired = tanggal_expired + datetime.timedelta(days=day)
         except:
             tanggal_expired=datetime.datetime.now() + datetime.timedelta(days=day)
-        return HttpResponse(f"Lisensi akan berakhir: {tanggal_expired.strftime("%d/%m/%Y")}")
+        return HttpResponse(f"Lisensi akan berakhir: {tanggal_expired.strftime('%d/%m/%Y')}")
     except Exception as ex:
         print(ex)
         return HttpResponse("-")
@@ -673,7 +673,7 @@ def upgradeLisensi(request):
         cabang.kuota_transaksi+=paket.max_transaksi
         cabang.paket=paket
         cabang.save()
-        messages.add_message(request,messages.SUCCESS,f"Selamat untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah menggunakan paket {paket.nama} dengan lisensi diperpanjang sampai dengan {cabang.lisensi_expired.strftime("%d/%m/%Y")}.")
+        messages.add_message(request,messages.SUCCESS,f"Selamat untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah menggunakan paket {paket.nama} dengan lisensi diperpanjang sampai dengan {cabang.lisensi_expired.strftime('%d/%m/%Y')}.")
         return HttpResponseRedirect('/')
     except Exception as ex:
         print(ex)
