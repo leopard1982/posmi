@@ -1,0 +1,31 @@
+<div>   
+    <canvas id="myChart2" style="width:100%;"></canvas>
+</div>
+<script>
+    const xValues_pie = {{list_nama_barang|safe}};
+        const yValues_pie = {{list_jumlah_barang|safe}};
+        const barColors_pie = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+
+    new Chart("myChart2", {
+    type: "pie",
+    data: {
+        labels: xValues_pie,
+        datasets: [{
+        backgroundColor: barColors_pie,
+        data: yValues_pie
+        }]
+    },
+    options: {
+        title: {
+        display: true,
+        text: "Top 5 Barang Paling Laris"
+        }
+    }
+    });
+</script>

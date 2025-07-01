@@ -1,0 +1,69 @@
+{% load humanize %}
+<table>
+    <tr>
+        <td style="min-width: 120px;">ID Transaksi:</td>
+        <td style="font-weight: bold;">{{penjualan.nota}}</td>
+    </tr>
+    <tr>
+        <td>Tanggal:</td>
+        <td  style="font-weight: bold;">{{penjualan.tgl_bayar|date:"d/M/Y h:i:s"}}</td>
+    </tr>
+    <tr>
+        <td>Kasir:</td>
+        <td style="font-weight: bold;">{{penjualan.user.userprofile.nama_lengkap}}</td>
+    </tr>
+    <tr>
+        <td>Customer:</td>
+        <td style="font-weight: bold;">{{penjualan.customer}}</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;">Keterangan:</td>
+        <td  style="font-weight: bold;">
+            Jumlah: {{penjualan.items}} barang <br>
+            Total: Rp.{{penjualan.total|intcomma}}
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="border border-primary" style="background-color: blue;color: white;vertical-align: top;font-weight: bold;text-align: center;">Detail:</td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <table class="table">
+                <tr style="border-bottom: 1px solid blue;">
+                    <th style="min-width: 75px;max-width: 75px;">Kode</th>
+                    <th style="min-width: 75px;max-width: 75px;">Nama</th>
+                    <th style="min-width: 45px;max-width: 45px;">Harga</th>
+                    <th>Total</th>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr class="border border-primary" >
+        <td colspan="2">
+            <div class="w-100" style="min-height: 130px;max-height: 130px;overflow-y: scroll;">
+                <div >
+                    <table class="table" >
+                        {% for detail in penjualan_detail%}
+                        <tr>
+                            <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.barcode}}</td>
+                            <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.nama}}</td>
+                            <td style="min-width: 60px;max-width: 60px;;font-size: 13px;">{{detail.harga|intcomma}}<br>x{{detail.jumlah|intcomma}}</td>
+                            <td style="font-size: 13px;">{{detail.total|intcomma}}</td>
+                        </tr>
+                        {% endfor%}
+                    </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary btn-sm">Reprint Nota</button>
+    <button type="button" class="btn btn-success btn-sm">Reprint A4</button>
+</div>

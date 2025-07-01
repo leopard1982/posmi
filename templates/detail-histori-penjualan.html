@@ -1,0 +1,100 @@
+{% extends 'base-histori.html'%}
+{% load humanize %}
+{% load static %}
+
+{% block contents %}
+<div class="p-4 container bg-white">
+    <div class="p-2 rounded shadow border border-primary ">
+        <div class="text-center fw-bold mb-5 fs-3">
+            DETAIL TRANSAKSI
+        </div>
+        <div>
+            <table class="w-100 table">
+                <tr>
+                    <td style="min-width: 120px;">ID Transaksi:</td>
+                    <td style="font-weight: bold;">{{penjualan.nota}}</td>
+                </tr>
+                <tr>
+                    <td style="min-width: 120px;">Nomor Nota:</td>
+                    <td style="font-weight: bold;">{{penjualan.no_nota}}</td>
+                </tr>
+                <tr>
+                    <td>Tanggal:</td>
+                    <td  style="font-weight: bold;">{{penjualan.tgl_bayar|date:"d/M/Y h:i:s"}}</td>
+                </tr>
+                <tr>
+                    <td>Kasir:</td>
+                    <td style="font-weight: bold;">{{penjualan.user.userprofile.nama_lengkap}}</td>
+                </tr>
+                <tr>
+                    <td>Customer:</td>
+                    <td style="font-weight: bold;">{{penjualan.customer}}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">Keterangan:</td>
+                    <td  style="font-weight: bold;">
+                        <table>
+                            <tr>
+                                <th>Jumlah Barang</th>
+                                <th>: {{penjualan.items}} item(s)</th>
+                            </tr>
+                            <tr>
+                                <td>Total Belanja</td>
+                                <td>: Rp.{{penjualan.total|intcomma}}</td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+               
+                
+                <tr class="border " >
+                    <td colspan="2">
+                        <div class="w-100" >
+                            <div >
+                                <table class="table " >
+                                    <tr style="border: 1px solid blue;">
+                                        <th >Kode</th>
+                                        <th >Nama</th>
+                                        <th >Harga</th>
+                                        <th>Jumlah</th>
+                                        <th>Total</th>
+                                    </tr>
+                                    {% for detail in penjualan_detail%}
+                                    <tr>
+                                        <td style="font-size: 13px;">{{detail.barang.barcode}}</td>
+                                        <td style="font-size: 13px;">{{detail.barang.nama}}</td>
+                                        <td style="font-size: 13px;">{{detail.harga|intcomma}}</td>
+                                        <td>{{detail.jumlah|intcomma}}</td>
+                                        <td style="font-size: 13px;">{{detail.total|intcomma}}</td>
+                                    </tr>
+                                    {% endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-center container mb-5">
+    {% if penjualan.is_void %}
+        <div class="text-danger text-center fw-bold my-2 p-2 rounded border-danger border w-75">
+            <span>Transaksi Dibatalkan (void) pada {{penjualan.updated_at|date:"d/M/Y"}}</span><br>
+            <span>Alasan: [{{penjualan.alasan_void|title}}]</span>
+            <div class="justify-content-center my-3">
+                <button class="btn btn-primary rounded-pill btn-sm px-3" onclick="javascript:window.close()">Tutup</button>
+            </div>
+        </div>
+        
+    {% else %}
+        <button class="btn btn-secondary  btn-sm px-3 ms-3" onclick="javascript:window.close()">Tutup</button>
+        <a href="{% url 'reprint_transaksi' penjualan.nota %}" class="btn ms-3 btn-primary btn-sm">Reprint Nota</A>
+        <a href="{% url 'print_kuitansi' penjualan.nota %}" class="btn ms-3 btn-success btn-sm">Print Kuitansi A4</a>
+    {% endif %}
+</div>
+
+{% endblock %}

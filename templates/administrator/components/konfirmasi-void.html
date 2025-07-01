@@ -1,0 +1,92 @@
+{% extends 'base-histori.html'%}
+{% load humanize %}
+{% block contents%}
+
+<div class="container py-3">
+    <div class="text-center text-danger fs-4 fw-bold">
+        Konfirmasi Pembatalan Transaksi (void)
+    </div>
+    <div class="my-3">
+        <div class="container w-100 border border-primary rounded p-2">
+            <table class="w-100">
+                <tr>
+                    <td style="min-width: 120px;">ID Transaksi:</td>
+                    <td style="font-weight: bold;">{{penjualan.nota}}</td>
+                </tr>
+                <tr>
+                    <td>Tanggal:</td>
+                    <td  style="font-weight: bold;">{{penjualan.tgl_bayar|date:"d/M/Y h:i:s"}}</td>
+                </tr>
+                <tr>
+                    <td>Kasir:</td>
+                    <td style="font-weight: bold;">{{penjualan.user.userprofile.nama_lengkap}}</td>
+                </tr>
+                <tr>
+                    <td>Customer:</td>
+                    <td style="font-weight: bold;">{{penjualan.customer}}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;">Keterangan:</td>
+                    <td  style="font-weight: bold;">
+                        Jumlah: {{penjualan.items}} barang <br>
+                        Total: Rp.{{penjualan.total|intcomma}}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="border border-primary" style="background-color: blue;color: white;vertical-align: top;font-weight: bold;text-align: center;">Detail:</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table class="table">
+                            <tr style="border-bottom: 1px solid blue;">
+                                <th style="min-width: 75px;max-width: 75px;">Kode</th>
+                                <th style="min-width: 75px;max-width: 75px;">Nama</th>
+                                <th style="min-width: 45px;max-width: 45px;">Harga</th>
+                                <th>Total</th>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="border border-primary" >
+                    <td colspan="2">
+                        <div class="w-100" style="min-height: 130px;max-height: 130px;overflow-y: scroll;">
+                            <div >
+                                <table class="table" >
+                                    {% for detail in penjualan_detail%}
+                                    <tr>
+                                        <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.barcode}}</td>
+                                        <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.nama}}</td>
+                                        <td style="min-width: 60px;max-width: 60px;;font-size: 13px;">{{detail.harga|intcomma}}<br>x{{detail.jumlah|intcomma}}</td>
+                                        <td style="font-size: 13px;">{{detail.total|intcomma}}</td>
+                                    </tr>
+                                    {% endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="border border-danger rounded p-2">
+        <div class="text-danger text-center">Apakah transaksi akan dibatalkan (void)?</div>
+        <div class="mt-2">
+            <form action="{{callback}}" class="px-4" method="post">
+                {% csrf_token %}
+                <input type="text" required minlength="5" name="alasan"  class="form-control" placeholder="alasan void" id="">
+                <div class="d-flex justify-content-center py-2">
+                    <button type="submit" class="mx-2 btn btn-sm btn-danger">Ya, Batalkan</button>
+                    <a href="#" onclick="window.open('', '_self', ''); window.close();" class="mx-2 btn btn-sm btn-secondary">Kembali &rarr;</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

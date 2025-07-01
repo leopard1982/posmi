@@ -1,0 +1,846 @@
+{% extends 'base-landing.html'%}
+{% load static %}
+{% load humanize %}
+
+{% block contents %}
+<!-- Hero 3 - Bootstrap Brain Component -->
+<section id="scrollspyHero" class="bsb-tpl-bg-alabaster pt-3 pb-5 p-lg-0">
+<div class="container overflow-hidden">
+<div class="row gy-5 gy-lg-0 align-items-lg-center justify-content-lg-between">
+<div class="col-12 col-lg-6 order-1 order-lg-0">
+  <h1 class="display-3 fw-bold mb-3">Aplikasi Penjualan Berbasis Web</h1>
+  <p class="fs-4 mb-5">POSMI merupakan aplikasi penjualan berbasis web yang sangat mudah digunakan tanpa harus melakukan instalasi, cukup melakukan registrasi dan Go!</p>
+  <div class="d-grid gap-2 d-sm-flex">
+    <a class="btn btn-danger bsb-btn-3xl" href="#detailgratis">Register Sekarang</a>
+    <a class="btn text-white bsb-btn-3xl" style="background-color: #0d6efd;" href="{% url 'loginkan'%}">Login</a>
+  </div>
+</div>
+<div class="col-12 col-lg-5 text-center  bg-white">
+  <div class="position-relative">
+    {% include 'promo/list_promo.html'%}
+    <!-- <div class="bsb-circle border border-4 border-warning position-absolute top-50 start-10 translate-middle z-1"></div>
+    <div class="bsb-circle bg-primary position-absolute top-50 start-50 translate-middle" style="--bsb-cs: 460px;"></div>
+    <div class="bsb-circle border border-4 border-warning position-absolute top-10 end-0 z-1" style="--bsb-cs: 100px;"></div>
+    <img class="img-fluid position-relative z-2" loading="lazy" src="./assets/img/hero/hero-img-1.webp" alt=""> -->
+  </div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Main -->
+<main id="main">
+
+<!-- Section - Services -->
+<!-- Service 6 - Bootstrap Brain Component -->
+<section id="scrollspyServices" class="bsb-service-6 py-5 py-xl-8 bsb-section-py-xxl-1">
+<div class="container">
+<div class="row justify-content-md-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+    <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Mengapa <strong>POSMI</strong>?</h3>
+    <h2 class="display-5 mb-4 mb-md-5 text-center"><strong>Posmi</strong> merupakan sistem penjualan lengkap yang mudah dipakai, semudah menghitung:<br>satu...dua...tiga...</h2>
+    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+  </div>
+</div>
+</div>
+
+<div class="container overflow-hidden">
+<div class="row gy-4 gy-md-0 gx-xxl-5">
+  <div class="col-12 col-lg-4 d-flex justify-content-center" id="detailgratis">
+    <div class="card bg-transparent border-primary rounded-0 overflow-hidden card-paket">
+      <div class="card-body " style="margin-top: -100px;">
+        <!-- <svg style="margin-top:40px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-hdd text-primary mb-4" viewBox="0 0 16 16">
+          <path d="M4.5 11a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+          <path d="M16 11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V9.51c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198V11zM3.655 4.26 1.592 8.043C1.724 8.014 1.86 8 2 8h12c.14 0 .276.014.408.042L12.345 4.26a.5.5 0 0 0-.439-.26H4.094a.5.5 0 0 0-.44.26zM1 10v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z" />
+        </svg> -->
+        <h3 class="h2 mb-4 pt-5 text-danger text-center">Paket Dasar</h3>
+        <p class=" text-dark fw-bold">
+          Fitur:
+          <ul class="text-dark" style="margin-top:-20px">
+            <li>1 User Admin</li>
+            <li>Maks 100 transaksi/ bulan</li>
+            <li>Upload Master Data</li>
+            <li>Transaksi Penjualan</li>
+            <li>Nota Watermark</li>
+            <li>Dashboard Penjualan</li>
+          </ul> 
+        </p>
+        
+        <!-- <a href="#!" class="fw-bold text-decoration-none link-primary">
+          Learn More
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
+          </svg>
+        </a> -->
+        <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+      </div>
+      <a href="#gratis" class="text-white fw-bold p-2 text-center btn btn-primary rounded m-2">
+          GRATIS 7 HARI
+      </a>
+    </div>
+  </div>
+  <div class="col-12 col-lg-4 d-flex justify-content-center" id="detailkecil">
+    <div class="card bg-transparent border-primary rounded-0 overflow-hidden  d-flex justify-content-center card-paket">
+      <div class="card-body" style="margin-top: -100px;">
+        <!-- <svg style="margin-top:40px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-filetype-ai text-primary mb-4" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2H6v-1h6a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM1.113 14.82.8 15.85H0l1.342-3.999h.926l1.336 3.999h-.841l-.314-1.028H1.113Zm1.178-.588-.49-1.617h-.034l-.49 1.617h1.014Zm2.425-2.382v3.999h-.791V11.85h.79Z" />
+        </svg> -->
+        <h3 class="h2 mb-4 pt-5 text-danger text-center">
+          Bisnis Kecil
+        </h3>
+        <p class="mb-4 text-dark">
+          <strong>Fitur:</strong>
+          <ul class="text-dark" style="margin-top:-20px">
+            <li>1 User Admin</li>
+            <li><b>Menambah Kasir Unlimited</b></li>
+            <li><b>Maks 1500 transaksi/ bulan</b></li>
+            <li>Upload Master Data</li>
+            <li>Transaksi Penjualan</li>
+            <li>Nota Tanpa Watermark</li>
+            <li>Dashboard Penjualan</li>
+            <li>Download Daftar Barang</li>
+            <li>Download Laporan Transaksi</li>
+            <li>Log Transaksi</li>
+          </ul> 
+        </p>
+        
+        <!-- <a href="#!" class="fw-bold text-decoration-none link-primary">
+          Learn More
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
+          </svg>
+        </a> -->
+        <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+      </div>
+      <a href="#bisniskecil" class="text-white fw-bold p-2 m-2 text-center btn btn-primary rounded"  style="margin-top: -30px !important;">
+          Cek Harga
+      </a>
+    </div>
+  </div>
+  <div class="col-12 col-lg-4 d-flex justify-content-center" id="detailmedium">
+    <div class="card bg-transparent border-primary rounded-0 overflow-hidden card-paket">
+      <div class="card-body" style="margin-top: -100px;">
+        <!-- <svg style="margin-top:40px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-diagram-3 text-primary mb-4" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z" />
+        </svg> -->
+        <h3 class="h2 mb-4 pt-5 text-danger text-center">Bisnis Medium</h3>
+        <p class="mb-4 text-dark">
+          <strong>Fitur:</strong>
+          <ul class="text-dark" style="margin-top:-20px">
+            <li>1 User Admin</li>
+            <li><b>Menambah Kasir Unlimited</b></li>
+            <li><b>Maks 6000 transaksi/ bulan</b></li>
+            <li>Upload Master Data</li>
+            <li>Transaksi Penjualan</li>
+            <li>Nota Tanpa Watermark</li>
+            <li>Dashboard Penjualan</li>
+            <li>Download Daftar Barang</li>
+            <li>Download Laporan Transaksi</li>
+            <li>Log Transaksi</li>
+          </ul> 
+        </p>
+      </div>
+      <a href="#bisnismedium" class="text-white fw-bold p-2 m-2 text-center btn btn-primary rounded" style="margin-top: -40px !important;">
+          Cek Harga
+      </a>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+
+<!-- Call To Action 2 - Bootstrap Brain Component -->
+<section class="bsb-cta-2" >
+<div class="container" style="min-height: 550px;max-height: 550px;">
+<div class="card border-0 rounded-3 overflow-hidden text-center bsb-overlay bsb-section-mb-n1" style="background-image: url('./assets/img/cta/cta-img-1.jpg'); --bsb-overlay-opacity: .9; --bsb-overlay-bg-color:var(--bs-primary-rgb);">
+  <div class="card-body">
+    <div class="row align-items-center justify-content-center">
+      <div class="col-12 col-md-10 col-xl-8 col-xxl-7">
+        <h2 class="fs-6 mb-4 text-white text-uppercase">PROMO! PROMO! POSMI!</h2>
+        <h3 class="display-5 text-white mb-5">Cek Promo Discount Setiap Bulan Untuk Sahabat POSMI Yah!</h3>
+        <a href="#detailmedium" class="btn btn-accent bsb-btn-3xl rounded mb-0 text-nowrap">Daftar Sekarang</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Fact 2 - Bootstrap Brain Component -->
+<section class="bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
+<div class="container bsb-section-mt-1">
+<div class="row gy-3 gy-md-5 gy-lg-0">
+  <div class="col-12 col-lg-5">
+    <h2 class="display-5 mb-3 mb-xl-4">Harga Paket</h2>
+    <p class="lead mb-4 mb-xl-5">Harga paket berlangganan tersedia untuk 1 bulan, 3 bulan, 6 bulan, 1 tahun dan 2 tahun.</p>
+    <!-- <a href="#!" class="btn bsb-btn-3xl btn-primary">More Details</a> -->
+  </div>
+  <div class="col-12 col-lg-7" id="bisniskecil">
+    <div class="row justify-content-xl-end">
+      <div class="col-12 col-xl-11">
+        <div class="row gy-3 gy-md-4">
+          <div class="col-12 col-sm-6">
+            <form action="{% url 'payment_request'%}" method="post">
+              {% csrf_token %}
+              <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+                <div class="card-body text-center p-4 p-xxl-5">
+                  <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
+                    <span>Bisnis Kecil</span>
+                    <span><a href="#detailkecil"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
+                  </p>
+                  <p class="text-start">
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_kecil" id="bulanan" value="bulanan" required>
+                      <label for="bulanan">
+                        <strong>Rp.250.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Langganan Per Bulan
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_kecil" id="3bulanan" value="3bulanan">
+                      <label for="3bulanan">
+                      <strong>Rp.240.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_kecil.harga_per_tiga_bulan|intcomma}}.00
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_kecil" id="6bulanan" value="6bulanan">
+                      <label for="6bulanan">
+                      <strong>Rp.230.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_kecil.harga_per_enam_bulan|intcomma}}.00
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_kecil" id="tahunan" value="tahunan">
+                      <label for="tahunan">
+                      <strong>Rp.220.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_kecil.harga_per_tahun|intcomma}}.00
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_kecil" id="2tahunan" value="2tahunan">
+                      <label for="2tahunan">
+                      <strong>Rp.210.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_kecil.harga_per_dua_tahun|intcomma}}.00
+                    </p>
+                    <p class="p-2">
+                      <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                    </p>
+                  </p>
+                  <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+                </div>
+              </div>
+            </form>
+            
+          </div>
+          <div class="col-12 col-sm-6" id="bisnismedium">
+            <form action="{% url 'payment_request'%}" method="post">
+              {% csrf_token %}
+              <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+                <div class="card-body text-center p-4 p-xxl-5">
+                  <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
+                    <span>Bisnis Medium</span>
+                    <span><a href="#detailmedium"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
+                  </p>
+                  <p class="text-start">
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_medium" id="bulanan1" value="bulanan" required>
+                      <label for="bulanan1">
+                        <strong>Rp.350.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Langganan Per Bulan
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_medium" id="3bulanan1" value="3bulanan"> 
+                      <label for="3bulanan1">
+                      <strong>Rp.340.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_medium.harga_per_tiga_bulan|intcomma}}.00
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_medium" id="6bulanan1" value="6bulanan">
+                      <label for="6bulanan1">
+                      <strong>Rp.330.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_medium.harga_per_enam_bulan|intcomma}}.00
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_medium" id="tahunan1" value="tahunan">
+                      <label for="tahunan1">
+                      <strong>Rp.320.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_medium.harga_per_tahun|intcomma}}.00
+                    </p>
+                    <p class="text-start">
+                      <input type="radio" name="bisnis_medium" id="2tahunan1" value="2tahunan">
+                      <label for="2tahunan1">
+                      <strong>Rp.310.000,00</strong>
+                      </label>
+                      <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_medium.harga_per_dua_tahun|intcomma}}.00
+                    </p>
+                    <p class="p-2">
+                      <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                    </p>
+                  </p>
+                  <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-12" id="gratis">
+            <form action="{% url 'payment_request'%}" method="post">
+              {% csrf_token %}
+              <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+                <div class="card-body text-center p-4 p-xxl-5">
+                  <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
+                    <span>Paket Dasar</span>
+                    <span><a href="#detailgratis"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
+                  </p>
+                  <p>
+                    Saya ingin mencoba terlebih dahulu <strong>POSMI</strong> dengan paket dasar terlebih dahulu.
+                  </p>
+                  <p class="p-2">
+                      <button class="btn btn-warning btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
+                    </p>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Section - About -->
+<!-- Process 1 - Bootstrap Brain Component -->
+<!-- <section id="scrollspyAbout" class="py-5 py-xl-8 bsb-section-py-xxl-1" style="margin-top:150px">
+<div class="container">
+<div class="row justify-content-md-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+    <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Our Design Process</h3>
+    <h2 class="display-5 mb-4 mb-md-5 text-center">Our design approach is very organized to ensure satisfaction for our esteemed clients.</h2>
+    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+  </div>
+</div>
+</div>
+
+<div class="container">
+<div class="row gy-5 gy-lg-0 align-items-lg-center">
+  <div class="col-12 col-lg-6">
+    <img class="img-fluid rounded" loading="lazy" src="./assets/img/process/process-img-1.webp" alt="">
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="row justify-content-xl-end">
+      <div class="col-12 col-xl-11">
+        <div class="d-flex mb-4">
+          <div>
+            <span class="btn btn-primary bsb-btn-circle bsb-btn-circle-lg pe-none me-4 bsb-tpl-font fs-5">1</span>
+          </div>
+          <div>
+            <h4 class="h2 mb-4">Planning</h4>
+            <p class="mb-0 text-secondary">Get to know your users and their needs better through surveys, interviews, usability testing, and other methods.</p>
+          </div>
+        </div>
+        <div class="d-flex mb-4">
+          <div>
+            <span class="btn btn-primary bsb-btn-circle bsb-btn-circle-lg pe-none me-4 bsb-tpl-font fs-5">2</span>
+          </div>
+          <div>
+            <h4 class="h2 mb-4">Launch</h4>
+            <p class="mb-0 text-secondary">This involves creating wireframes, mockups, and prototypes to test out your ideas and get feedback from users.</p>
+          </div>
+        </div>
+        <div class="d-flex mb-0">
+          <div>
+            <span class="btn btn-primary bsb-btn-circle bsb-btn-circle-lg pe-none me-4 bsb-tpl-font fs-5">3</span>
+          </div>
+          <div>
+            <h4 class="h2 mb-4">Finalize Product</h4>
+            <p class="mb-0 text-secondary">Once your product is launched, it's important to gather feedback from users to learn what they like and dislike about it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section> -->
+
+<!-- Testimonial 2 - Bootstrap Brain Component -->
+<!-- <section class="bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
+<div class="container">
+<div class="row gy-5 gy-lg-0">
+  <div class="col-12 col-lg-4">
+    <h2 class="display-5 mb-3 mb-xl-4">Our Clients</h2>
+    <p class="lead mb-4 mb-xl-5">We believe in client satisfaction. Here are some testimonials by our worthy clients.</p>
+    <a href="#!" class="btn bsb-btn-2xl btn-primary">More Testimonials</a>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="row justify-content-xl-end">
+      <div class="col-12 col-xl-11">
+        <div class="row gy-4">
+          <div class="col-12 col-md-6">
+            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+              <div class="card-body p-4 p-xxl-5">
+                <figure>
+                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-1.jpg" alt="Luna John">
+                  <figcaption>
+                    <blockquote class="bsb-blockquote-icon mb-4">We were so impressed with the work they did for us. They were able to take our vision and turn it into a reality, and they did it all on time and within budget. We would highly recommend them to anyone looking for a reliable and professional partner.</blockquote>
+                    <h4 class="mb-2">Luna John</h4>
+                    <h5 class="fs-6 text-secondary mb-0">UX Designer</h5>
+                  </figcaption>
+                </figure>
+                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+              <div class="card-body p-4 p-xxl-5">
+                <figure>
+                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-2.jpg" alt="Mark Smith">
+                  <figcaption>
+                    <blockquote class="bsb-blockquote-icon mb-4">We were looking for a company that could help us develop a new website that was both visually appealing and user-friendly. We are so happy with the results, and we would highly recommend them to anyone looking for a new website.</blockquote>
+                    <h4 class="mb-2">Mark Smith</h4>
+                    <h5 class="fs-6 text-secondary mb-0">Marketing Specialist</h5>
+                  </figcaption>
+                </figure>
+                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+              <div class="card-body p-4 p-xxl-5">
+                <figure>
+                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-3.jpg" alt="Michael Wilson">
+                  <figcaption>
+                    <blockquote class="bsb-blockquote-icon mb-4">We were struggling to manage our finances effectively. We needed help developing a financial plan. They create a financial plan that worked for us, and they showed us how to track our spending more effectively. We are so grateful for the help.</blockquote>
+                    <h4 class="mb-2">Michael Wilson</h4>
+                    <h5 class="fs-6 text-secondary mb-0">SEO Expert</h5>
+                  </figcaption>
+                </figure>
+                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
+              <div class="card-body p-4 p-xxl-5">
+                <figure>
+                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-4.jpg" alt="Luke Reeves">
+                  <figcaption>
+                    <blockquote class="bsb-blockquote-icon mb-4">We were looking for a company that could help us with our branding. We needed a website and marketing materials. They were able to create a brand identity that we loved. They worked with us to develop a logo that represented our company.</blockquote>
+                    <h4 class="mb-2">Luke Reeves</h4>
+                    <h5 class="fs-6 text-secondary mb-0">Sales Manager</h5>
+                  </figcaption>
+                </figure>
+                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section> -->
+
+<!-- Section - Team -->
+<!-- Team 1 - Bootstrap Brain Component -->
+<section id="scrollspyTeam" class="py-5 py-xl-8 bsb-section-py-xxl-1">
+  <div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+      <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Apa kata Pengguna POSMI?</h3>
+      <h2 class="display-5 mb-4 mb-md-5 text-center">Pengalaman sobat yang telah menggunakan POSMI:</h2>
+      <hr class="w-50 mx-auto mb-2 mb-xl-6 border-dark-subtle">
+    </div>
+  </div>
+</div>
+
+<!-- dikasih carousel di sini -->
+  <div id="myCarousel1" class="container carousel carousel1 slide container" data-bs-ride="carousel">
+    <div class="carousel-inner w-100">
+      {% for testimoni in list_testimoni %}
+        {% if forloop.first %}
+          <div class="carousel-item active carousel-item1">
+              <div class="col-md-3">
+                  <div class="card card-body justify-content-center w-100" style="height: 300px;min-height: 300px;max-height: 300px;border:none;padding:10px  ">
+                    <div class="p-2 border-top border-bottom rounded border-primary border-5 w-100 vh-100 d-flex align-items-center" >
+                      <h5 class="text-center w-100">
+                        "{{testimoni.testimoni}}"
+                      </h5>
+                    </div>
+                    <div class="mt-2">
+                      <h5 class="fw-bold text-center text-success">
+                        {{testimoni.cabang.nama_toko}} 
+                      </h5>
+                    </div>
+                    <div class="mb-2">
+                      <h6 class="fw-bold text-center">
+                        Bergabung: {{testimoni.cabang.created_at|date:"d/M/Y"}}
+                      </h6>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        {% else %}
+          <div class="carousel-item carousel-item1">
+              <div class="col-md-3">
+                  <div class="card card-body justify-content-center w-100" style="height: 300px;min-height: 300px;max-height: 300px;border:none;padding:10px">
+                    <div class="p-2 border-top border-bottom rounded border-primary border-5 w-100 vh-100 d-flex align-items-center" >
+                      <h5 class="text-center w-100">
+                        "{{testimoni.testimoni}}"
+                      </h5>
+                    </div>
+                    <div class="mt-2">
+                      <h5 class="fw-bold text-center text-success">
+                        {{testimoni.cabang.nama_toko}}
+                      </h5>
+                    </div>
+                    <div class="mb-2">
+                      <h6 class="fw-bold text-center">
+                        Bergabung: {{testimoni.cabang.created_at|date:"d/M/Y"}}
+                      </h6>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        {% endif%}
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel1" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel1" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+  <script>
+    $('.carousel1 .carousel-item1').each(function () {
+    var minPerSlide = 4;
+    var next = $(this).next();
+    if (!next.length) {
+    next = $(this).siblings(':first');
+    }
+    next.children(':first-child').clone().appendTo($(this));
+
+    for (var i = 0; i < minPerSlide; i++) { next=next.next(); if (!next.length) { next=$(this).siblings(':first'); } next.children(':first-child').clone().appendTo($(this)); } });
+  </script>
+</section>
+
+<!-- Section - Pricing -->
+<!-- Pricing 1 - Bootstrap Brain Component -->
+<section id="scrollspyPricing" class="bsb-pricing-1 bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
+<div class="container">
+<div class="row gy-5 gy-lg-0">
+  <div class="col-12 col-lg-4">
+    <h2 class="display-5 mb-3 mb-xl-4">Add-ons Paket</h2>
+    <p class="lead mb-4 mb-xl-5">
+      Digunakan untuk melakukan perpanjangan lisensi, upgrade paket bisnis dan membeli paket kuota. Silakan klik cek kode toko untuk pengecekan dan melihat <b>kode promo</b>!
+    </p>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="row justify-content-xl-end">
+      <div class="col-12 col-xl-11">
+        <div class="row gy-4 gy-md-0 gx-xxl-5">
+          <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="lisensismall">
+            <div class="card card-addons border-0 border-bottom border-primary shadow-sm" style="min-height: 600px !important; max-height: 600px !important;">
+              <div class="card-body p-4 p-xxl-5">
+                <h2 class="h4">Perpanjangan Lisensi</h2>
+                <h3 class="h5" style="color:black">Paket Bisnis Kecil</h3>
+                <h4 class="display-3 text-primary mb-0 bsb-tpl-font">250.000</h4>
+                <p class="text-secondary mb-4">Rupiah / Bulan</p>
+                <ul class="list-group list-group-flush mb-4">
+                  <li class="list-group-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                    </svg>
+                    <span><strong>1500</strong> Transaksi Perbulan</span>
+                  </li>
+                  <li class="list-group-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                    </svg>
+                    <span>Menambah User Kasir Unlimited</span>
+                  </li>
+                  <li class="list-group-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                    </svg>
+                    <span>Full Support Admin</span>
+                  </li>
+                </ul>
+                <form action="{% url 'cek_lisensi'%}?tipe=small" method="post">
+                  {% csrf_token %}
+                  <div class="my-3">
+                    <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                  </div>
+                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</button>                        
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="lisensimedium">
+            <div class="card card-addons border-0 border-bottom border-primary shadow-sm" style="min-height: 600px !important; max-height: 600px !important;">
+              <div class="card-body p-4 p-xxl-5">
+                <h2 class="h4">Perpanjangan Lisensi</h2>
+                <h3 class="h5" style="color: black;">Paket Bisnis Medium</h3>
+                <h4 class="display-3 text-primary mb-0 bsb-tpl-font">350.000</h4>
+                <p class="text-secondary mb-4">Rupiah / Bulan</p>
+                <ul class="list-group list-group-flush mb-4">
+                  <li class="list-group-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                    </svg>
+                    <span><strong>6000</strong> Transaksi Perbulan</span>
+                  </li>
+                  <li class="list-group-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                    </svg>
+                    <span>Menambah User Kasir Unlimited</span>
+                  </li>
+                  <li class="list-group-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                    </svg>
+                    <span>Full Support Admin</span>
+                  </li>
+                </ul>
+                <form action="{% url 'cek_lisensi'%}?tipe=medium" method="post">
+                  {% csrf_token %}
+                  <div class="my-3">
+                    <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                  </div>
+                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</button>                          
+                </form>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="upgradepaket">
+            <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" style="min-height: 450px !important; max-height: 450px !important;">
+              <div class="card-body p-4 p-xxl-5">
+                <h2 class="h3">Upgrade Paket</h2>
+                <h3 class="h5" style="color: black;">Upgrade paket bisnis dari bisnis kecil ke medium untuk skala transaksi lebih besar.</h3>
+                <ul class="list-group list-group-flush mb-4">
+                  <li class="list-group-item p-2" style="border-radius: 5px; background-color: whitesmoke;">
+                    <span style="font-weight: bold;">catatan:</span><br>
+                    <span>Biaya upgrade akan dihitung dari sisa tanggal expired paket.</span>
+                  </li>
+                </ul>
+                <form action="{% url 'cek_lisensi'%}?tipe=upgrade" method="post">
+                  {% csrf_token %}
+                  <div class="my-3">
+                    <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                  </div>
+                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Biaya Upgrade</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-6 p-2 d-flex justify-content-center" id="tambahkuota">
+            <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" style="min-height: 450px !important; max-height: 450px !important;">
+              <div class="card-body p-4 p-xxl-5">
+                <h2 class="h4">Tambah Kuota Transaksi</h2>
+                <h3  style="color: black;font-size: 19px;">Menambah kuota transaksi mu?<br>Bisa! Mulai dari:</h3>
+                <h4 class="display-4 text-primary mb-0 bsb-tpl-font">10.000</h4>
+                <p class="text-secondary mb-4">Rupiah / 50 Transaksi</p>
+                <form action="{% url 'cek_lisensi'%}?tipe=kuota" method="post">
+                  {% csrf_token %}
+                                          <div class="my-3">
+                                            <input required type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
+                                          </div>
+                                          <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; margin-top:5px;height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Kode Toko</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- Section - Blog -->
+<!-- Blog 2 - Bootstrap Brain Component -->
+<section id="scrollspyBlog" class="py-5 py-xl-8 bsb-section-py-xxl-1">
+<div class="container">
+<div class="row justify-content-md-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+    <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Tutorial</h3>
+    <h2 class="display-5 mb-4 mb-md-5 text-center">Tutorial Penggunaan POSMI:</h2>
+    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
+  </div>
+</div>
+</div>
+
+<div class="container overflow-hidden">
+<div class="row gy-3 gy-lg-0 gx-xxl-5">
+{% for tutorialnya in image_tutorial %}
+  <div class="col-12 col-lg-4">
+    <article>
+      <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
+        <a href="{% url 'detail_cara' tutorialnya.tutorial.id %}">
+           
+            <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy" src="{{tutorialnya.image.url}}" alt="Business">
+        </a>
+        <figcaption>
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-eye text-white bsb-hover-fadeInLeft" viewBox="0 0 16 16">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+          </svg>
+          <h4 class="h6 text-white bsb-hover-fadeInRight mt-2">Read More</h4>
+        </figcaption>
+      </figure>
+      <div class="entry-header mb-3">
+        <ul class="entry-meta list-unstyled d-flex mb-2">
+          <li>
+            <a class="link-primary text-decoration-none" href="#!">Tutorial</a>
+          </li>
+        </ul>
+        <h2 class="entry-title h4 mb-0">
+          <a class="link-dark text-decoration-none" href="{% url 'detail_cara' tutorialnya.tutorial.id %}">{{tutorialnya.tutorial.judul|title}}</a>
+        </h2>
+      </div>
+      <div class="entry-footer">
+        <ul class="entry-meta list-unstyled d-flex align-items-center mb-0">
+          <li>
+            <a class="fs-7 link-secondary text-decoration-none d-flex align-items-center" href="#!">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
+                <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z" />
+                <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+              </svg>
+              <span class="ms-2 fs-7">{{tutorialnya.tutorial.created_at|date:"d/M/Y H:i:s"}}</span>
+            </a>
+          </li>
+          <li>
+            <span class="px-3">&bull;</span>
+          </li>
+          <li>
+            <a class="link-secondary text-decoration-none d-flex align-items-center" href="#!">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
+              </svg>
+              <span class="ms-2 fs-7">{{tutorialnya.comment}}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </article>
+  </div>
+{% endfor %}
+</div>
+</div>
+</section>
+<!-- Section - Contact -->
+    <!-- Contact 3 - Bootstrap Brain Component -->
+    <section id="scrollspyContact" class="bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
+        <div class="container">
+          <div class="row gy-3 gy-md-4 gy-lg-0">
+            <div class="col-12 col-lg-6">
+              <div class="row justify-content-xl-center">
+                <div class="col-12 col-xl-11">
+                  <h2 class="display-5 mb-3 text-primary">Dari Pengembang:</h2>
+                  <p class="lead mb-5">Kami selalu memberikan pelayanan terbaik untuk pengguna POSMI. Apabila ada kendala, segera hubungi kami:</p>
+                  <div class="d-flex mb-5">
+                    <div class="me-4  fs-3" style="color: blue;">
+                      <i class="fa fa-facebook" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                      <h4 class="mb-3">Facebook Profile</h4>
+                      <a href="https://www.facebook.com/suryo1982/" target="_blank" style="font-size: 20px;font-weight: bold;text-decoration: none;"><address class="mb-0 text-secondary">Suryo Adhy Chandra, ST</address></a>
+                    </div>
+                  </div>
+                  <div class="row mb-5">
+                    <div class="col-12 col-sm-6">
+                      <div class="d-flex mb-5 mb-sm-0">
+                        <div class="me-4 fs-1" style="color: green;">
+                          <i class="fa fa-whatsapp" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                          <h4 class="mb-3">Whatsapp</h4>
+                          <p class="mb-0">
+                            <a class="link-secondary text-decoration-none" href="https://wa.me/+6281213270275" target="_blank">Suryo Adhy Chandra</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <div class="d-flex mb-5 mb-sm-0">
+                        <div class="me-4 fs-1" style="color: blue;">
+                          <i class="fa fa-telegram" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                          <h4 class="mb-3">Telegram</h4>
+                          <p class="mb-0">
+                            <a class="link-secondary text-decoration-none" href="https://t.me/suryo_adhy" target="_blank">@suryo_adhy</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-6 mt-4">
+                      <div class="d-flex mb-0">
+                        <div class="me-4 " style="color:blue">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-envelope-at" viewBox="0 0 16 16">
+                            <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z" />
+                            <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648Zm-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 class="mb-3">E-Mail</h4>
+                          <p class="mb-0">
+                            <a class="link-secondary text-decoration-none" href="mailto:demo@yourdomain.com" target="_blank">adhy.chandra@gmail.com</a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex">
+                    <div class="me-4 " style="color: blue;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16">
+                        <path d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z" />
+                        <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1h-3zm1.038 3.018a6.093 6.093 0 0 1 .924 0 6 6 0 1 1-.924 0zM0 3.5c0 .753.333 1.429.86 1.887A8.035 8.035 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5zM13.5 1c-.753 0-1.429.333-1.887.86a8.035 8.035 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="mb-3">Kami akan memberikan response sesegera mungkin.</h4>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="bg-white position-relative border rounded shadow-sm overflow-hidden p-2 text-center">
+                
+                  <h2 class=" text-primary">Program Toko Get Toko</h2>  
+                  <div class="mb-3">(Khusus Pengguna Bisnis Kecil dan Medium)</div>
+                  <p class="text-center">Setiap Toko Memiliki Kode Unik berupa huruf 4 karakter. Untuk melihat kode toko bisa login ke pos dan klik tombol profile merah.</p>
+                  <img src="{% static 'images/profile1.png'%}" style="width: 250px;height: 100px;border-radius: 5px;" alt="">
+                  <div class="my-2">Kemudian akan muncul detail keterangan toko.</div>
+                  <img src="{% static 'images/profile2.png'%}" style="width: 300px;height: 250px;border-radius: 5px;box-shadow: 5px 5px 5px lightgrey;" alt="">
+                  <div class="my-2">Nah Kode toko itu bagikan kepada teman-teman yang belum memiliki aplikasi Penjualan pada saat pendaftaran sebagai referal.</div>
+                  <div class="my-2">Dengan kode referal, kamu akan mendapatkan bonus 5% dari transaksi pembelian kuota/perpanjangan lisensi dari toko yang memakai kode referalmu selamanya, dan dapat diuangkan.</div>
+                  <div class="my-2 text-primary"><h4>Yuk, segera referensikan teman-temanmu!</h4></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+{% endblock %}
