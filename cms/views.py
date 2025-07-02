@@ -145,9 +145,15 @@ def index(request):
             except:
                 jumlah_metode.append(0)
             
-            print(jumlah_metode)
+            if request.user.userprofile.cabang.lisensi_expired < datetime.datetime.now():
+                is_perpanjangan = True
+            else:
+                is_perpanjangan = False
+
+
 
             context = {
+                'is_perpanjangan':is_perpanjangan,
                 'bulan':bulan,
                 'tahun':tahun,
                 'total_penjualan_sebulan':total_penjualan_sebulan['jumlah'],
