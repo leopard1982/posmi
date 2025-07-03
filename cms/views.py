@@ -242,12 +242,12 @@ def transaksiBulanBerjalan(request):
     if request.user.is_authenticated:
         if request.user.is_superuser:
             transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year))
-            bulannya = bulannya(datetime.datetime.now().month)
+            bulanku = bulannya(datetime.datetime.now().month)
             tahun = datetime.datetime.now().year
             bulan = datetime.datetime.now().month
             context = {
                 'transaksi':transaksi,
-                'bulannya':bulannya,
+                'bulannya':bulanku,
                 'tahunnya':tahun,
                 'bulan':bulan
             }
