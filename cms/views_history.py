@@ -38,7 +38,7 @@ def getHistoryBB(request):
                         alasan_void=jual.alasan_void
                     else:
                         alasan_void="-"
-                    file.write(f"{index},{jual.nota},{jual.no_nota},{jual.cabang.prefix},{jual.user.username},{jual.user.userprofile.nama_lengkap},{jual.items},{jual.total},{jual.metode},{jual.tgl_bayar.strftime('%d/%h/%Y %H:%M:%Y')},{jual.customer},{jual.reprint_nota},{jual.cetak_kuitansi},{alasan_void}\n")
+                    file.write(f"{index},{jual.nota},{jual.no_nota:05d},{jual.cabang.prefix},{jual.user.username},{jual.user.userprofile.nama_lengkap},{jual.items},{jual.total},{jual.metode},{jual.tgl_bayar.strftime('%d/%h/%Y %H:%M:%Y')},{jual.customer},{jual.reprint_nota},{jual.cetak_kuitansi},{alasan_void}\n")
                     index +=1
                 file.close()
                 
