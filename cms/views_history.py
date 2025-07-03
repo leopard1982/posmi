@@ -43,7 +43,7 @@ def getHistoryBB(request):
                 file.close()
                 
                 file=open(nama_file,'rb')
-                file_response = FileResponse(file,as_attachment=True,filename=f"histori_{request.user.userprofile.cabang.prefix}.csv")
+                file_response = FileResponse(file,as_attachment=True,filename=f"histori_{request.user.userprofile.cabang.prefix}_{bulan}_{tahun}.csv")
                 return file_response
             except Exception as ex:
                 print(ex)
