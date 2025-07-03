@@ -8,11 +8,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        {% if user.userprofile.foto %}
-          <img class="img-profile rounded-circle" src="{{user.userprofile.foto.url}}">
-        {% else %}
-          <img class="img-profile rounded-circle" src="{% static 'img/undraw_profile.svg'%}">
-        {% endif %}
+        <div class="d-flex justify-content-center">
+          {% if user.userprofile.foto %}
+            <img class=" rounded" style="width: 100px;height: 100px;box-shadow: 0px 0px 10px blue;" src="{{user.userprofile.foto.url}}">
+          {% else %}
+            <img class=" rounded" style="width: 100px;height: 100px;box-shadow: 0px 0px 10px blue;" src="{% static 'img/undraw_profile.svg'%}">
+          {% endif %}
+        </div>
+        
         <div>
           <table class="table">
             <tr>
