@@ -22,3 +22,4 @@ jobs/__pycache__
 jobs/migrations
 resep/__pycache__
 resep/migrations
+download_history
