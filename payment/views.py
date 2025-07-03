@@ -333,12 +333,18 @@ def cekLisensi(request):
                 list_paket_small = DaftarPaket.objects.get(nama="Bisnis Kecil")
                 list_paket_medium=None
 
+                if cabang.paket == None:
+                    return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Paket Free tidak bisa diperpanjang, silakan upgrade ke paket Bisnis Kecil atau Bisnis Besar terlebih dahulu.</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+
                 # kalau belum masa tenggang tidak diperkenankan untuk upgrade
                 if cabang.lisensi_expired > datetime.datetime.now():
                     return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan Lisensi belum dapat dilakukan karena masih dalam masa aktif.</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
 
+
                 if cabang.paket.nama=="Bisnis Medium":
                     return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan gagal dilakukan karena toko ini menggunakan tipe Bisnis Kecil</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+                
+                
                 
             elif tipe=="medium":
                 info_registrasi="Perpanjangan Lisensi Bisnis Medium"
@@ -347,12 +353,17 @@ def cekLisensi(request):
                 list_paket_medium = DaftarPaket.objects.get(nama="Bisnis Medium")
                 list_paket_small=None
 
+                if cabang.paket == None:
+                    return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Paket Free tidak bisa diperpanjang, silakan upgrade ke paket Bisnis Kecil atau Bisnis Besar terlebih dahulu.</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+
                 if cabang.lisensi_expired > datetime.datetime.now():
                     return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan Lisensi belum dapat dilakukan karena masih dalam masa aktif.</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
 
                 if cabang.paket.nama=="Bisnis Kecil":
                     return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan gagal dilakukan karena toko ini menggunakan tipe Bisnis Medium</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
 
+                
+                
             elif tipe=="upgrade":
                 list_paket_medium=None
                 list_paket_small=None
