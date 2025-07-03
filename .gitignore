@@ -4,6 +4,7 @@ stock/migrations
 cms/migrations
 cara/migrations
 promo/migrations
+paymen/migrations
 kelontong_mami/settings.py
 pos/__pycache__
 kelontong_mami/__pycache__
