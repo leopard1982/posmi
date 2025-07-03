@@ -247,7 +247,7 @@ def transaksiBulanBerjalan(request):
             bulan = datetime.datetime.now().month
             context = {
                 'transaksi':transaksi,
-                'bulannya':bulan,
+                'bulannya':bulannya,
                 'tahunnya':tahun,
                 'bulan':bulan
             }
