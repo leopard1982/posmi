@@ -1,5 +1,6 @@
 from django.db import models
 from stock.models import Cabang,DaftarPaket
+import uuid
 
 # Create your models here.
 class TokoGetToko(models.Model):
@@ -11,7 +12,8 @@ class TokoGetToko(models.Model):
     is_withdraw = models.BooleanField(default=True)
 
 class MidtransPayment(models.Model):
-    id = models.CharField(max_length=100,primary_key=True,null=False,blank=False,default="")
+    id = models.UUIDField(auto_created=True,editable=False,primary_key=True,null=False,blank=False,default=uuid.uuid4)
+    midtrans_token = models.CharField(max_length=100,default="")
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,blank=True,null=True)
     total = models.IntegerField(default=0)
     kode_voucher = models.CharField(max_length=100,blank=True,null=True)

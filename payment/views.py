@@ -519,6 +519,8 @@ def hitungBiayaKuota(request):
 
 def tambahKuota(request):
     import datetime
+    import uuid
+
     try:
         asal = request.META['HTTP_REFERER']
     except Exception as ex:
@@ -562,10 +564,13 @@ def tambahKuota(request):
         # hitung wallet bonus
         walet = int(harga*5/100)
 
-        transaksi = paymentMidtrans()
+        id_transaksi = uuid.uuid4()
+        transaksi = paymentMidtrans(str(id_transaksi))
 
+        
         midtranspayment = MidtransPayment()
-        midtranspayment.id = transaksi['token']
+        midtranspayment.id=id_transaksi
+        midtranspayment.midtrans_token = transaksi['token']
         midtranspayment.cabang = request.user.userprofile.cabang
         midtranspayment.total = harga
         midtranspayment.referal_point = walet

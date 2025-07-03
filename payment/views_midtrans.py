@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.shortcuts import HttpResponse,render
 
-def paymentMidtrans():
+def paymentMidtrans(order_id):
     jumlah = 200000
     snap = midtransclient.Snap(
         is_production=False,
@@ -13,7 +13,7 @@ def paymentMidtrans():
 
     param = {
         "transaction_details": {
-            "order_id": "test_123",
+            "order_id": order_id,
             "gross_amount": jumlah,
         },
         "credit_card": {
@@ -28,6 +28,6 @@ def paymentMidtrans():
     return transaction
 
 def responseMidtransPayment(request):
-    print(request.POST)
-    print(request.GET)
+    print(f"post: {request.POST}")
+    print(f"get: {request.GET}")
     return HttpResponse('ok')
