@@ -244,10 +244,12 @@ def transaksiBulanBerjalan(request):
             transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=datetime.datetime.now().month) & Q(updated_at__year=datetime.datetime.now().year))
             bulan = bulannya(datetime.datetime.now().month)
             tahun = datetime.datetime.now().year
+            bulan = datetime.datetime.now().month
             context = {
                 'transaksi':transaksi,
                 'bulannya':bulan,
-                'tahunnya':tahun
+                'tahunnya':tahun,
+                'bulan':bulan
             }
             return render(request,'administrator/components/history_bulan_berjalan.html',context)
         else:
@@ -262,8 +264,12 @@ def transaksiBulanLain(request):
         if request.user.is_superuser:
             if request.method=="POST":
                 transaksi = Penjualan.objects.all().filter(Q(is_paid=True) & Q(cabang=request.user.userprofile.cabang) & Q(updated_at__month=int(request.POST['bulan'])) & Q(updated_at__year=int(request.POST['tahun'])))
+                bulan = int(request.POST['bulan'])
+                tahunnya = int(request.POST['tahun'])
                 context = {
-                    'transaksi':transaksi
+                    'transaksi':transaksi,
+                    'bulan':bulan,
+                    'tahunnya':tahunnya
                 }
                 return render(request,'administrator/components/history_bulan_lain.html',context)
             return render(request,'administrator/components/filter_history.html')

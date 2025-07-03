@@ -1,0 +1,4 @@
+no,id_transaksi,nomor_nota,cabang,user_id,user_name,total_item,total_bayar,metode_bayar,tanggal,customer,nota_print,kuitansi_print,alasan_void
+1,d315a789-89fb-4aec-8514-bdaa079365b1,00005,onwi,suryo,Suryo Adhy Chandra, ST,1,15000.00,0,03/Jul/2025 08:56:2025,mas jo,0,0,-
+2,1d76bb60-49f6-49f0-bc37-031db243ecdb,00003,onwi,suryo,Suryo Adhy Chandra, ST,1,15000.00,0,03/Jul/2025 01:14:2025,mas jo,0,0,salah input
+3,a224f30f-cdbf-4428-99cb-51aa3da30de1,00004,onwi,suryo,Suryo Adhy Chandra, ST,2,35000.00,0,03/Jul/2025 08:52:2025,mas jo,0,0,-

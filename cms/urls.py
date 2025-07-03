@@ -4,6 +4,7 @@ from .views import editBarang, tambahBarang,downloadTemplate,konfirmasiUpload, h
 from .views import viewLog,daftarKasir,tambahKasir,detailPenjualan,konfirmasiVoid,tidakVoid,okeVoid
 from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin,gantiPassword,updateStatusKasir
 from .views import detailPengguna,updateFoto,updatePassword,updateNama, tambahBarangSatuan
+from .views_history import getHistoryBB
 
 urlpatterns = [
     path('', index,name='index_cms'),
@@ -13,6 +14,7 @@ urlpatterns = [
     path('history/bb/',transaksiBulanBerjalan,name='transaksi_bulan_berjalan'),
     path('history/bl/',transaksiBulanLain,name='transaksi_bulan_lain'),
     path('history/detail/',detailPenjualan,name='detail_penjualan_histori'),
+    path('history/bb/download/',getHistoryBB,name='get_history_bulan_berjalan'),
     path('profil/',profilSaya,name="profil_saya"),
     path('barang/tambah/',tambahBarang,name="tambah_barang"),
     path('barang/template/',downloadTemplate,name="download_template"),

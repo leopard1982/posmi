@@ -487,6 +487,7 @@ def bayarTransaksi(request):
                         penjualan.customer=request.POST['pembeli']
                         penjualan.tgl_bayar = datetime.datetime.now()
                         penjualan.no_nota = str(no_nota).zfill(5)
+                        penjualan.user_name = str(request.user.userprofile.nama_lengkap).title()
                         penjualan.save()
 
                         cabangnya = penjualan.cabang

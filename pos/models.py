@@ -42,6 +42,7 @@ class Penjualan(models.Model):
     cetak_kuitansi = models.IntegerField(default=0)
     is_void = models.BooleanField(default=False,blank=True,null=True)
     alasan_void = models.CharField(max_length=200,null=True,blank=True)
+    user_name = models.CharField(max_length=200,default="")
 
     def __str__(self):
         if self.is_paid:

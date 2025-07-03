@@ -27,12 +27,25 @@
 
 </div>
 
+<div class="d-flex justify-content-between">
+    <div></div>
+    <div class="text-center  p-2 border rounded bg-white shadow" style="height: 80px;">
+        <span href="#" class="text-white bg-dark fw-bold  py-0 px-5 mb-2" style="height: 25px;text-decoration: none;" >Download History Transaksi</span><br>
+        <div class="d-flex justify-content-between mt-2">
+            <a href="{% url 'get_history_bulan_berjalan'%}?bulan={{bulan}}&tahun={{tahunnya}}&f=0" class="btn btn-danger btn-sm  py-0 px-2 mb-2" style="height: 25px;" >semua</a>
+                <a href="{% url 'get_history_bulan_berjalan'%}?bulan={{bulan}}&tahun={{tahunnya}}&f=1" class="btn btn-success btn-sm  py-0 px-2 mb-2" style="height: 25px;" >sukses</a>
+                <a href="{% url 'get_history_bulan_berjalan'%}?bulan={{bulan}}&tahun={{tahunnya}}&f=2" class="btn btn-secondary btn-sm  py-0 px-2 mb-2" style="height: 25px;" >pembatalan (void)</a>
+        </div>
+    </div>
+</div>
+
+
 <div>
     <table id="datasetTrxBulanLain"  >
         <thead>
             <tr>
                 <th>No.</th>
-                <th>ID Transaksi</th>
+                <th>Transaksi</th>
                 <th>Items</th>
                 <th>Jumlah</th>
                 <th>Customer</th>
@@ -44,10 +57,16 @@
         <tbody>
             {% for trx in transaksi %}
             <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
-                <td>{{forloop.counter}} </td>
+                <td>{{forloop.counter}}</td>
                 <td  style="font-size: 14px;">
-                    {{trx.nota}}<br>
-                    <a target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
+                    ID: <span class="fw-bold">{{trx.nota}}</span><br>
+                    Nomor Nota: <span class="fw-bold">{{trx.no_nota}}</span><br>
+                    {% if trx.is_void %}
+                        <a target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" class="btn btn-sm btn-danger rounded-pill  px-3" style="padding:0">Lihat Detail</a><br>
+                        <span class="text-danger">alasan void: <span class="fw-bold">{{trx.alasan_void}}</span></span>
+                    {% else %}
+                        <a target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a><br>
+                    {% endif %}
                 </td>
                 <td>{{trx.items}}</td>
                 <td>Rp.{{trx.total|intcomma}}</td>
@@ -56,10 +75,9 @@
                 <td >{{trx.tgl_bayar|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{trx.tgl_bayar|date:"h:m:s"}}</span></td>
                 <td class="text-center">
                     {% if trx.is_void %}
-                        <span class="text-danger fw-bold fst-italic">Batal</span>
+                        <span class="text-danger fw-bold fst-italic">Batal (VOID)</span>
                     {% else %}
                         <span class="text-success fw-bold">Sukses</span><br>
-                        <a target="_blank" href="{% url 'konfirmasi_void'%}?id={{trx.nota}}"  class="btn btn-sm btn-danger rounded-pill p-0 px-2">Batalkan</a>
                     {% endif %}
                 </td>
             </tr>
