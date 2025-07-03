@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import paymentRequest, paymentResponse, cekLisensi,hitungBiayaKuota,tambahKuota,hitungExpired
 from .views import upgradeLisensi,hitungPanjangLisensi,perpanjangLisensi
+from .views_midtrans import responseMidtransPayment
 
 urlpatterns = [
     path('req/',paymentRequest,name='payment_request' ),
@@ -12,4 +13,5 @@ urlpatterns = [
     path('lisensi/kuota/tambah/',tambahKuota,name="tambah_kuota"),
     path('lisensi/upgrade/hitung/',hitungExpired,name="hitung_expired"),
     path('lisensi/upgrade/',upgradeLisensi,name="upgrade_lisensi"),
+    path('response/',responseMidtransPayment,name='response_midtrans_payment')
 ]

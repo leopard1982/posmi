@@ -9,3 +9,16 @@ class TokoGetToko(models.Model):
     nilai = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     is_withdraw = models.BooleanField(default=True)
+
+class MidtransPayment(models.Model):
+    id = models.CharField(max_length=100,primary_key=True,null=False,blank=False,default="")
+    cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,blank=True,null=True)
+    total = models.IntegerField(default=0)
+    kode_voucher = models.CharField(max_length=100,blank=True,null=True)
+    referal_point = models.IntegerField(default=0)
+    transaksi = models.CharField(max_length=100,default="") #upgrade lisensi, perpanjangan atau yang lain
+    jml_kuota = models.IntegerField(default=0,blank=True,null=True) #jika tambah kuota
+    lisensi_expired = models.DateTimeField(null=True,blank=True) #menyimpan informasi pertambahan lisensi
+    is_success = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

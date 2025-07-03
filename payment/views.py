@@ -10,6 +10,8 @@ from promo.views import cekKodeToko,cekKodeVoucher
 from promo.models import Promo, PromoUsed
 from pos.models import DetailWalet
 from posmimail import posmiMail
+from .views_midtrans import paymentMidtrans
+from .models import MidtransPayment
 
 def prosesPayment(noTransaksi,jumlah):
     midtrans_server = settings.MIDTRANS_SERVER
@@ -530,6 +532,8 @@ def tambahKuota(request):
             voucher=""
         kode_toko=request.GET['id']
         disc = 0
+
+        
         
         if voucher!="":
             cek_voucher = cekKodeVoucher(kode=voucher,toko=kode_toko,tipe="add")
@@ -557,40 +561,53 @@ def tambahKuota(request):
 
         # hitung wallet bonus
         walet = int(harga*5/100)
+
+        transaksi = paymentMidtrans()
+
+        midtranspayment = MidtransPayment()
+        midtranspayment.id = transaksi['token']
+        midtranspayment.cabang = request.user.userprofile.cabang
+        midtranspayment.total = harga
+        midtranspayment.referal_point = walet
+        midtranspayment.transaksi="kuota"
+        midtranspayment.kode_voucher=voucher
+        midtranspayment.save()
+
+        return HttpResponseRedirect(transaksi['redirect_url'])
                 
         try:
-                    # update data voucher berkurang 1
-                    promo = Promo.objects.get(kode=voucher)
-                    promo.kuota -= 1
-                    promo.save()
+            # update data voucher berkurang 1
+            promo = Promo.objects.get(kode=voucher)
+            promo.kuota -= 1
+            promo.save()
 
-                    # simpan siapa pemakai voucher
-                    promoused = PromoUsed()
-                    promoused.cabang=cabang
-                    promoused.promo=promo
-                    promoused.save()
+            # simpan siapa pemakai voucher
+            promoused = PromoUsed()
+            promoused.cabang=cabang
+            promoused.promo=promo
+            promoused.save()
         except Exception as ex:
-                    print(ex)
+            print(ex)
 
 
         # simpan tambahan wallet untuk referal (kalau ada)
         try:
-                    print(f'penambahan wallet di cabang {cabang.nama_cabang} dengan kode referal {cabang.kode_referal}')
-                    kode_ref = cabang.kode_referal
-                    reff = Cabang.objects.get(prefix=kode_ref)
-                    reff.wallet = reff.wallet+walet
-                    reff.save()
+            print(f'penambahan wallet di cabang {cabang.nama_cabang} dengan kode referal {cabang.kode_referal}')
+            kode_ref = cabang.kode_referal
+            reff = Cabang.objects.get(prefix=kode_ref)
+            reff.wallet = reff.wallet+walet
+            reff.save()
 
-                    print('sekarang menambahkan detail wallet')
-                    detailwallet = DetailWalet()
-                    detailwallet.cabang=reff
-                    detailwallet.cabang_referensi=cabang
-                    detailwallet.jumlah=walet
-                    detailwallet.keterangan="penambahan kuota transaksi"
-                    detailwallet.save()
-                    print('detail wallet sudah ditambahkan')
+            print('sekarang menambahkan detail wallet')
+            detailwallet = DetailWalet()
+            detailwallet.cabang=reff
+            detailwallet.cabang_referensi=cabang
+            detailwallet.jumlah=walet
+            detailwallet.keterangan="penambahan kuota transaksi"
+            detailwallet.save()
+            print('detail wallet sudah ditambahkan')
         except Exception as ex:
-                    print(ex)
+            print(ex)
 
         jumlah_kuota = request.POST['jumlah_kuota']
         cabang.kuota_transaksi+=int(jumlah_kuota)
@@ -608,6 +625,8 @@ def tambahKuota(request):
         logtransaksi.keterangan=f"pembelian kuota {jumlah_kuota}"
         logtransaksi.transaksi="kuota transaksi"
         logtransaksi.save()
+
+        
         
         messages.add_message(request,messages.SUCCESS,f"Selamat kuota transaksi untuk toko {cabang.nama_toko} ({cabang.nama_cabang}) telah bertambah {jumlah_kuota} menjadi sebanyak: {cabang.kuota_transaksi} transaksi. ")
         return HttpResponseRedirect('/')
