@@ -21,7 +21,7 @@ def getHistoryBB(request):
                     filternya = 0
                 nama_file = 'download_history/' + str(uuid.uuid4()) + ".csv"
                 file = open(nama_file,'w')
-                file.write('no,id_transaksi,nomor_nota,cabang,user_id,user_name,total_item,total_bayar,metode_bayar,tanggal,customer,jumlah_nota_reprint,jumlah_kuitansi_a4_print,status,alasan_void\n')
+                file.write('no,bulan,tahun,id_transaksi,nomor_nota,cabang,user_id,user_name,total_item,total_bayar,metode_bayar,tanggal,customer,jumlah_nota_reprint,jumlah_kuitansi_a4_print,status,alasan_void\n')
 
                 if filternya == 0:
                     penjualan = Penjualan.objects.all().filter(Q(cabang=request.user.userprofile.cabang) & Q(tgl_bayar__month=bulan) & Q(tgl_bayar__year=tahun))
@@ -45,7 +45,7 @@ def getHistoryBB(request):
                         metode_bayar = 'cash'
                     else:
                         metode_bayar = 'transfer'
-                    file.write(f"{index},{jual.nota},{int(jual.no_nota):05d},{jual.cabang.prefix},{jual.user.username},{jual.user.userprofile.nama_lengkap},{jual.items},{jual.total},{metode_bayar},{jual.tgl_bayar.strftime('%d/%h/%Y %H:%M:%Y')},{jual.customer},{jual.reprint_nota},{jual.cetak_kuitansi},{status},{alasan_void}\n")
+                    file.write(f"{index},{bulan},{tahun},{jual.nota},{int(jual.no_nota):05d},{jual.cabang.prefix},{jual.user.username},{jual.user.userprofile.nama_lengkap},{jual.items},{jual.total},{metode_bayar},{jual.tgl_bayar.strftime('%d/%h/%Y %H:%M:%Y')},{jual.customer},{jual.reprint_nota},{jual.cetak_kuitansi},{status},{alasan_void}\n")
                     index +=1
                 file.close()
                 
