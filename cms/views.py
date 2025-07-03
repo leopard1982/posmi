@@ -150,7 +150,20 @@ def index(request):
             else:
                 is_perpanjangan = False
 
+            try:
+                nama_paket = request.user.userprofile.cabang.paket.nama
+            except Exception as ex:
+                print(ex)
+                nama_paket=None
 
+            if nama_paket == "Bisnis Kecil":
+                tipe_paket = "small"
+            elif nama_paket == "Bisnis Medium":
+                tipe_paket = "medium"
+            else:
+                tipe_paket = None
+
+            print(tipe_paket)
 
             context = {
                 'is_perpanjangan':is_perpanjangan,
@@ -177,7 +190,8 @@ def index(request):
                 'nama_kasir':nama_kasir,
                 'jumlah_transaksi':jumlah_transaksi,
                 'jumlah_metode':jumlah_metode,
-                'jumlah_barang':jumlah_barang
+                'jumlah_barang':jumlah_barang,
+                'tipe_paket':tipe_paket
             }
             return render(request,'administrator/index.html',context)
         else:

@@ -56,6 +56,10 @@
         {% include 'registrasi/components/tambah_kuota.html'%}
     {% elif tipe == "upgrade" %}
         {% include 'registrasi/components/upgrade_paket.html' %}
+    {% elif tipe == "small" %}
+        {% include 'registrasi/components/perpanjangan_lisensi.html' %}
+    {% elif tipe == "medium" %}
+        {% include 'registrasi/components/perpanjangan_lisensi.html' %}
     {% endif %}
     
     <!-- <div class="mt-5 mb-5">

@@ -1,0 +1,53 @@
+{% load humanize %}
+{% load static %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js" integrity="sha512-2kIcAizYXhIn8TzUvqzEDZNuDZ+aW7yE/+f1HJHXFjQcGNfv1kqzJSTBRBSlOgp6B/KZsz1K0a3ZTqP9dnxioQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+    .keterangan {
+        width: 220px;
+        padding-top:5px
+    }
+</style>
+{% endblock %}
+
+<div>
+    <div class="fs-6 fw-bold mt-3">
+        Perpanjangan Lisensi Bisnis {% if tipe == "small" %} Kecil {% else %} Medium {% endif %}
+    </div>
+    <div>
+        Untuk perpanjangan Lisensi Bisnis {% if tipe == "small" %} Kecil {% else %} Medium {% endif %} akan menambah masa expired dan hanya dapat dilakukan pada masa tenggang (grace period). Silakan memilih waktu perpanjangan lisensi di bawah ini.
+    </div>
+    <form action="{% url 'perpanjang_lisensi'%}?id={{kode_toko}}" method="POST">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center mt-3">
+            <label for="list_biaya" class="keterangan fw-bold">Biaya Perpanjangan: </label>
+            <select name="list_biaya" required class="form-select" id="list_biaya" hx-get="{% url 'hitung_panjang_lisensi'%}?id={{kode_toko}}" hx-trigger="change" hx-target="#biaya">
+                <option value="">----------</option>
+                {% if tipe == "small" %}
+                    <option value="bulan">[Perpanjangan 1 Bulan] Rp.{{list_paket_small.harga_per_bulan|intcomma}}.00</option>
+                    <option value="3bulan">[Perpanjangan 3 Bulan] Rp.{{list_paket_small.harga_per_tiga_bulan|intcomma}}.00</option>
+                    <option value="6bulan">[Perpanjangan 6 Bulan] Rp.{{list_paket_small.harga_per_enam_bulan|intcomma}}.00</option>
+                    <option value="tahun">[Perpanjangan 1 Tahun] Rp.{{list_paket_small.harga_per_tahun|intcomma}}.00</option>
+                    <option value="2tahun">[Perpanjangan 2 Tahun] Rp.{{list_paket_small.harga_per_dua_tahun|intcomma}}.00</option>
+                {% else %}
+                    <option value="bulan">[Perpanjangan 1 Bulan] Rp.{{list_paket_medium.harga_per_bulan|intcomma}}.00</option>
+                    <option value="3bulan">[Perpanjangan 3 Bulan] Rp.{{list_paket_medium.harga_per_tiga_bulan|intcomma}}.00</option>
+                    <option value="6bulan">[Perpanjangan 6 Bulan] Rp.{{list_paket_medium.harga_per_enam_bulan|intcomma}}.00</option>
+                    <option value="tahun">[Perpanjangan 1 Tahun] Rp.{{list_paket_medium.harga_per_tahun|intcomma}}.00</option>
+                    <option value="2tahun">[Perpanjangan 2 Tahun] Rp.{{list_paket_medium.harga_per_dua_tahun|intcomma}}.00</option>
+                {% endif %}
+            </select>
+        </div>
+        <div id="biaya" class="mt-4"></div>
+        <div class="mt-4">
+            Apakah akan di proses?
+            <button class="btn btn-sm btn-success ">
+                ya, saya proses.
+            </button>
+            <a class="btn btn-sm btn-warning " href="{{asal}}#tambahkuota">
+                tidak, batalkan dulu.
+            </a>
+        </div>
+    </form>
+    
+</div>

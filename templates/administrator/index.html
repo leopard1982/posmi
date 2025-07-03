@@ -549,7 +549,7 @@
                                                 <div class="h5 mb-0 font-weight-bold text-gray-800 d-flex justify-content-between">
                                                     <span>{{user.userprofile.cabang.lisensi_expired|date:"d/M/Y"}}</span>
                                                     {% if is_perpanjangan %}
-                                                        <a href="#" class="btn btn-sm btn-info">Perpanjang Lisensi?</a>
+                                                        <a target="_blank" href="{% url 'cek_lisensi'%}?id={{user.userprofile.cabang.prefix}}&tipe={{tipe_paket}}" class="btn btn-sm btn-info">Perpanjang Lisensi?</a>
                                                     {% endif %}
                                                 </div>
                                             </div>

@@ -315,7 +315,11 @@ def cekLisensi(request):
         asal="/"
     
     try:
-        kode_toko = request.POST['id']
+        if request.method=="POST":
+            kode_toko = request.POST['id']
+        else:
+            kode_toko = request.GET['id']
+
         tipe = request.GET['tipe']    
         info_registrasi=""
         list_kuota=[data for data in range(50,1500,50)]
@@ -324,9 +328,34 @@ def cekLisensi(request):
             cabang = Cabang.objects.get(prefix=kode_toko)
             if tipe=="small":
                 info_registrasi="Perpanjangan Lisensi Bisnis Kecil"
+                print('perpanjangan bisnis kecil')
+                tipe="small"
+                list_paket_small = DaftarPaket.objects.get(nama="Bisnis Kecil")
+                list_paket_medium=None
+
+                # kalau belum masa tenggang tidak diperkenankan untuk upgrade
+                if cabang.lisensi_expired > datetime.datetime.now():
+                    return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan Lisensi belum dapat dilakukan karena masih dalam masa aktif.</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+
+                if cabang.paket.nama=="Bisnis Medium":
+                    return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan gagal dilakukan karena toko ini menggunakan tipe Bisnis Kecil</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+                
             elif tipe=="medium":
-                info_registrasi="Perpanjangan Lisensi Bisnis Kecil"
+                info_registrasi="Perpanjangan Lisensi Bisnis Medium"
+                print('perpanjangan bisnis medium')
+                tipe="medium"
+                list_paket_medium = DaftarPaket.objects.get(nama="Bisnis Medium")
+                list_paket_small=None
+
+                if cabang.lisensi_expired > datetime.datetime.now():
+                    return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan Lisensi belum dapat dilakukan karena masih dalam masa aktif.</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+
+                if cabang.paket.nama=="Bisnis Kecil":
+                    return HttpResponse("<div style='margin-top:200px;text-align:center;font-weight:bold;'>Perpanjangan gagal dilakukan karena toko ini menggunakan tipe Bisnis Medium</div><div style='text-align:center;margin-top:30px'><a href='/'>kembali ke halaman utama</a></div>")
+
             elif tipe=="upgrade":
+                list_paket_medium=None
+                list_paket_small=None
                 if cabang.paket== None:
                     info_registrasi="Upgrade ke Paket Bisnis Kecil atau Medium"
                     daftarpaket = DaftarPaket.objects.all().filter(nama__in=['Bisnis Kecil','Bisnis Medium'])
@@ -431,8 +460,12 @@ def cekLisensi(request):
                     messages.add_message(request,messages.SUCCESS,f"Paket untuk {cabang.nama_toko} sudah Medium tidak bisa melakukan upgrade. Yang bisa dilakukan adalah menambah kuota transaksi penjualan. Terima kasih.")
                     return HttpResponseRedirect('/')
             elif tipe=="kuota":
+                list_paket_medium=None
+                list_paket_small=None
                 info_registrasi="Penambahan Kuota"
             
+            
+
             nama_admin = getAdmin(kode_toko)
             context = {
                 'kode_toko':kode_toko,
@@ -442,7 +475,9 @@ def cekLisensi(request):
                 'tipe':tipe,
                 'list_kuota':list_kuota,
                 'asal':asal,
-                'list_biaya':list_biaya
+                'list_biaya':list_biaya,
+                'list_paket_small':list_paket_small,
+                'list_paket_medium':list_paket_medium
             }
             return render(request,'registrasi/cek_lisensi.html',context)
         except Exception as ex:
@@ -678,4 +713,69 @@ def upgradeLisensi(request):
     except Exception as ex:
         print(ex)
         return HttpResponseRedirect(asal)
+
+def hitungPanjangLisensi(request):
+    try:
+        asal = request.META['HTTP_REFERER']
+    except Exception as ex:
+        print(ex)
+        asal="/"
+    try:
+        kode_toko = request.GET['id']
+        cabang = Cabang.objects.get(prefix=kode_toko)
+        metode = str(request.GET['list_biaya'])
+        day=0
+        if(metode==""):
+            return HttpResponse("")
+        
+        if metode=="bulan":
+            day = 30
+        elif metode=="3bulan":
+            day = 30*3
+        elif metode=="6bulan":
+            day = 30*6
+        elif metode=="tahun":
+            day = 365
+        elif metode=="2tahun":
+            day = 365*2
+        
+        tanggal_expired  = cabang.lisensi_expired + datetime.timedelta(days=day)
+        return HttpResponse(f"<b>Lisensi akan berakhir</b>: {tanggal_expired.strftime('%d/%m/%Y')}")
+    except Exception as ex:
+        print(ex)
+        return HttpResponse("-")
+
+def perpanjangLisensi(request):
+    try:
+        id=request.GET['id']
+        cabang = Cabang.objects.get(prefix=id)
+        metode = str(request.POST['list_biaya'])
+        
+        day=0
+        if(metode==""):
+            return HttpResponse("")
+        
+        if metode=="bulan":
+            day = 30
+        elif metode=="3bulan":
+            day = 30*3
+        elif metode=="6bulan":
+            day = 30*6
+        elif metode=="tahun":
+            day = 365
+        elif metode=="2tahun":
+            day = 365*2
+        
+        if cabang.lisensi_expired > datetime.datetime.now():
+            messages.add_message(request,messages.SUCCESS,f'Perpanjangan lisensi tidak dilanjutkan karena lisensi tidak dalam masa tenggang/ grace period.')    
+            return HttpResponseRedirect("/")
+        cabang.lisensi_expired += datetime.timedelta(days=day)
+        cabang.lisensi_grace = cabang.lisensi_expired + datetime.timedelta(days=7)
+        cabang.save()
+        messages.add_message(request,messages.SUCCESS,f'Perpanjangan lisensi berhasil. Lisensi akan berakhir pada: {cabang.lisensi_expired.strftime("%d-%m-%Y")}')
+    except Exception as ex:
+        print(ex)
+        messages.add_message(request,messages.SUCCESS,f'Perpanjangan lisensi Gagal. silakan coba kembali.')
+    return HttpResponseRedirect('/')
+    
     
