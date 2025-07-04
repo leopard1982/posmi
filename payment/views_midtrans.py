@@ -163,7 +163,7 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
         if midtranspayment.kode_referensi:
             cabang.kode_referal = str(midtranspayment.kode_referensi).lower()
             try:
-                cab = Cabang.objects.get(Q(prefix=str(midtranspayment.kode_referensi).lower()) & Q(paket__ne=None))
+                cab = Cabang.objects.get(Q(prefix=str(midtranspayment.kode_referensi).lower()) & Q(paket__isnull=False))
                 cabang.kode_referal=midtranspayment.kode_referensi
             except:
                 cabang.kode_referal=""
