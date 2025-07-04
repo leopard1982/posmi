@@ -116,6 +116,7 @@ def paymentRequest(request):
     return HttpResponseRedirect('/')
 
 def paymentResponse(request):
+    import uuid
     try:
         asal = request.META['HTTP_REFERER']
     except:
@@ -188,6 +189,73 @@ def paymentResponse(request):
     
 
     if request.method=="POST":
+        kode_toko = request.POST['kode_toko']
+        nama_toko = request.POST['nama_toko']
+        nama_cabang = request.POST['nama_cabang']
+        alamat_toko = request.POST['alamat_toko']
+        telpon_toko = request.POST['telpon_toko']
+        email_toko = request.POST['email_toko']
+        pemilik_toko = request.POST['pemilik_toko']
+        password = request.POST['password_admin']
+
+        # cek status voucher
+        try:
+            voucher = str(request.POST['voucher']).lower()
+            if voucher!="":
+                cek_voucher = cekKodeVoucher(kode=voucher,tipe="add")
+            else:
+                cek_voucher = {
+                    'status':False,
+                    'disc':0
+                }
+        except:
+            cek_voucher = {
+                'status':False,
+                'disc':0
+            }
+
+        if(cek_voucher['status']):
+            try:
+                promo = Promo.objects.get(kode=str(request.POST['voucher']).lower())
+                harga -= promo.disc
+            except:
+                pass
+        
+        # cek apakah email pernah dipakai
+        try:
+            cabang = Cabang.objects.get(email=email_toko)
+            messages.add_message(request,messages.SUCCESS,'Pendaftaran Gagal, email sudah pernah teregistrasi. Silakan menggunakan email lain. Terima kasih.')
+            return HttpResponseRedirect('/')
+        except:
+            pass
+
+        id_transaksi = uuid.uuid4()
+        transaksi = paymentMidtrans(str(id_transaksi),harga)
+        # ini yang akan dipindahkan
+        # buat dulu midtrans payment nya
+        midtranspayment = MidtransPayment()
+        midtranspayment.id = id_transaksi
+        midtranspayment.midtrans_token = transaksi['token']
+        midtranspayment.total=harga
+        midtranspayment.kode_voucher=request.POST['voucher']
+        midtranspayment.kode_referensi = request.POST['referensi']
+        midtranspayment.referal_point = harga * 5/100
+        midtranspayment.transaksi="registrasi"
+        midtranspayment.lisensi_expired = lisensi_expired
+        midtranspayment.lisensi_grace = lisensi_grace
+        midtranspayment.kode_toko = kode_toko
+        midtranspayment.nama_toko=nama_toko
+        midtranspayment.nama_cabang=nama_cabang
+        midtranspayment.alamat_toko=alamat_toko
+        midtranspayment.telpon_toko=telpon_toko
+        midtranspayment.email_toko=email_toko
+        midtranspayment.pemilik_toko=pemilik_toko
+        midtranspayment.password=password
+        midtranspayment.jml_kuota = jumlah_transaksi
+        midtranspayment.save()
+
+        return HttpResponseRedirect(transaksi['redirect_url'])
+        
         try:
             referensi_cek = cekKodeToko(str(request.POST['referensi']).lower())
         except:
@@ -227,19 +295,15 @@ def paymentResponse(request):
             except:
                 pass
 
-        kode_toko = request.POST['kode_toko']
-        nama_toko = request.POST['nama_toko']
-        nama_cabang = request.POST['nama_cabang']
-        alamat_toko = request.POST['alamat_toko']
-        telpon_toko = request.POST['telpon_toko']
-        email_toko = request.POST['email_toko']
-        pemilik_toko = request.POST['pemilik_toko']
-        password = request.POST['password_admin']
+        
 
         try:
             cabang = Cabang.objects.get(email=email_toko)
             messages.add_message(request,messages.SUCCESS,'Pendaftaran Gagal, email sudah pernah teregistrasi. Silakan menggunakan email lain. Terima kasih.')
         except:
+            
+
+
             cabang = Cabang()
             cabang.keterangan=""
             cabang.paket=daftarpaket

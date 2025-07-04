@@ -109,6 +109,8 @@ def responseMidtransPayment(request):
             # isikan ke bayarKuota
             bayarKuota(request,midtranspayment.cabang,midtranspayment.kode_voucher,midtranspayment.referal_point,midtranspayment.jml_kuota,midtranspayment.total)
             return HttpResponseRedirect('/')
+        elif midtranspayment.transaksi=="registrasi":
+            return HttpResponse('ok bisa')
     else:
         messages.add_message(request,messages.SUCCESS,"Pembayaran POSMI gagal, silakan ulangi kembali...")
         return HttpResponseRedirect('/')
