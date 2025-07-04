@@ -571,7 +571,7 @@ def tambahKuota(request):
         midtranspayment = MidtransPayment()
         midtranspayment.id=id_transaksi
         midtranspayment.midtrans_token = transaksi['token']
-        midtranspayment.cabang = request.user.userprofile.cabang
+        midtranspayment.cabang = cabang
         midtranspayment.total = harga
         midtranspayment.referal_point = walet
         midtranspayment.transaksi="kuota"
