@@ -143,81 +143,72 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
     
 
     try:
-        print('cek cabang')
         cabang = Cabang.objects.get(email=midtranspayment.email_toko)
-        print('cabang ada')
     except Exception as ex:
-        print('cabang tidak ada')
         print(ex)
         cabang = Cabang()
-    
-    cabang.keterangan=""
-    cabang.paket=midtranspayment.daftar_paket
-    cabang.nama_toko=midtranspayment.nama_toko
-    cabang.nama_cabang=midtranspayment.nama_cabang
-    cabang.alamat_toko = midtranspayment.alamat_toko
-    cabang.telpon=midtranspayment.telpon_toko
-    cabang.email=midtranspayment.email_toko
-    cabang.prefix=midtranspayment.kode_toko
-    cabang.lisensi_expired=midtranspayment.lisensi_expired
-    cabang.lisensi_grace=midtranspayment.lisensi_grace
-    cabang.kuota_transaksi=midtranspayment.jml_kuota
-    if midtranspayment.kode_referensi:
-        cabang.kode_referal = str(midtranspayment.kode_referensi).lower()
-        try:
-            cab = Cabang.objects.get(Q(prefix=str(midtranspayment.kode_referensi).lower()) & Q(paket__isnull=False))
-            cabang.kode_referal=midtranspayment.kode_referensi
-        except:
-            cabang.kode_referal=""
-    else:
-        cabang.kode_referal = ""
-    cabang.no_nota=1
-    
-    # mengatasi error
-    try:
+        cabang.keterangan=""
+        cabang.paket=midtranspayment.daftar_paket
+        cabang.nama_toko=midtranspayment.nama_toko
+        cabang.nama_cabang=midtranspayment.nama_cabang
+        cabang.alamat_toko = midtranspayment.alamat_toko
+        cabang.telpon=midtranspayment.telpon_toko
+        cabang.email=midtranspayment.email_toko
+        cabang.prefix=midtranspayment.kode_toko
+        cabang.lisensi_expired=midtranspayment.lisensi_expired
+        cabang.lisensi_grace=midtranspayment.lisensi_grace
+        cabang.kuota_transaksi=midtranspayment.jml_kuota
+        if midtranspayment.kode_referensi:
+            cabang.kode_referal = str(midtranspayment.kode_referensi).lower()
+            try:
+                cab = Cabang.objects.get(Q(prefix=str(midtranspayment.kode_referensi).lower()) & Q(paket__isnull=False))
+                cabang.kode_referal=midtranspayment.kode_referensi
+            except:
+                cabang.kode_referal=""
+        else:
+            cabang.kode_referal = ""
+        cabang.no_nota=1
         cabang.save()
-    except:
-        pass
-    
-    if 'voucher' in request.POST:
-        if cek_voucher['status']:
-            promoused = PromoUsed()
-            promoused.promo=promo
-            promoused.cabang=cabang
-            promoused.save()
 
-        detailwallet = DetailWalet()
-        detailwallet.cabang=cabang_penerima
-        detailwallet.cabang_referensi=cabang
-        detailwallet.jumlah=midtranspayment.referal_point
-        detailwallet.keterangan="registrasi toko"
-        detailwallet.save()
+        if 'voucher' in request.POST:
+            if cek_voucher['status']:
+                promoused = PromoUsed()
+                promoused.promo=promo
+                promoused.cabang=cabang
+                promoused.save()
 
-    print(cabang)
+            detailwallet = DetailWalet()
+            detailwallet.cabang=cabang_penerima
+            detailwallet.cabang_referensi=cabang
+            detailwallet.jumlah=midtranspayment.referal_point
+            detailwallet.keterangan="registrasi toko"
+            detailwallet.save()
 
-    user = User()
-    user.username=f"{midtranspayment.kode_toko}1"
-    user.email=midtranspayment.email_toko
-    user.first_name=midtranspayment.pemilik_toko
-    user.is_active=True
-    user.is_superuser=True
-    user.password=midtranspayment.password
-    user.save()
-    user.set_password(midtranspayment.password)
-    user.save()
+        print(cabang)
 
-    userprofile = UserProfile()
-    userprofile.user=user
-    userprofile.cabang=cabang
-    userprofile.nama_lengkap=midtranspayment.pemilik_toko
-    userprofile.is_active=True
-    userprofile.save()
+        user = User()
+        user.username=f"{midtranspayment.kode_toko}1"
+        user.email=midtranspayment.email_toko
+        user.first_name=midtranspayment.pemilik_toko
+        user.is_active=True
+        user.is_superuser=True
+        user.password=midtranspayment.password
+        user.save()
+        user.set_password(midtranspayment.password)
+        user.save()
 
-    message = f"Halo Sobat {midtranspayment.pemilik_toko}!\n\nSelamat bergabung di aplikasi posmi. Informasi toko sobat adalah sebagai berikut:\nNama Toko: {midtranspayment.nama_toko}\nNama Cabang: {cabang}\nAlamat Toko: {midtranspayment.alamat_toko}\nKode Toko: {midtranspayment.kode_toko}\nEmail Toko: {midtranspayment.email_toko}\n\nUntuk user administrator bisa login menggunakan user {user} atau menggunakan email {midtranspayment.email_toko}. Password yang telah dibuat adalah [{midtranspayment.password}] dan harap disimpan baik-baik atau diganti secara berkala.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+        userprofile = UserProfile()
+        userprofile.user=user
+        userprofile.cabang=cabang
+        userprofile.nama_lengkap=midtranspayment.pemilik_toko
+        userprofile.is_active=True
+        userprofile.save()
 
-    posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=midtranspayment.email_toko)
+        message = f"Halo Sobat {midtranspayment.pemilik_toko}!\n\nSelamat bergabung di aplikasi posmi. Informasi toko sobat adalah sebagai berikut:\nNama Toko: {midtranspayment.nama_toko}\nNama Cabang: {cabang}\nAlamat Toko: {midtranspayment.alamat_toko}\nKode Toko: {midtranspayment.kode_toko}\nEmail Toko: {midtranspayment.email_toko}\n\nUntuk user administrator bisa login menggunakan user {user} atau menggunakan email {midtranspayment.email_toko}. Password yang telah dibuat adalah [{midtranspayment.password}] dan harap disimpan baik-baik atau diganti secara berkala.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
 
-    messages.add_message(request,messages.SUCCESS,f"Selamat Untuk User Admin {midtranspayment.kode_toko}1 berhasil dibuat. Silakan Login.")
+        posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=midtranspayment.email_toko)
+
+        messages.add_message(request,messages.SUCCESS,f"Selamat Untuk User Admin {midtranspayment.kode_toko}1 berhasil dibuat. Silakan Login.")
 
 
 
