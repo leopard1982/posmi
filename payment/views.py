@@ -189,6 +189,11 @@ def paymentResponse(request):
     
 
     if request.method=="POST":
+        try:
+            tipe_request = request.GET['tipe']
+        except:
+            tipe_request = "tr"
+
         kode_toko = request.POST['kode_toko']
         nama_toko = request.POST['nama_toko']
         nama_cabang = request.POST['nama_cabang']
@@ -197,6 +202,10 @@ def paymentResponse(request):
         email_toko = request.POST['email_toko']
         pemilik_toko = request.POST['pemilik_toko']
         password = request.POST['password_admin']
+        try:
+            kode_referensi = request.POST['referensi']
+        except:
+            kode_referensi=""
 
         # cek status voucher
         try:
@@ -228,34 +237,93 @@ def paymentResponse(request):
             return HttpResponseRedirect('/')
         except:
             pass
+        
+        if tipe_request != "tr":
+            # berbayar
+            id_transaksi = uuid.uuid4()
+            transaksi = paymentMidtrans(str(id_transaksi),harga)
+            # ini yang akan dipindahkan
+            # buat dulu midtrans payment nya
+            midtranspayment = MidtransPayment()
+            midtranspayment.id = id_transaksi
+            midtranspayment.midtrans_token = transaksi['token']
+            midtranspayment.total=harga
+            midtranspayment.kode_voucher=request.POST['voucher']
+            midtranspayment.kode_referensi = request.POST['referensi']
+            midtranspayment.referal_point = harga * 5/100
+            midtranspayment.transaksi="registrasi"
+            midtranspayment.lisensi_expired = lisensi_expired
+            midtranspayment.lisensi_grace = lisensi_grace
+            midtranspayment.kode_toko = kode_toko
+            midtranspayment.nama_toko=nama_toko
+            midtranspayment.nama_cabang=nama_cabang
+            midtranspayment.alamat_toko=alamat_toko
+            midtranspayment.telpon_toko=telpon_toko
+            midtranspayment.email_toko=email_toko
+            midtranspayment.pemilik_toko=pemilik_toko
+            midtranspayment.password=password
+            midtranspayment.jml_kuota = jumlah_transaksi
+            midtranspayment.daftar_paket=daftarpaket
+            midtranspayment.save()
 
-        id_transaksi = uuid.uuid4()
-        transaksi = paymentMidtrans(str(id_transaksi),harga)
-        # ini yang akan dipindahkan
-        # buat dulu midtrans payment nya
-        midtranspayment = MidtransPayment()
-        midtranspayment.id = id_transaksi
-        midtranspayment.midtrans_token = transaksi['token']
-        midtranspayment.total=harga
-        midtranspayment.kode_voucher=request.POST['voucher']
-        midtranspayment.kode_referensi = request.POST['referensi']
-        midtranspayment.referal_point = harga * 5/100
-        midtranspayment.transaksi="registrasi"
-        midtranspayment.lisensi_expired = lisensi_expired
-        midtranspayment.lisensi_grace = lisensi_grace
-        midtranspayment.kode_toko = kode_toko
-        midtranspayment.nama_toko=nama_toko
-        midtranspayment.nama_cabang=nama_cabang
-        midtranspayment.alamat_toko=alamat_toko
-        midtranspayment.telpon_toko=telpon_toko
-        midtranspayment.email_toko=email_toko
-        midtranspayment.pemilik_toko=pemilik_toko
-        midtranspayment.password=password
-        midtranspayment.jml_kuota = jumlah_transaksi
-        midtranspayment.daftar_paket=daftarpaket
-        midtranspayment.save()
+            return HttpResponseRedirect(transaksi['redirect_url'])
+        else:
+            # gratisan 7 hari
+            try:
+                cabang = Cabang.objects.get(email=email_toko)
+                print(cabang)
+                messages.add_message(request,messages.SUCCESS,'Pendaftaran Gagal, email sudah pernah teregistrasi. Silakan menggunakan email lain. Terima kasih.')
+            except Exception as ex:
+                print(ex)
+                cabang = Cabang()
+                cabang.keterangan=""
+                cabang.paket=None
+                cabang.nama_toko=nama_toko
+                cabang.nama_cabang=nama_cabang
+                cabang.alamat_toko = alamat_toko
+                cabang.telpon=telpon_toko
+                cabang.email=email_toko
+                cabang.prefix=kode_toko
+                cabang.lisensi_expired=datetime.datetime.now() + datetime.timedelta(days=7)
+                cabang.lisensi_grace=datetime.datetime.now() + datetime.timedelta(days=7)
+                cabang.kuota_transaksi=100
+                if kode_referensi:
+                    try:
+                        cab = Cabang.objects.get(prefix=kode_referensi)
+                        cabang.kode_referal=kode_referensi
+                    except:
+                        cabang.kode_referal=""
+                else:
+                    cabang.kode_referal=""
+                cabang.no_nota=1
+                cabang.save()
 
-        return HttpResponseRedirect(transaksi['redirect_url'])
+                
+
+                user = User()
+                user.username=f"{cabang.prefix}1"
+                user.email=email_toko
+                user.first_name=pemilik_toko
+                user.is_active=True
+                user.is_superuser=True
+                user.password=password
+                user.save()
+                user.set_password(password)
+                user.save()
+
+                userprofile = UserProfile()
+                userprofile.user=user
+                userprofile.cabang=cabang
+                userprofile.nama_lengkap=pemilik_toko
+                userprofile.is_active=True
+                userprofile.save()
+
+                message = f"Halo Sobat {pemilik_toko}!\n\nSelamat bergabung di aplikasi posmi. Informasi toko sobat adalah sebagai berikut:\nNama Toko: {nama_toko}\nNama Cabang: {cabang}\nAlamat Toko: {alamat_toko}\nKode Toko: {kode_toko}\nEmail Toko: {email_toko}\n\nUntuk user administrator bisa login menggunakan user {user} atau menggunakan email {email_toko}. Password yang telah dibuat adalah [{password}] dan harap disimpan baik-baik atau diganti secara berkala.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+
+                posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=email_toko)
+
+                messages.add_message(request,messages.SUCCESS,f"Selamat Untuk User Admin {kode_toko}1 berhasil dibuat. Silakan Login.")
+            return HttpResponseRedirect('/')
 
     return HttpResponseRedirect(asal)
 
