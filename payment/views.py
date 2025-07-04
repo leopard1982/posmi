@@ -576,6 +576,7 @@ def tambahKuota(request):
         midtranspayment.referal_point = walet
         midtranspayment.transaksi="kuota"
         midtranspayment.kode_voucher=voucher
+        midtranspayment.jml_kuota = int(jumlah_kuota)
         midtranspayment.save()
 
         return HttpResponseRedirect(transaksi['redirect_url'])
