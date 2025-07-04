@@ -143,8 +143,12 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
     
 
     try:
+        print('cek cabang')
         cabang = Cabang.objects.get(email=midtranspayment.email_toko)
+        print('cabang ada')
     except Exception as ex:
+        print('cabang tidak ada')
+        print(ex)
         cabang = Cabang()
     
     cabang.keterangan=""
@@ -168,8 +172,13 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
     else:
         cabang.kode_referal = ""
     cabang.no_nota=1
-    cabang.save()
-
+    
+    # mengatasi error
+    try:
+        cabang.save()
+    except:
+        pass
+    
     if 'voucher' in request.POST:
         if cek_voucher['status']:
             promoused = PromoUsed()

@@ -269,6 +269,7 @@ def paymentResponse(request):
             return HttpResponseRedirect(transaksi['redirect_url'])
         else:
             # gratisan 7 hari
+            print('ini gratisan')
             try:
                 cabang = Cabang.objects.get(email=email_toko)
                 print(cabang)
