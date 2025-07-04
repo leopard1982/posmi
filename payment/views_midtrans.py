@@ -10,6 +10,7 @@ from posmimail import posmiMail
 from django.contrib import messages
 from payment.models import MidtransPayment
 import datetime
+from django.contrib.auth.models import User
 
 def paymentMidtrans(order_id):
     jumlah = 200000
@@ -74,7 +75,12 @@ def bayarKuota(request,cabang:Cabang,voucher:str,walet:int,jumlah_kuota:int,harg
     cabang.kuota_transaksi+=int(jumlah_kuota)
     cabang.save()
 
-    user = request.user
+    try:
+        user = request.user
+    except:
+        # berarti user belum melakukan login
+        user = User.objects.get(username=f"{cabang.prefix}1")
+        
     userprofile = UserProfile.objects.get(user=user)
 
     message = f"Halo Sobat {userprofile.nama_lengkap}!\n\nTerima kasih atas pembelian {int(jumlah_kuota):,} kuota transaksi dengan pembayaran sebesar: Rp.{int(harga):,} pada tanggal: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
