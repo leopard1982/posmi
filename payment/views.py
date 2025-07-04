@@ -252,6 +252,7 @@ def paymentResponse(request):
         midtranspayment.pemilik_toko=pemilik_toko
         midtranspayment.password=password
         midtranspayment.jml_kuota = jumlah_transaksi
+        midtranspayment.daftar_paket=daftarpaket
         midtranspayment.save()
 
         return HttpResponseRedirect(transaksi['redirect_url'])

@@ -36,3 +36,4 @@ class MidtransPayment(models.Model):
     kode_referensi = models.CharField(max_length=10,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    daftar_paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT,blank=True,null=True)
