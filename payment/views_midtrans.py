@@ -9,6 +9,7 @@ from stock.models import Cabang, LogTransaksi, UserProfile
 from posmimail import posmiMail
 from django.contrib import messages
 from payment.models import MidtransPayment
+import datetime
 
 def paymentMidtrans(order_id):
     jumlah = 200000
@@ -34,7 +35,7 @@ def paymentMidtrans(order_id):
         transaction = None
     return transaction
 
-def bayarKuota(request,cabang:Cabang,voucher:str,walet:int,jumlah_kuota:int):
+def bayarKuota(request,cabang:Cabang,voucher:str,walet:int,jumlah_kuota:int,harga:int):
         try:
             # update data voucher berkurang 1
             promo = Promo.objects.get(kode=voucher)
@@ -99,7 +100,7 @@ def responseMidtransPayment(request):
         
         if midtranspayment.transaksi=="kuota":
             # isikan ke bayarKuota
-            bayarKuota(request,request.user.userprofile.cabang,midtranspayment.kode_voucher,midtranspayment.referal_point,midtranspayment.jml_kuota)
+            bayarKuota(request,request.user.userprofile.cabang,midtranspayment.kode_voucher,midtranspayment.referal_point,midtranspayment.jml_kuota,midtranspayment.total)
     else:
         messages.add_message(request,messages.SUCCESS,"Pembayaran POSMI gagal, silakan ulangi kembali...")
         return HttpResponseRedirect('/')
