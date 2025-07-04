@@ -73,9 +73,10 @@
     <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
         <div style="font-size: 20px;margin-top: 20px;margin-bottom: 10px;border-top: 1px solid grey;border-bottom: 1px solid grey;">
             <span>Kode Toko: <span style="font-weight: bold;">{{kode_toko}}</span></span>
-            <br><span style="font-style: italic;font-size: 15px;">bagikan kode toko sebagai referensi untuk mendapatkan bonus 5% setiap pembayaran untuk  pembelian dari Toko yang sobat refensikan, berlaku selamanya.</span>
-            <br><span style="font-style: italic;font-size: 15px;">penarikan dana dari wallet akan langsung masuk rekening sobat, jangan lupa untuk mendaftarkan rekening sobat yah.</span>
-            
+            {% if user.userprofile.cabang.paket %}
+                <br><span style="font-style: italic;font-size: 15px;">bagikan kode toko sebagai referensi untuk mendapatkan bonus 5% setiap pembayaran untuk  pembelian dari Toko yang sobat refensikan, berlaku selamanya.</span>
+                <br><span style="font-style: italic;font-size: 15px;">penarikan dana dari wallet akan langsung masuk rekening sobat, jangan lupa untuk mendaftarkan rekening sobat yah.</span>
+            {% endif %}
         </div>
         {{forms.as_div}}
         {% csrf_token %}
