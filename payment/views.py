@@ -565,7 +565,7 @@ def tambahKuota(request):
         walet = int(harga*5/100)
 
         id_transaksi = uuid.uuid4()
-        transaksi = paymentMidtrans(str(id_transaksi))
+        transaksi = paymentMidtrans(str(id_transaksi),harga)
 
         
         midtranspayment = MidtransPayment()

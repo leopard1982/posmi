@@ -12,8 +12,8 @@ from payment.models import MidtransPayment
 import datetime
 from django.contrib.auth.models import User
 
-def paymentMidtrans(order_id):
-    jumlah = 200000
+def paymentMidtrans(order_id,jumlah):
+    jumlah = jumlah
     snap = midtransclient.Snap(
         is_production=False,
         server_key=settings.MIDTRANS_SERVER,
