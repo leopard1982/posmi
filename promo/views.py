@@ -56,7 +56,7 @@ def cekKodeVoucher(kode,toko=None,tipe=None):
 def cekKodeToko(kode):
     kode = kode
     try:
-        cabang = Cabang.objects.get(prefix=str(kode).lower())
+        cabang = Cabang.objects.get(Q(prefix=str(kode).lower()) & Q(paket__ne=None))
         return True
     except:
         return False

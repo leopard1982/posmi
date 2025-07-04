@@ -12,6 +12,7 @@ from django.contrib import messages
 from payment.models import MidtransPayment
 import datetime
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 def paymentMidtrans(order_id,jumlah):
     jumlah = jumlah
@@ -159,10 +160,15 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
         cabang.lisensi_expired=midtranspayment.lisensi_expired
         cabang.lisensi_grace=midtranspayment.lisensi_grace
         cabang.kuota_transaksi=midtranspayment.jml_kuota
-        try:
+        if midtranspayment.kode_referensi:
             cabang.kode_referal = str(midtranspayment.kode_referensi).lower()
-        except:
-            pass
+            try:
+                cab = Cabang.objects.get(Q(prefix=str(midtranspayment.kode_referensi).lower()) & Q(paket__ne=None))
+                cabang.kode_referal=midtranspayment.kode_referensi
+            except:
+                cabang.kode_referal=""
+        else:
+            cabang.kode_referal = ""
         cabang.no_nota=1
         cabang.save()
 
