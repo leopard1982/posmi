@@ -48,7 +48,7 @@ def bayarKuota(request,cabang:Cabang,voucher:str,walet:int,jumlah_kuota:int,harg
             promoused.promo=promo
             promoused.save()
         except Exception as ex:
-            print(ex)
+            print(f"error di update promo: {ex}")
 
 
         # simpan tambahan wallet untuk referal (kalau ada)
@@ -68,7 +68,7 @@ def bayarKuota(request,cabang:Cabang,voucher:str,walet:int,jumlah_kuota:int,harg
             detailwallet.save()
             print('detail wallet sudah ditambahkan')
         except Exception as ex:
-            print(ex)
+            print(f"error di tambahan wallet: {ex}")
 
         jumlah_kuota = jumlah_kuota
         cabang.kuota_transaksi+=int(jumlah_kuota)
@@ -100,7 +100,7 @@ def responseMidtransPayment(request):
         
         if midtranspayment.transaksi=="kuota":
             # isikan ke bayarKuota
-            bayarKuota(request,request.user.userprofile.cabang,midtranspayment.kode_voucher,midtranspayment.referal_point,midtranspayment.jml_kuota,midtranspayment.total)
+            bayarKuota(request,midtranspayment.cabang,midtranspayment.kode_voucher,midtranspayment.referal_point,midtranspayment.jml_kuota,midtranspayment.total)
     else:
         messages.add_message(request,messages.SUCCESS,"Pembayaran POSMI gagal, silakan ulangi kembali...")
         return HttpResponseRedirect('/')
