@@ -143,8 +143,10 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
 
     try:
         cabang = Cabang.objects.get(email=midtranspayment.email_toko)
+        print(cabang)
         messages.add_message(request,messages.SUCCESS,'Pendaftaran Gagal, email sudah pernah teregistrasi. Silakan menggunakan email lain. Terima kasih.')
-    except:
+    except Exception as ex:
+        print(ex)
         cabang = Cabang()
         cabang.keterangan=""
         cabang.paket=midtranspayment.daftar_paket
