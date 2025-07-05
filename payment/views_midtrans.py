@@ -143,6 +143,7 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
     
 
     try:
+        # untuk filtering supaya kalau midtrans 2x call tidak error
         cabang = Cabang.objects.get(email=midtranspayment.email_toko)
     except Exception as ex:
         print(ex)
