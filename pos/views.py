@@ -691,6 +691,7 @@ def printKuitansi(request,nota):
             }
             return render(request,'pos/print_kuitansi.html',context)
         except Exception as ex:
+            print(ex)
             messages.add_message(request,messages.SUCCESS,'Nota yang akan dicetak tidak diketemukan..')
             return HttpResponseRedirect('/')
     else:
