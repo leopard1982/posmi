@@ -4,21 +4,7 @@ from stock.models import DaftarPaket
 
 PAKET_DATA = [
     {
-        "nama": "Free",
-        "max_transaksi": 50,
-        "max_user_login": 1,
-        "harga_per_bulan": 0,
-        "harga_per_tiga_bulan": 0,
-        "harga_per_enam_bulan": 0,
-        "harga_per_tahun": 0,
-        "harga_per_dua_tahun": 0,
-        "disc": 0,
-        "is_ceklist_barang": False,
-        "is_pembayaran_tempo": False,
-        "is_add_ons": False,
-    },
-    {
-        "nama": "Starter",
+        "nama": "Kecil",
         "max_transaksi": 200,
         "max_user_login": 2,
         "harga_per_bulan": 49000,
@@ -32,21 +18,7 @@ PAKET_DATA = [
         "is_add_ons": False,
     },
     {
-        "nama": "Bisnis Basic",
-        "max_transaksi": 500,
-        "max_user_login": 3,
-        "harga_per_bulan": 99000,
-        "harga_per_tiga_bulan": 275000,
-        "harga_per_enam_bulan": 520000,
-        "harga_per_tahun": 990000,
-        "harga_per_dua_tahun": 1850000,
-        "disc": 0,
-        "is_ceklist_barang": False,
-        "is_pembayaran_tempo": False,
-        "is_add_ons": True,
-    },
-    {
-        "nama": "Bisnis Medium",
+        "nama": "Medium",
         "max_transaksi": 1000,
         "max_user_login": 5,
         "harga_per_bulan": 199000,
@@ -54,20 +26,6 @@ PAKET_DATA = [
         "harga_per_enam_bulan": 1050000,
         "harga_per_tahun": 1990000,
         "harga_per_dua_tahun": 3700000,
-        "disc": 0,
-        "is_ceklist_barang": True,
-        "is_pembayaran_tempo": True,
-        "is_add_ons": True,
-    },
-    {
-        "nama": "Bisnis Pro",
-        "max_transaksi": 0,  # 0 = unlimited
-        "max_user_login": 10,
-        "harga_per_bulan": 299000,
-        "harga_per_tiga_bulan": 825000,
-        "harga_per_enam_bulan": 1575000,
-        "harga_per_tahun": 2990000,
-        "harga_per_dua_tahun": 5600000,
         "disc": 0,
         "is_ceklist_barang": True,
         "is_pembayaran_tempo": True,
@@ -94,17 +52,16 @@ class Command(BaseCommand):
         created_count = 0
         updated_count = 0
 
+        existing = set(DaftarPaket.objects.values_list("nama", flat=True))
+
         for data in PAKET_DATA:
-            obj, created = DaftarPaket.objects.update_or_create(
-                nama=data["nama"],
-                defaults={k: v for k, v in data.items() if k != "nama"},
-            )
-            if created:
-                created_count += 1
-                self.stdout.write(self.style.SUCCESS(f"  [+] {obj.nama}"))
-            else:
+            if data["nama"] in existing:
                 updated_count += 1
-                self.stdout.write(f"  [=] {obj.nama} (sudah ada, diupdate)")
+                self.stdout.write(f"  [=] {data['nama']} (sudah ada, dilewati)")
+                continue
+            DaftarPaket.objects.create(**data)
+            created_count += 1
+            self.stdout.write(self.style.SUCCESS(f"  [+] {data['nama']}"))
 
         self.stdout.write(
             self.style.SUCCESS(
