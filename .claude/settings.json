@@ -40,7 +40,9 @@
       "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python manage.py shell -c ' *)",
       "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import openpyxl; print\\('openpyxl OK', openpyxl.__version__\\)\")",
       "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import reportlab; print\\('reportlab OK'\\)\")",
-      "Bash(mkdir -p /home/suryo/.claude/projects/-home-suryo-project-kelontong-mami/memory/)"
+      "Bash(mkdir -p /home/suryo/.claude/projects/-home-suryo-project-kelontong-mami/memory/)",
+      "Bash(git checkout *)",
+      "Bash(git commit -m ' *)"
     ],
     "additionalDirectories": [
       "/home/suryo/.claude/projects/-home-suryo-project-kelontong-mami"
