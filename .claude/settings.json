@@ -42,7 +42,9 @@
       "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import reportlab; print\\('reportlab OK'\\)\")",
       "Bash(mkdir -p /home/suryo/.claude/projects/-home-suryo-project-kelontong-mami/memory/)",
       "Bash(git checkout *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(sed -n '7,15p' /home/suryo/project/kelontong_mami/owner/migrations/0006_order_barang.py)",
+      "Bash(sed -n '7,15p' /home/suryo/project/kelontong_mami/owner/migrations/0008_toko_addon.py)"
     ],
     "additionalDirectories": [
       "/home/suryo/.claude/projects/-home-suryo-project-kelontong-mami"

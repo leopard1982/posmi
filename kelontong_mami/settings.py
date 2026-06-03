@@ -22,8 +22,8 @@ MIDTRANS_CLIENT = readEnv('MIDTRANS_CLIENT')
 MIDTRANS_SERVER = readEnv('MIDTRANS_SERVER')
 MIDTRANS_PRODUCTION = readEnv('MIDTRANS_PRODUCTION')
 
-ALLOWED_HOSTS = ['192.168.1.50','localhost','127.0.0.1']
-CSRF_TRUSTED_ORIGINS=['http://localhost:8000','http://127.0.0.1:8000','http://192.168.1.50']
+ALLOWED_HOSTS = ['192.168.1.50','localhost','127.0.0.1','posmi.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS=['http://localhost:8000','http://127.0.0.1:8000','http://192.168.1.50','https://posmi.pythonanywhere.com']
 
 
 # Application definition
@@ -90,19 +90,31 @@ TEMPLATES = [
 WSGI_APPLICATION = 'kelontong_mami.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# Database — dikonfigurasi via .env
+# DB_ENGINE bisa: django.db.backends.sqlite3 | mysql | postgresql
+_db_engine = readEnv('DB_ENGINE') or 'django.db.backends.sqlite3'
+_db_name   = readEnv('DB_NAME') or 'db.sqlite3'
 
-DATABASES = {
-    'default': {
-        'ENGINE': readEnv('DB_ENGINE') or 'django.db.backends.postgresql',
-        'NAME': readEnv('DB_NAME'),
-        'USER': readEnv('DB_USER'),
-        'PASSWORD': readEnv('DB_PASSWORD'),
-        'HOST': readEnv('DB_HOST'),
-        'PORT': readEnv('DB_PORT'),
+if 'sqlite3' in _db_engine:
+    # SQLite hanya butuh NAME (path file); relatif terhadap BASE_DIR
+    import os as _os
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': _db_name if _os.path.isabs(_db_name) else BASE_DIR / _db_name,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE':   _db_engine,
+            'NAME':     _db_name,
+            'USER':     readEnv('DB_USER')     or '',
+            'PASSWORD': readEnv('DB_PASSWORD') or '',
+            'HOST':     readEnv('DB_HOST')     or 'localhost',
+            'PORT':     readEnv('DB_PORT')     or '',
+        }
+    }
 
 
 # Password validation
