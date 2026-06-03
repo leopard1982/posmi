@@ -1,0 +1,277 @@
+{% load humanize %}
+
+<style>
+.rcv-page { color:#4b5563; }
+.rcv-title { margin:0; color:#2f3446; font-size:26px; font-weight:900; line-height:1.2; }
+.rcv-sub   { margin-top:6px; color:#8a92a6; font-size:13px; font-weight:600; }
+
+.rcv-panel { background:#fff; border:1px solid #e4e8f0; border-radius:10px; box-shadow:0 4px 16px rgba(31,41,55,.06); overflow:hidden; margin-bottom:20px; }
+.rcv-panel-hd { padding:16px 22px; background:#f8fafc; border-bottom:1px solid #e4e8f0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.rcv-panel-hd-title { font-size:14px; font-weight:800; color:#2f3446; }
+.rcv-panel-hd-sub   { font-size:12px; color:#8a92a6; margin-top:1px; }
+
+.rcv-table { width:100%; border-collapse:collapse; font-size:13px; }
+.rcv-table thead th { background:#f8fafc; border-bottom:1.5px solid #e4e8f0; padding:10px 16px; font-size:11px; font-weight:700; color:#8a92a6; text-transform:uppercase; letter-spacing:.5px; }
+.rcv-table tbody tr { border-bottom:1px solid #f0f4f8; }
+.rcv-table tbody tr:last-child { border:none; }
+.rcv-table td { padding:12px 16px; vertical-align:middle; }
+
+.no-pengiriman { font-family:monospace; font-weight:700; font-size:13px; background:#eef3fb; border-radius:5px; padding:3px 9px; color:#3a5298; }
+
+.badge-dikirim  { background:#dbeafe; color:#1e40af; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+.badge-selesai  { background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+.badge-sebagian { background:#fef3c7; color:#92400e; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+
+.btn-konfirmasi { display:inline-flex; align-items:center; gap:5px; padding:7px 16px; background:#1e2c5a; color:#fff; border:none; border-radius:7px; font-size:12px; font-weight:700; cursor:pointer; text-decoration:none; transition:opacity .2s; }
+.btn-konfirmasi:hover { opacity:.85; color:#fff; }
+
+/* KPI mini */
+.rcv-kpi { background:#fff; border:1px solid #e4e8f0; border-radius:10px; padding:16px 18px; }
+.rcv-kpi .label { font-size:11px; font-weight:700; color:#8a92a6; text-transform:uppercase; letter-spacing:.8px; margin-bottom:4px; }
+.rcv-kpi .value { font-size:1.5rem; font-weight:900; color:#2f3446; }
+</style>
+
+<div class="rcv-page">
+
+  <!-- Header -->
+  <div style="margin-bottom:22px;">
+    <h2 class="rcv-title"><i class="fa fa-inbox me-2" style="font-size:22px;color:#8a92a6;"></i>Penerimaan Barang</h2>
+    <div class="rcv-sub">{{ cabang.nama_toko }} &larr; Gudang Utama Korporasi</div>
+  </div>
+
+  <!-- KPI row -->
+  {% with total=pengiriman_list|length %}
+  {% with pending=pengiriman_list|length %}
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+      <div class="rcv-kpi">
+        <div class="label">Total Pengiriman</div>
+        <div class="value">{{ pengiriman_list|length }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="rcv-kpi">
+        <div class="label">Menunggu Konfirmasi</div>
+        <div class="value" style="color:#1e40af;">
+          {% with count=0 %}
+          {% for p in pengiriman_list %}{% if p.status == 'dikirim' %}{% with count=count|add:1 %}{% endwith %}{% endif %}{% endfor %}
+          {{ pengiriman_list|length }}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="rcv-kpi">
+        <div class="label">Selesai</div>
+        <div class="value" style="color:#065f46;">
+          {{ pengiriman_list|length }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endwith %}{% endwith %}
+
+  <!-- Tabel Pengiriman dari Gudang Utama -->
+  <div class="rcv-panel">
+    <div class="rcv-panel-hd">
+      <div>
+        <div class="rcv-panel-hd-title">
+          <i class="fa fa-warehouse me-2" style="color:#4e73df;"></i>Penerimaan Barang dari Gudang Utama
+        </div>
+        <div class="rcv-panel-hd-sub">Pengiriman stok dari Gudang Utama Korporasi. Klik "Konfirmasi" untuk memeriksa item satu per satu.</div>
+      </div>
+    </div>
+
+    {% if pengiriman_list %}
+    <div class="table-responsive">
+      <table class="rcv-table">
+        <thead>
+          <tr>
+            <th>No. Pengiriman</th>
+            <th>Dari Gudang</th>
+            <th class="text-center">Jml Item</th>
+            <th class="text-center">Status</th>
+            <th>Catatan</th>
+            <th>Tanggal</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pengiriman_list %}
+          <tr>
+            <td><span class="no-pengiriman">{{ p.nomor_pengiriman }}</span></td>
+            <td style="font-size:12px;color:#4b5563;">Gudang Utama</td>
+            <td class="text-center" style="font-weight:700;">{{ p.item_set.count }}</td>
+            <td class="text-center">
+              <span class="badge-{{ p.status }}">{{ p.get_status_display }}</span>
+              {% if p.status == 'dikirim' and p.item_set.filter %}
+                {% with pending_count=p.item_set.count %}
+                {% endwith %}
+              {% endif %}
+            </td>
+            <td style="font-size:12px;color:#6b7280;font-style:italic;">{{ p.catatan|default:"-"|truncatechars:40 }}</td>
+            <td style="font-size:11px;color:#8a92a6;">{{ p.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="text-center">
+              {% if p.status == 'dikirim' %}
+                <a href="#" hx-get="/cms/penerimaan/{{ p.id }}/" hx-target="#mainpage" class="btn-konfirmasi">
+                  <i class="fa fa-check-circle"></i>Konfirmasi
+                </a>
+              {% elif p.status == 'sebagian' %}
+                <a href="#" hx-get="/cms/penerimaan/{{ p.id }}/" hx-target="#mainpage" class="btn-konfirmasi" style="background:#92400e;">
+                  <i class="fa fa-eye"></i>Detail
+                </a>
+              {% else %}
+                <a href="#" hx-get="/cms/penerimaan/{{ p.id }}/" hx-target="#mainpage" style="font-size:12px;color:#8a92a6;text-decoration:none;">
+                  <i class="fa fa-eye me-1"></i>Lihat
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:48px 20px;color:#8a92a6;">
+      <i class="fa fa-inbox" style="font-size:36px;opacity:.2;display:block;margin-bottom:12px;"></i>
+      Belum ada pengiriman masuk dari gudang utama.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Penerimaan dari Toko Lain ── -->
+  <div class="rcv-panel" style="margin-top:20px;">
+    <div class="rcv-panel-hd">
+      <div>
+        <div class="rcv-panel-hd-title" style="display:flex;align-items:center;gap:8px;">
+          <span style="width:28px;height:28px;background:#fff3cd;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa fa-random" style="color:#d97706;font-size:13px;"></i>
+          </span>
+          Penerimaan Barang dari Toko Lain
+          {% if transfer_masuk_pending %}
+          <span style="background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:50px;margin-left:6px;">
+            {{ transfer_masuk_pending|length }} menunggu
+          </span>
+          {% endif %}
+        </div>
+        <div class="rcv-panel-hd-sub">Transfer stok dari toko lain dalam Korporasi. Setujui untuk menambah stok atau tolak.</div>
+      </div>
+    </div>
+
+    {% if transfer_masuk_pending %}
+    <!-- Menunggu konfirmasi -->
+    <div style="padding:10px 16px;background:#fffbeb;border-bottom:1px solid #fde68a;font-size:12px;font-weight:700;color:#92400e;">
+      <i class="fa fa-clock-o me-2"></i>Menunggu Konfirmasi ({{ transfer_masuk_pending|length }})
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="rcv-table">
+        <thead>
+          <tr>
+            <th>Barang</th><th>Dari Toko</th>
+            <th class="text-center">Jumlah</th><th>Catatan</th>
+            <th>Tanggal</th><th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transfer_masuk_pending %}
+          <tr>
+            <td>
+              <div style="font-weight:700;color:#2f3446;font-size:13px;">{{ t.barang_asal.nama }}</div>
+              <div style="font-family:monospace;font-size:11px;color:#8a92a6;">{{ t.barang_asal.barcode }}</div>
+            </td>
+            <td style="font-size:12px;color:#4b5563;">{{ t.cabang_asal.nama_toko }}</td>
+            <td class="text-center" style="font-weight:700;">{{ t.jumlah }}</td>
+            <td style="font-size:12px;color:#6b7280;font-style:italic;">{{ t.catatan|default:"—" }}</td>
+            <td style="font-size:11px;color:#8a92a6;">{{ t.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="text-center">
+              <div class="d-flex gap-2 justify-content-center">
+                <form hx-post="{% url 'penerimaan_barang' %}" hx-target="#mainpage"
+                      hx-confirm="Terima transfer {{ t.barang_asal.nama }} ({{ t.jumlah }} item)?">
+                  {% csrf_token %}
+                  <input type="hidden" name="transfer_id" value="{{ t.id }}">
+                  <input type="hidden" name="aksi_transfer" value="terima">
+                  <button type="submit" style="background:#059669;color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">
+                    <i class="fa fa-check me-1"></i>Terima
+                  </button>
+                </form>
+                <form hx-post="{% url 'penerimaan_barang' %}" hx-target="#mainpage"
+                      hx-confirm="Tolak transfer {{ t.barang_asal.nama }}?">
+                  {% csrf_token %}
+                  <input type="hidden" name="transfer_id" value="{{ t.id }}">
+                  <input type="hidden" name="aksi_transfer" value="tolak">
+                  <button type="submit" style="background:#fff;color:#dc3545;border:1.5px solid #dc3545;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;">
+                    <i class="fa fa-times me-1"></i>Tolak
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <!-- History riwayat -->
+    {% if transfer_masuk_history %}
+    <div style="padding:10px 16px;background:#f8fafc;border-top:{% if transfer_masuk_pending %}1px solid #eef1f6{% else %}none{% endif %};border-bottom:1px solid #eef1f6;font-size:12px;font-weight:700;color:#8a92a6;">
+      <i class="fa fa-history me-2"></i>Riwayat Transfer ({{ transfer_masuk_history|length }} terakhir)
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="rcv-table" id="tblTransferHistory">
+        <thead>
+          <tr>
+            <th>Barang</th><th>Dari Toko</th>
+            <th class="text-center">Jumlah</th>
+            <th class="text-center">Status</th>
+            <th>Tanggal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transfer_masuk_history %}
+          <tr class="history-row" {% if forloop.counter > 5 %}style="display:none;"{% endif %}>
+            <td>
+              <div style="font-weight:700;color:#2f3446;font-size:13px;">{{ t.barang_asal.nama }}</div>
+              <div style="font-family:monospace;font-size:11px;color:#8a92a6;">{{ t.barang_asal.barcode }}</div>
+            </td>
+            <td style="font-size:12px;color:#4b5563;">{{ t.cabang_asal.nama_toko }}</td>
+            <td class="text-center" style="font-weight:700;">{{ t.jumlah }}</td>
+            <td class="text-center">
+              {% if t.status == 'approved' %}<span style="background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;">Diterima</span>
+              {% elif t.status == 'rejected' %}<span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;">Ditolak</span>
+              {% else %}<span style="background:#f3f4f6;color:#6b7280;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;">{{ t.get_status_display }}</span>
+              {% endif %}
+            </td>
+            <td style="font-size:11px;color:#8a92a6;">{{ t.updated_at|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination sederhana -->
+    {% if transfer_masuk_history|length > 5 %}
+    <div style="padding:10px 16px;text-align:center;border-top:1px solid #f0f4f8;">
+      <button id="btnShowMore" onclick="tampilkanSemua()"
+        style="background:#f0f4fb;border:1.5px solid #d8e3f5;color:#1e2c5a;border-radius:7px;padding:6px 18px;font-size:12px;font-weight:700;cursor:pointer;">
+        <i class="fa fa-chevron-down me-1"></i>Tampilkan semua ({{ transfer_masuk_history|length }})
+      </button>
+    </div>
+    <script>
+    function tampilkanSemua(){
+      document.querySelectorAll('#tblTransferHistory .history-row').forEach(function(r){ r.style.display=''; });
+      document.getElementById('btnShowMore').style.display='none';
+    }
+    </script>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty state -->
+    <div style="text-align:center;padding:40px 20px;color:#8a92a6;">
+      <i class="fa fa-exchange" style="font-size:32px;opacity:.2;display:block;margin-bottom:10px;"></i>
+      Belum ada transfer masuk dari toko lain.
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>

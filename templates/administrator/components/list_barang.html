@@ -1,85 +1,373 @@
 {% load humanize %}
-<div>
-    <div class="mt-3 h2 fw-bold">
-        Daftar Barang
-    </div>
-    <div class="mb-5 fs-6">
-        Barang &rarr; Daftar Barang
-    </div>
-    <div class="container my-2">
-                                {% if messages %}
-                                    {% for message in messages %}
-                                    <div class="alert alert-primary alert-dismissible fade show " role="alert">
-                                        <button type="button" class=" btn" data-bs-dismiss="alert" aria-label="Close">X</button>    
-                                        <span>{{message}}</span>
-                                            
-                                    </div>
-                                    
-                                    {% endfor %}
-                                {% endif %}
-    </div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div style="padding-left: 20px;border-left: 5px solid lightgrey;" class="fs-5 fw-bold ">
-            Total: {{jumlah_barang|intcomma}} barang
-        </div>
+
+<style>
+  .inventory-page {
+    color: #4b5563;
+  }
+
+  .inventory-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .inventory-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .inventory-breadcrumb {
+    margin-top: 8px;
+    color: #8a92a6;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .inventory-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .inventory-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .inventory-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .inventory-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 78px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+  }
+
+  .inventory-summary-icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #4e73df;
+    background: #f3f6ff;
+    border-radius: 8px;
+  }
+
+  .inventory-summary-label {
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .inventory-summary-value {
+    margin-top: 2px;
+    color: #2f3446;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .inventory-panel {
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+    overflow: hidden;
+  }
+
+  .inventory-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #eef1f6;
+  }
+
+  .inventory-panel-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .inventory-panel-subtitle {
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 12px;
+  }
+
+  .inventory-table-wrap {
+    padding: 14px 18px 18px;
+    overflow-x: auto;
+  }
+
+  #datasetBarang {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+
+  #datasetBarang thead th {
+    color: #687086;
+    border-bottom: 1px solid #dfe4ee;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  #datasetBarang tbody td {
+    color: #4b5563;
+    border-bottom: 1px solid #eef1f6;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  #datasetBarang tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .inventory-item-name {
+    color: #2f3446;
+    font-weight: 900;
+  }
+
+  .inventory-item-code {
+    display: inline-block;
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .inventory-money {
+    white-space: nowrap;
+  }
+
+  .inventory-date {
+    white-space: nowrap;
+  }
+
+  .inventory-date small {
+    display: block;
+    margin-top: 3px;
+    color: #8a92a6;
+    font-weight: 800;
+  }
+
+  .inventory-action-cell {
+    min-width: 92px;
+    white-space: nowrap;
+  }
+
+  .inventory-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px;
+    border-radius: 7px;
+    color: #fff !important;
+  }
+
+  .inventory-page .dataTables_wrapper .dataTables_length,
+  .inventory-page .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 14px;
+    color: #687086;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .inventory-page .dataTables_wrapper .dataTables_filter input,
+  .inventory-page .dataTables_wrapper .dataTables_length select {
+    min-height: 34px;
+    border: 1px solid #cfd6e6;
+    border-radius: 7px;
+    color: #374151;
+  }
+
+  .inventory-page .dataTables_wrapper .dataTables_info,
+  .inventory-page .dataTables_wrapper .dataTables_paginate {
+    margin-top: 14px;
+    color: #687086;
+    font-size: 13px;
+  }
+
+  @media (max-width: 991.98px) {
+    .inventory-header {
+      flex-direction: column;
+    }
+
+    .inventory-summary {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .inventory-title {
+      font-size: 23px;
+    }
+
+    .inventory-actions,
+    .inventory-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="inventory-page">
+    <div class="inventory-header">
         <div>
-            <a href="{% url 'download_barang'%}"  class="btn btn-info rounded-pill" style="padding-left: 20px;padding-right: 20px;">Download</a>
-            <a hx-get="{% url 'tambah_barang_satuan'%}" hx-target="#mainpage" hx-trigger="click"  class="btn btn-success rounded-pill" style="padding-left: 20px;padding-right: 20px;">+ Tambah Barang Satuan</a>
+            <h2 class="inventory-title">Daftar Barang</h2>
+            <div class="inventory-breadcrumb">Barang &rarr; Daftar Barang</div>
         </div>
-        
+        <div class="inventory-actions">
+            <a href="{% url 'download_barang'%}" class="btn btn-info inventory-btn">
+                <i class="fas fa-download"></i>
+                <span>Download</span>
+            </a>
+            <a hx-get="{% url 'tambah_barang_satuan'%}" hx-target="#mainpage" hx-trigger="click" class="btn btn-success inventory-btn">
+                <i class="fas fa-plus"></i>
+                <span>Tambah Barang Satuan</span>
+            </a>
+        </div>
     </div>
-    <table id="datasetBarang"  >
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Nama Barang</th>
-                <th class="text-center">Satuan</th>
-                <th class="text-center">Stok</th>
-                <th>Harga Beli</th>
-                <th>Harga Ecer</th>
-                <th>Min. Grosir</th>
-                <th>Harga Grosir</th>
-                <th>Terjual</th>
-                <th>Tgl.Update</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for barang in barangs %}
-            <tr>
-                <td>{{forloop.counter}}</td>
-                <td>{{barang.nama}}<br><span style="font-size: 12px;font-weight: bold;">({{barang.barcode}})</span></td>
-                <td class="text-center">{{barang.satuan}}</td>
-                <td class="text-center">{{barang.stok|intcomma}}</td>
-                <td>Rp.{{barang.harga_beli|intcomma}}.00</td>
-                <td>Rp.{{barang.harga_ecer|intcomma}}.00</td>
-                <td class="text-center">{{barang.min_beli_grosir}}</td>
-                <td>Rp.{{barang.harga_grosir|intcomma}}.00</td>
-                <td class="text-center">{{barang.jumlah_dibeli|intcomma}}</td>
-                <td >{{barang.updated_at|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{barang.updated_at|date:"H:i:s"}}</span></td>
-                <td>
-                    <a href="{% url 'hapus_barang'%}?id={{barang.id}}"  class="btn btn-sm btn-danger p-1 m-2 text-white"><i class="fa fa-trash text-white" aria-hidden="true"></i></a>
-                    <a href="{% url 'edit_barang'%}?id={{barang.id}}"  target="_blank" class="btn btn-sm btn-info p-1 m-2"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                </td>
-            </tr>
-            <!-- <tr style="padding-bottom: 15px;border-bottom: 1px solid lightgrey;">
-                <td colspan="11"><b>Keterangan:</b>{{barang.keterangan|upper}}</td>
-            </tr> -->
-            {% endfor%}
-        </tbody>
-        <!-- <tfoot>
-            <tr>
-                {% for headers in df_headers %}
-                <th>{{headers}}</th>
-                {% endfor %}
-            </tr>
-        </tfoot> -->
-    </table>
+
+    {% if messages %}
+    <div class="mb-3">
+        {% for message in messages %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <span>{{message}}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="inventory-summary">
+        <div class="inventory-summary-card">
+            <div class="inventory-summary-icon"><i class="fas fa-boxes"></i></div>
+            <div>
+                <div class="inventory-summary-label">Total Barang</div>
+                <div class="inventory-summary-value">{{jumlah_barang|intcomma}}</div>
+            </div>
+        </div>
+        <div class="inventory-summary-card">
+            <div class="inventory-summary-icon"><i class="fas fa-store"></i></div>
+            <div>
+                <div class="inventory-summary-label">Cabang</div>
+                <div class="inventory-summary-value">{{user.userprofile.cabang.nama_cabang|title}}</div>
+            </div>
+        </div>
+        <div class="inventory-summary-card">
+            <div class="inventory-summary-icon"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="inventory-summary-label">Data Terbaru</div>
+                <div class="inventory-summary-value">{{barangs.0.updated_at|date:"d/m/Y"|default:"-"}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inventory-panel">
+        <div class="inventory-panel-header">
+            <div>
+                <h3 class="inventory-panel-title">Inventory Barang</h3>
+                <div class="inventory-panel-subtitle">Kelola stok, harga, dan data penjualan barang.</div>
+            </div>
+        </div>
+        <div class="inventory-table-wrap">
+            <table id="datasetBarang">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Nama Barang</th>
+                        <th class="text-center">Satuan</th>
+                        <th class="text-center">Stok</th>
+                        <th>Harga Beli</th>
+                        <th>Harga Ecer</th>
+                        <th class="text-center">Min. Grosir</th>
+                        <th>Harga Grosir</th>
+                        <th class="text-center">Terjual</th>
+                        <th>Tgl. Update</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for barang in barangs %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>
+                            <div class="inventory-item-name">{{barang.nama}}</div>
+                            <span class="inventory-item-code">{{barang.barcode}}</span>
+                        </td>
+                        <td class="text-center">{{barang.satuan}}</td>
+                        <td class="text-center">{{barang.stok|intcomma}}</td>
+                        <td class="inventory-money">Rp.{{barang.harga_beli|intcomma}}.00</td>
+                        <td class="inventory-money">Rp.{{barang.harga_ecer|intcomma}}.00</td>
+                        <td class="text-center">{{barang.min_beli_grosir}}</td>
+                        <td class="inventory-money">Rp.{{barang.harga_grosir|intcomma}}.00</td>
+                        <td class="text-center">{{barang.jumlah_dibeli|intcomma}}</td>
+                        <td class="inventory-date">
+                            {{barang.updated_at|date:"d/m/Y"}}
+                            <small>{{barang.updated_at|date:"H:i:s"}}</small>
+                        </td>
+                        <td class="text-center inventory-action-cell">
+                            <a href="{% url 'edit_barang'%}?id={{barang.id}}" target="_blank" class="btn btn-info btn-sm inventory-icon-btn" title="Edit barang">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{% url 'hapus_barang'%}?id={{barang.id}}" class="btn btn-danger btn-sm inventory-icon-btn" title="Hapus barang" onclick="return confirm('Hapus barang {{barang.nama}}?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
-        new DataTable('#datasetBarang',{
+        new DataTable('#datasetBarang', {
             language: {
-                search: "Pencarian Data: ",
-            }
+                search: "Cari barang:",
+                lengthMenu: "Tampilkan _MENU_ barang",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ barang",
+                infoEmpty: "Belum ada barang",
+                zeroRecords: "Barang tidak ditemukan",
+            },
+            order: [[9, 'desc']],
+            pageLength: 10
         });
     </script>
 </div>

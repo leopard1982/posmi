@@ -1,846 +1,1741 @@
-{% extends 'base-landing.html'%}
+{% extends 'base-landing.html' %}
 {% load static %}
 {% load humanize %}
 
 {% block contents %}
-<!-- Hero 3 - Bootstrap Brain Component -->
-<section id="scrollspyHero" class="bsb-tpl-bg-alabaster pt-3 pb-5 p-lg-0">
-<div class="container overflow-hidden">
-<div class="row gy-5 gy-lg-0 align-items-lg-center justify-content-lg-between">
-<div class="col-12 col-lg-6 order-1 order-lg-0">
-  <h1 class="display-3 fw-bold mb-3">Aplikasi Penjualan Berbasis Web</h1>
-  <p class="fs-4 mb-5">POSMI merupakan aplikasi penjualan berbasis web yang sangat mudah digunakan tanpa harus melakukan instalasi, cukup melakukan registrasi dan Go!</p>
-  <div class="d-grid gap-2 d-sm-flex">
-    <a class="btn btn-danger bsb-btn-3xl" href="#detailgratis">Register Sekarang</a>
-    <a class="btn text-white bsb-btn-3xl" style="background-color: #0d6efd;" href="{% url 'loginkan'%}">Login</a>
-  </div>
-</div>
-<div class="col-12 col-lg-5 text-center  bg-white">
-  <div class="position-relative">
-    {% include 'promo/list_promo.html'%}
-    <!-- <div class="bsb-circle border border-4 border-warning position-absolute top-50 start-10 translate-middle z-1"></div>
-    <div class="bsb-circle bg-primary position-absolute top-50 start-50 translate-middle" style="--bsb-cs: 460px;"></div>
-    <div class="bsb-circle border border-4 border-warning position-absolute top-10 end-0 z-1" style="--bsb-cs: 100px;"></div>
-    <img class="img-fluid position-relative z-2" loading="lazy" src="./assets/img/hero/hero-img-1.webp" alt=""> -->
-  </div>
-</div>
-</div>
-</div>
-</section>
+<style>
+/* ── Palet: soft blue – senada dengan /cms/ ── */
+:root {
+  --ink:    #2c3e6b;   /* navy biru tua — heading & CTA */
+  --ink2:   #4a5f8a;   /* biru abu medium — body text */
+  --ink3:   #8899bb;   /* biru abu terang — caption */
+  --border: #d8e3f5;   /* biru muda — border */
+  --soft:   #f0f4fb;   /* biru sangat muda — bg section alt */
+  --white:  #ffffff;
+  --accent: #4e73df;   /* biru aksen — primary button */
+}
 
-<!-- Main -->
-<main id="main">
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
-<!-- Section - Services -->
-<!-- Service 6 - Bootstrap Brain Component -->
-<section id="scrollspyServices" class="bsb-service-6 py-5 py-xl-8 bsb-section-py-xxl-1">
-<div class="container">
-<div class="row justify-content-md-center">
-  <div class="col-12 col-md-10 col-lg-8 col-xl-7">
-    <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Mengapa <strong>POSMI</strong>?</h3>
-    <h2 class="display-5 mb-4 mb-md-5 text-center"><strong>Posmi</strong> merupakan sistem penjualan lengkap yang mudah dipakai, semudah menghitung:<br>satu...dua...tiga...</h2>
-    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
-  </div>
-</div>
-</div>
+.anim-fade,
+.section-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .62s ease, transform .62s ease;
+  will-change: opacity, transform;
+}
+.anim-fade.is-visible,
+.section-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.anim-delay-1 { transition-delay: .06s; }
+.anim-delay-2 { transition-delay: .12s; }
+.anim-delay-3 { transition-delay: .18s; }
+.anim-delay-4 { transition-delay: .24s; }
+.anim-delay-5 { transition-delay: .30s; }
+.anim-delay-6 { transition-delay: .36s; }
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade,
+  .section-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
 
-<div class="container overflow-hidden">
-<div class="row gy-4 gy-md-0 gx-xxl-5">
-  <div class="col-12 col-lg-4 d-flex justify-content-center" id="detailgratis">
-    <div class="card bg-transparent border-primary rounded-0 overflow-hidden card-paket">
-      <div class="card-body " style="margin-top: -100px;">
-        <!-- <svg style="margin-top:40px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-hdd text-primary mb-4" viewBox="0 0 16 16">
-          <path d="M4.5 11a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
-          <path d="M16 11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V9.51c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198V11zM3.655 4.26 1.592 8.043C1.724 8.014 1.86 8 2 8h12c.14 0 .276.014.408.042L12.345 4.26a.5.5 0 0 0-.439-.26H4.094a.5.5 0 0 0-.44.26zM1 10v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z" />
-        </svg> -->
-        <h3 class="h2 mb-4 pt-5 text-danger text-center">Paket Dasar</h3>
-        <p class=" text-dark fw-bold">
-          Fitur:
-          <ul class="text-dark" style="margin-top:-20px">
-            <li>1 User Admin</li>
-            <li>Maks 100 transaksi/ bulan</li>
-            <li>Upload Master Data</li>
-            <li>Transaksi Penjualan</li>
-            <li>Nota Watermark</li>
-            <li>Dashboard Penjualan</li>
-          </ul> 
+/* ── Section helpers ── */
+.section-tag  { display: inline-block; background: var(--soft); color: var(--ink2); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 14px; border-radius: 50px; border: 1px solid var(--border); margin-bottom: 14px; }
+.section-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 800; color: var(--ink); line-height: 1.25; }
+.section-sub   { color: var(--ink3); font-size: 15px; max-width: 540px; line-height: 1.75; }
+.bg-soft { background: var(--soft); }
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(145deg, #1e2c5a 0%, #2c3e6b 60%, #3a5298 100%);
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+  padding: 80px 0 60px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.8); font-size: 13px; font-weight: 500;
+  padding: 6px 14px; border-radius: 50px; margin-bottom: 24px;
+}
+.hero-badge span { background: rgba(255,255,255,.15); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 50px; letter-spacing: .5px; text-transform: uppercase; }
+.hero-title { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 20px; }
+.hero-title em { font-style: normal; color: #fff; text-decoration: underline; text-decoration-color: rgba(255,255,255,.4); text-underline-offset: 6px; }
+.hero-sub { color: rgba(255,255,255,.6); font-size: 16px; line-height: 1.75; margin-bottom: 36px; max-width: 500px; }
+.btn-hero-primary { background: var(--accent); color: #fff; border: none; padding: 14px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; transition: opacity .2s, transform .2s; text-decoration: none; display: inline-block; }
+.btn-hero-primary:hover { opacity: .88; transform: translateY(-2px); color: #fff; }
+.btn-hero-outline { background: transparent; color: rgba(255,255,255,.8); border: 1.5px solid rgba(255,255,255,.25); padding: 13px 28px; border-radius: 8px; font-weight: 600; font-size: 15px; transition: border-color .2s, transform .2s; text-decoration: none; display: inline-block; }
+.btn-hero-outline:hover { border-color: rgba(255,255,255,.6); transform: translateY(-2px); color: #fff; }
+
+/* ── POS Mock UI ── */
+.pos-mock {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 32px 64px rgba(0,0,0,.28);
+  overflow: hidden;
+  animation: floatY 4s ease-in-out infinite;
+}
+.pos-mock-bar { background: var(--ink); padding: 11px 16px; display: flex; align-items: center; gap: 7px; }
+.pos-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; }
+.pos-mock-body { padding: 20px; }
+.pos-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border-radius: 7px; margin-bottom: 7px; background: var(--soft); }
+.pos-item:last-child { margin-bottom: 0; }
+.pos-item-name { font-weight: 600; font-size: 13px; color: var(--ink); }
+.pos-item-qty  { font-size: 11px; color: var(--ink3); }
+.pos-item-price { font-weight: 700; font-size: 13px; color: var(--ink); }
+.pos-total { background: var(--ink); color: #fff; border-radius: 8px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.pos-total-label { font-size: 13px; font-weight: 600; }
+.pos-total-amount { font-size: 18px; font-weight: 800; }
+.pos-pay-btn { width: 100%; background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 12px; font-weight: 700; font-size: 14px; margin-top: 10px; cursor: pointer; transition: opacity .2s; }
+.pos-pay-btn:hover { opacity: .85; }
+
+/* ── Stats ticker ── */
+.stats-bar { background: var(--soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 14px 0; overflow: hidden; }
+.stats-ticker { display: flex; white-space: nowrap; animation: ticker 22s linear infinite; gap: 0; }
+.stats-ticker-inner { display: flex; gap: 0; }
+.stat-item { display: inline-flex; align-items: center; gap: 10px; padding: 0 36px; color: var(--ink2); font-size: 13px; font-weight: 500; }
+.stat-item strong { color: var(--ink); font-size: 16px; font-weight: 800; }
+.stat-sep { color: var(--border); }
+
+/* ── Feature cards ── */
+.feature-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  transition: box-shadow .22s, transform .22s;
+  height: 100%;
+}
+.feature-card:hover { box-shadow: 0 10px 28px rgba(0,0,0,.08); transform: translateY(-3px); }
+.feature-icon { width: 48px; height: 48px; border-radius: 10px; background: var(--soft); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 20px; color: var(--ink2); }
+.feature-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.feature-desc  { font-size: 13px; color: var(--ink3); line-height: 1.65; margin: 0; }
+
+/* ── Pricing ── */
+.price-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px;
+  position: relative;
+  transition: box-shadow .22s, transform .22s;
+  height: 100%;
+  display: flex; flex-direction: column;
+}
+.price-card:hover { box-shadow: 0 14px 36px rgba(0,0,0,.09); transform: translateY(-4px); }
+.price-card.featured { border: 2px solid var(--ink); }
+.price-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 18px; border-radius: 50px; letter-spacing: .8px; text-transform: uppercase; white-space: nowrap; }
+.price-name  { font-size: 12px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.price-list { list-style: none; padding: 0; margin: 0 0 24px; flex: 1; }
+.price-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--ink2); padding: 7px 0; border-bottom: 1px solid #f0f0f0; }
+.price-list li:last-child { border: none; }
+.price-list li i.fa-check { color: var(--ink); margin-top: 2px; flex-shrink: 0; }
+.price-list li i.fa-times { color: #ccc; margin-top: 2px; flex-shrink: 0; }
+.btn-price { display: block; text-align: center; padding: 13px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; transition: all .2s; border: none; cursor: pointer; width: 100%; }
+.btn-price-primary { background: var(--ink); color: #fff; }
+.btn-price-primary:hover { opacity: .85; color: #fff; }
+.btn-price-outline { border: 1.5px solid var(--ink); color: var(--ink); background: transparent; }
+.btn-price-outline:hover { background: var(--ink); color: #fff; }
+.btn-price-ghost { border: 1.5px solid var(--border); color: var(--ink2); background: transparent; }
+.btn-price-ghost:hover { border-color: #999; }
+
+/* ── Addon cards ── */
+.addon-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 26px 22px; transition: box-shadow .2s, transform .2s; height: 100%; }
+.addon-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.07); transform: translateY(-3px); }
+
+/* ── Testimoni ── */
+.testi-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 28px; height: 100%; transition: box-shadow .2s; }
+.testi-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,.07); }
+.testi-quote { font-size: 36px; line-height: 1; color: #ccc; margin-bottom: 12px; font-family: Georgia, serif; }
+.testi-text  { font-size: 14px; color: var(--ink2); line-height: 1.75; margin-bottom: 20px; font-style: italic; }
+.testi-name  { font-weight: 700; font-size: 14px; color: var(--ink); }
+.testi-date  { font-size: 12px; color: var(--ink3); }
+
+/* ── Tutorial cards ── */
+.tutorial-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: box-shadow .2s, transform .2s; height: 100%; display: flex; flex-direction: column; }
+.tutorial-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.09); transform: translateY(-3px); }
+.tutorial-card img { width: 100%; height: 180px; object-fit: cover; }
+.tutorial-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.tutorial-label { font-size: 11px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.tutorial-title { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.5; flex: 1; }
+
+/* ── Referral ── */
+.referral-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 30px 32px;
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(44,62,107,.05);
+}
+.referral-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.35rem);
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+.referral-title strong {
+  font-weight: 900;
+}
+.referral-copy {
+  color: var(--ink2);
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 0 0 22px;
+  max-width: 620px;
+}
+.referral-copy strong { color: var(--ink); }
+.referral-highlight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.referral-highlight-number {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+}
+.referral-highlight-label {
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 800;
+}
+.referral-points { display: none; }
+.referral-point {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+.referral-point-label {
+  display: none;
+}
+.referral-point-value {
+  color: var(--ink2);
+  font-size: 13px;
+  font-weight: 700;
+}
+.referral-point-value::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #8fa2cc;
+  margin-right: 8px;
+  vertical-align: 1px;
+}
+.referral-steps {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.referral-steps-title {
+  color: var(--ink3);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+  margin-bottom: 14px;
+}
+.referral-step {
+  display: flex;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid #edf2f8;
+}
+.referral-step:last-child { border-bottom: 0; padding-bottom: 0; }
+.referral-step:first-of-type { padding-top: 0; }
+.referral-step-number {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: #f0f4fb;
+  color: var(--ink2);
+  font-size: 12px;
+  font-weight: 900;
+}
+.referral-step-text {
+  color: var(--ink2);
+  font-size: 13px;
+  line-height: 1.55;
+  padding-top: 4px;
+}
+@media (max-width: 767.98px) {
+  .referral-box { padding: 26px 20px; }
+}
+
+/* ── CTA ── */
+.cta-section {
+  background: #243865;
+  padding: 64px 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.cta-title {
+  font-size: clamp(1.65rem, 3vw, 2.05rem);
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.cta-sub {
+  color: rgba(255,255,255,.74);
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 660px;
+  margin: 0 auto 28px;
+}
+.cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: var(--ink);
+  padding: 13px 28px;
+  border-radius: 9px;
+  font-weight: 900;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  transition: transform .2s, box-shadow .2s;
+}
+.cta-primary:hover {
+  color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.16);
+}
+.cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(255,255,255,.86);
+  border: 1px solid rgba(255,255,255,.28);
+  padding: 12px 24px;
+  border-radius: 9px;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+}
+.cta-secondary:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,.48);
+}
+.cta-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255,255,255,.68);
+  text-decoration: none;
+}
+.cta-contact:hover { color: #fff; }
+
+/* ── Durasi buttons ── */
+.dur-btn { background: var(--soft); border: 1px solid var(--border); color: var(--ink2); font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 6px; cursor: pointer; transition: all .15s; }
+.dur-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.price-row { display: flex; align-items: baseline; gap: 4px; margin: 16px 0 4px; }
+.price-main { font-size: 2rem; font-weight: 900; color: var(--ink); }
+.price-main sup { font-size: .9rem; font-weight: 700; vertical-align: top; margin-top: 7px; }
+.price-total-label { font-size: 12px; color: var(--ink3); }
+.moneyback-banner {
+  max-width: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 22px auto 0;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #bfe6d5;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(8, 122, 85, .12);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+.moneyback-banner-icon {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  color: #087a55;
+  background: #eafaf4;
+  border-radius: 10px;
+}
+.moneyback-info-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  color: var(--accent);
+  background: #eef3ff;
+  border: 1px solid #d6e0ff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.moneyback-info-btn:hover {
+  background: #e2ebff;
+  transform: translateY(-1px);
+}
+@media (max-width: 575.98px) {
+  .moneyback-banner {
+    font-size: 16px;
+  }
+}
+</style>
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container position-relative" style="z-index:2;">
+    <div class="row align-items-center gy-5">
+
+      <!-- Left -->
+      <div class="col-12 col-lg-6">
+        <h1 class="hero-title anim-fade anim-delay-1">
+          Kelola Toko Lebih Mudah<br>dengan <em>POSMI</em>
+        </h1>
+        <p class="hero-sub anim-fade anim-delay-2">
+          Sistem Point of Sale berbasis web yang ringan, cepat, dan mudah digunakan. Tanpa instalasi — daftar, langsung berjualan.
         </p>
-        
-        <!-- <a href="#!" class="fw-bold text-decoration-none link-primary">
-          Learn More
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
-          </svg>
-        </a> -->
-        <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
+        <div class="d-flex flex-wrap gap-3 anim-fade anim-delay-3">
+          <a href="#harga" class="btn-hero-primary">
+            <i class="fa fa-rocket me-2"></i>Mulai Gratis Selamanya
+          </a>
+        </div>
+        <div class="d-flex flex-wrap gap-4 mt-4 anim-fade anim-delay-4" style="font-size:13px;color:rgba(255,255,255,.6);">
+          <span><i class="fa fa-check-circle me-1" ></i>Tanpa instalasi</span>
+          <span><i class="fa fa-check-circle me-1" ></i>Gratis selamanya</span>
+          <span><i class="fa fa-check-circle me-1" ></i>Support 24 jam</span>
+        </div>
       </div>
-      <a href="#gratis" class="text-white fw-bold p-2 text-center btn btn-primary rounded m-2">
-          GRATIS 7 HARI
-      </a>
+
+      <!-- Right: POS Mock UI -->
+      <div class="col-12 col-lg-5 offset-lg-1 anim-fade anim-delay-2">
+        <div class="pos-mock">
+          <!-- Title bar -->
+          <div class="pos-mock-bar">
+            <div class="pos-dot" style="background:#ff5f57;"></div>
+            <div class="pos-dot" style="background:#febc2e;"></div>
+            <div class="pos-dot" style="background:#28c840;"></div>
+            <span style="color:rgba(255,255,255,.6);font-size:12px;margin-left:10px;">POSMI — Kasir</span>
+          </div>
+          <!-- Body -->
+          <div class="pos-mock-body">
+            <div style="font-size:11px;color:#9ca3af;font-weight:700;letter-spacing:1px;margin-bottom:12px;">ITEM BELANJA</div>
+            <div class="pos-item">
+              <div><div class="pos-item-name">Mie Goreng Indomie</div><div class="pos-item-qty">2 × Rp 3.500</div></div>
+              <div class="pos-item-price">Rp 7.000</div>
+            </div>
+            <div class="pos-item">
+              <div><div class="pos-item-name">Teh Botol Sosro</div><div class="pos-item-qty">3 × Rp 5.000</div></div>
+              <div class="pos-item-price">Rp 15.000</div>
+            </div>
+            <div class="pos-item">
+              <div><div class="pos-item-name">Roti Tawar Sari Roti</div><div class="pos-item-qty">1 × Rp 12.000</div></div>
+              <div class="pos-item-price">Rp 12.000</div>
+            </div>
+            <div class="pos-total">
+              <div><div class="pos-total-label">Total Bayar</div></div>
+              <div class="pos-total-amount">Rp 34.000</div>
+            </div>
+            <button class="pos-pay-btn"><i class="fa fa-check me-2"></i>BAYAR SEKARANG</button>
+          </div>
+        </div>
+
+        <!-- Floating badge -->
+        <div style="position:absolute;bottom:-16px;right:20px;background:#fff;border-radius:10px;padding:12px 18px;box-shadow:0 8px 24px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;">
+          <div style="background:#10b981;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <i class="fa fa-bar-chart" style="color:#fff;font-size:16px;"></i>
+          </div>
+          <div style="font-size:12px;">
+            <div style="font-weight:700;color:#0d1b3e;">Laporan Real-time</div>
+            <div style="color:#888;">Dashboard langsung terupdate</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div class="col-12 col-lg-4 d-flex justify-content-center" id="detailkecil">
-    <div class="card bg-transparent border-primary rounded-0 overflow-hidden  d-flex justify-content-center card-paket">
-      <div class="card-body" style="margin-top: -100px;">
-        <!-- <svg style="margin-top:40px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-filetype-ai text-primary mb-4" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M14 4.5V14a2 2 0 0 1-2 2H6v-1h6a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5ZM1.113 14.82.8 15.85H0l1.342-3.999h.926l1.336 3.999h-.841l-.314-1.028H1.113Zm1.178-.588-.49-1.617h-.034l-.49 1.617h1.014Zm2.425-2.382v3.999h-.791V11.85h.79Z" />
-        </svg> -->
-        <h3 class="h2 mb-4 pt-5 text-danger text-center">
-          Bisnis Kecil
-        </h3>
-        <p class="mb-4 text-dark">
-          <strong>Fitur:</strong>
-          <ul class="text-dark" style="margin-top:-20px">
-            <li>1 User Admin</li>
-            <li><b>Menambah Kasir Unlimited</b></li>
-            <li><b>Maks 1500 transaksi/ bulan</b></li>
-            <li>Upload Master Data</li>
-            <li>Transaksi Penjualan</li>
-            <li>Nota Tanpa Watermark</li>
-            <li>Dashboard Penjualan</li>
-            <li>Download Daftar Barang</li>
-            <li>Download Laporan Transaksi</li>
-            <li>Log Transaksi</li>
-          </ul> 
-        </p>
-        
-        <!-- <a href="#!" class="fw-bold text-decoration-none link-primary">
-          Learn More
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
-          </svg>
-        </a> -->
-        <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
-      </div>
-      <a href="#bisniskecil" class="text-white fw-bold p-2 m-2 text-center btn btn-primary rounded"  style="margin-top: -30px !important;">
-          Cek Harga
-      </a>
-    </div>
-  </div>
-  <div class="col-12 col-lg-4 d-flex justify-content-center" id="detailmedium">
-    <div class="card bg-transparent border-primary rounded-0 overflow-hidden card-paket">
-      <div class="card-body" style="margin-top: -100px;">
-        <!-- <svg style="margin-top:40px" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-diagram-3 text-primary mb-4" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z" />
-        </svg> -->
-        <h3 class="h2 mb-4 pt-5 text-danger text-center">Bisnis Medium</h3>
-        <p class="mb-4 text-dark">
-          <strong>Fitur:</strong>
-          <ul class="text-dark" style="margin-top:-20px">
-            <li>1 User Admin</li>
-            <li><b>Menambah Kasir Unlimited</b></li>
-            <li><b>Maks 6000 transaksi/ bulan</b></li>
-            <li>Upload Master Data</li>
-            <li>Transaksi Penjualan</li>
-            <li>Nota Tanpa Watermark</li>
-            <li>Dashboard Penjualan</li>
-            <li>Download Daftar Barang</li>
-            <li>Download Laporan Transaksi</li>
-            <li>Log Transaksi</li>
-          </ul> 
-        </p>
-      </div>
-      <a href="#bisnismedium" class="text-white fw-bold p-2 m-2 text-center btn btn-primary rounded" style="margin-top: -40px !important;">
-          Cek Harga
-      </a>
-    </div>
-  </div>
-</div>
-</div>
 </section>
 
-
-<!-- Call To Action 2 - Bootstrap Brain Component -->
-<section class="bsb-cta-2" >
-<div class="container" style="min-height: 550px;max-height: 550px;">
-<div class="card border-0 rounded-3 overflow-hidden text-center bsb-overlay bsb-section-mb-n1" style="background-image: url('./assets/img/cta/cta-img-1.jpg'); --bsb-overlay-opacity: .9; --bsb-overlay-bg-color:var(--bs-primary-rgb);">
-  <div class="card-body">
-    <div class="row align-items-center justify-content-center">
-      <div class="col-12 col-md-10 col-xl-8 col-xxl-7">
-        <h2 class="fs-6 mb-4 text-white text-uppercase">PROMO! PROMO! POSMI!</h2>
-        <h3 class="display-5 text-white mb-5">Cek Promo Discount Setiap Bulan Untuk Sahabat POSMI Yah!</h3>
-        <a href="#detailmedium" class="btn btn-accent bsb-btn-3xl rounded mb-0 text-nowrap">Daftar Sekarang</a>
-      </div>
+<!-- ══════════════════════════════════════════════
+     STATS TICKER
+══════════════════════════════════════════════ -->
+<div class="stats-bar mt-5">
+  <div class="stats-ticker">
+    <div class="stats-ticker-inner">
+      <div class="stat-item"><strong>100+</strong> Toko Aktif <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>10.000+</strong> Transaksi/Bulan <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>99.9%</strong> Uptime <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>Rp 0</strong> Biaya Instalasi <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>Gratis</strong> Selamanya <span class="stat-sep">✦</span></div>
+    </div>
+    <!-- Duplicate for infinite loop -->
+    <div class="stats-ticker-inner" aria-hidden="true">
+      <div class="stat-item"><strong>100+</strong> Toko Aktif <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>10.000+</strong> Transaksi/Bulan <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>99.9%</strong> Uptime <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>Rp 0</strong> Biaya Instalasi <span class="stat-sep">✦</span></div>
+      <div class="stat-item"><strong>Gratis</strong> Selamanya <span class="stat-sep">✦</span></div>
     </div>
   </div>
 </div>
-</div>
-</section>
 
-<!-- Fact 2 - Bootstrap Brain Component -->
-<section class="bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
-<div class="container bsb-section-mt-1">
-<div class="row gy-3 gy-md-5 gy-lg-0">
-  <div class="col-12 col-lg-5">
-    <h2 class="display-5 mb-3 mb-xl-4">Harga Paket</h2>
-    <p class="lead mb-4 mb-xl-5">Harga paket berlangganan tersedia untuk 1 bulan, 3 bulan, 6 bulan, 1 tahun dan 2 tahun.</p>
-    <!-- <a href="#!" class="btn bsb-btn-3xl btn-primary">More Details</a> -->
-  </div>
-  <div class="col-12 col-lg-7" id="bisniskecil">
-    <div class="row justify-content-xl-end">
-      <div class="col-12 col-xl-11">
-        <div class="row gy-3 gy-md-4">
-          <div class="col-12 col-sm-6">
-            <form action="{% url 'payment_request'%}" method="post">
-              {% csrf_token %}
-              <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-                <div class="card-body text-center p-4 p-xxl-5">
-                  <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
-                    <span>Bisnis Kecil</span>
-                    <span><a href="#detailkecil"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
-                  </p>
-                  <p class="text-start">
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_kecil" id="bulanan" value="bulanan" required>
-                      <label for="bulanan">
-                        <strong>Rp.250.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Langganan Per Bulan
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_kecil" id="3bulanan" value="3bulanan">
-                      <label for="3bulanan">
-                      <strong>Rp.240.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_kecil.harga_per_tiga_bulan|intcomma}}.00
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_kecil" id="6bulanan" value="6bulanan">
-                      <label for="6bulanan">
-                      <strong>Rp.230.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_kecil.harga_per_enam_bulan|intcomma}}.00
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_kecil" id="tahunan" value="tahunan">
-                      <label for="tahunan">
-                      <strong>Rp.220.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_kecil.harga_per_tahun|intcomma}}.00
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_kecil" id="2tahunan" value="2tahunan">
-                      <label for="2tahunan">
-                      <strong>Rp.210.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_kecil.harga_per_dua_tahun|intcomma}}.00
-                    </p>
-                    <p class="p-2">
-                      <button class="btn btn-success btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
-                    </p>
-                  </p>
-                  <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
-                </div>
-              </div>
-            </form>
-            
+<!-- ══════════════════════════════════════════════
+     MODAL REQUEST DEMO
+══════════════════════════════════════════════ -->
+<div class="modal fade" id="modalRequestDemo" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <form action="{% url 'request_demo_aplikasi' %}" method="post">
+        {% csrf_token %}
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Request Demo Aplikasi</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Pilihan Aplikasi</label>
+            <select class="form-control" name="aplikasi_demo" required>
+              <option value="">Pilih aplikasi...</option>
+              <option value="pos">Aplikasi Penjualan (POS)</option>
+              <option value="jurnal_koperasi">Aplikasi Jurnal untuk Koperasi</option>
+              <option value="platform_baca">Aplikasi Platform Baca</option>
+            </select>
           </div>
-          <div class="col-12 col-sm-6" id="bisnismedium">
-            <form action="{% url 'payment_request'%}" method="post">
-              {% csrf_token %}
-              <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-                <div class="card-body text-center p-4 p-xxl-5">
-                  <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
-                    <span>Bisnis Medium</span>
-                    <span><a href="#detailmedium"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
-                  </p>
-                  <p class="text-start">
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_medium" id="bulanan1" value="bulanan" required>
-                      <label for="bulanan1">
-                        <strong>Rp.350.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Langganan Per Bulan
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_medium" id="3bulanan1" value="3bulanan"> 
-                      <label for="3bulanan1">
-                      <strong>Rp.340.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per 3 Bulan, Rp.{{bisnis_medium.harga_per_tiga_bulan|intcomma}}.00
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_medium" id="6bulanan1" value="6bulanan">
-                      <label for="6bulanan1">
-                      <strong>Rp.330.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per 6 Bulan, Rp.{{bisnis_medium.harga_per_enam_bulan|intcomma}}.00
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_medium" id="tahunan1" value="tahunan">
-                      <label for="tahunan1">
-                      <strong>Rp.320.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per Tahun, Rp.{{bisnis_medium.harga_per_tahun|intcomma}}.00
-                    </p>
-                    <p class="text-start">
-                      <input type="radio" name="bisnis_medium" id="2tahunan1" value="2tahunan">
-                      <label for="2tahunan1">
-                      <strong>Rp.310.000,00</strong>
-                      </label>
-                      <br><span class="ps-3"></span>Per 2 Tahun, Rp.{{bisnis_medium.harga_per_dua_tahun|intcomma}}.00
-                    </p>
-                    <p class="p-2">
-                      <button class="btn btn-primary btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
-                    </p>
-                  </p>
-                  <!-- <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div> -->
-                </div>
-              </div>
-            </form>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label fw-bold">Nama</label>
+              <input type="text" class="form-control" name="nama" required placeholder="Nama lengkap">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold">Email</label>
+              <input type="email" class="form-control" name="email" required placeholder="email@anda.com">
+            </div>
           </div>
-          <div class="col-12" id="gratis">
-            <form action="{% url 'payment_request'%}" method="post">
-              {% csrf_token %}
-              <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-                <div class="card-body text-center p-4 p-xxl-5">
-                  <p  class="fs-5 mb-0 text-start text-secondary position-relative z-1 fw-bold d-flex justify-content-between">
-                    <span>Paket Dasar</span>
-                    <span><a href="#detailgratis"><i class="fa fa-info-circle" aria-hidden="true"></i></a></i></span>
-                  </p>
-                  <p>
-                    Saya ingin mencoba terlebih dahulu <strong>POSMI</strong> dengan paket dasar terlebih dahulu.
-                  </p>
-                  <p class="p-2">
-                      <button class="btn btn-warning btn-sm rounded-pill px-4 fw-bold" type="submit">Berlangganan</button>
-                    </p>
-                </div>
-              </div>
-            </form>
+          <div class="mt-3">
+            <label class="form-label fw-bold">Keterangan</label>
+            <textarea class="form-control" name="keterangan" rows="3" placeholder="Ceritakan kebutuhan Anda..."></textarea>
           </div>
         </div>
-      </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary fw-bold px-4">Kirim Permintaan</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
-</div>
-</section>
 
-<!-- Section - About -->
-<!-- Process 1 - Bootstrap Brain Component -->
-<!-- <section id="scrollspyAbout" class="py-5 py-xl-8 bsb-section-py-xxl-1" style="margin-top:150px">
-<div class="container">
-<div class="row justify-content-md-center">
-  <div class="col-12 col-md-10 col-lg-8 col-xl-7">
-    <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Our Design Process</h3>
-    <h2 class="display-5 mb-4 mb-md-5 text-center">Our design approach is very organized to ensure satisfaction for our esteemed clients.</h2>
-    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
-  </div>
-</div>
-</div>
-
-<div class="container">
-<div class="row gy-5 gy-lg-0 align-items-lg-center">
-  <div class="col-12 col-lg-6">
-    <img class="img-fluid rounded" loading="lazy" src="./assets/img/process/process-img-1.webp" alt="">
-  </div>
-  <div class="col-12 col-lg-6">
-    <div class="row justify-content-xl-end">
-      <div class="col-12 col-xl-11">
-        <div class="d-flex mb-4">
-          <div>
-            <span class="btn btn-primary bsb-btn-circle bsb-btn-circle-lg pe-none me-4 bsb-tpl-font fs-5">1</span>
-          </div>
-          <div>
-            <h4 class="h2 mb-4">Planning</h4>
-            <p class="mb-0 text-secondary">Get to know your users and their needs better through surveys, interviews, usability testing, and other methods.</p>
-          </div>
-        </div>
-        <div class="d-flex mb-4">
-          <div>
-            <span class="btn btn-primary bsb-btn-circle bsb-btn-circle-lg pe-none me-4 bsb-tpl-font fs-5">2</span>
-          </div>
-          <div>
-            <h4 class="h2 mb-4">Launch</h4>
-            <p class="mb-0 text-secondary">This involves creating wireframes, mockups, and prototypes to test out your ideas and get feedback from users.</p>
-          </div>
-        </div>
-        <div class="d-flex mb-0">
-          <div>
-            <span class="btn btn-primary bsb-btn-circle bsb-btn-circle-lg pe-none me-4 bsb-tpl-font fs-5">3</span>
-          </div>
-          <div>
-            <h4 class="h2 mb-4">Finalize Product</h4>
-            <p class="mb-0 text-secondary">Once your product is launched, it's important to gather feedback from users to learn what they like and dislike about it.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-</section> -->
-
-<!-- Testimonial 2 - Bootstrap Brain Component -->
-<!-- <section class="bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
-<div class="container">
-<div class="row gy-5 gy-lg-0">
-  <div class="col-12 col-lg-4">
-    <h2 class="display-5 mb-3 mb-xl-4">Our Clients</h2>
-    <p class="lead mb-4 mb-xl-5">We believe in client satisfaction. Here are some testimonials by our worthy clients.</p>
-    <a href="#!" class="btn bsb-btn-2xl btn-primary">More Testimonials</a>
-  </div>
-  <div class="col-12 col-lg-8">
-    <div class="row justify-content-xl-end">
-      <div class="col-12 col-xl-11">
-        <div class="row gy-4">
-          <div class="col-12 col-md-6">
-            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-              <div class="card-body p-4 p-xxl-5">
-                <figure>
-                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-1.jpg" alt="Luna John">
-                  <figcaption>
-                    <blockquote class="bsb-blockquote-icon mb-4">We were so impressed with the work they did for us. They were able to take our vision and turn it into a reality, and they did it all on time and within budget. We would highly recommend them to anyone looking for a reliable and professional partner.</blockquote>
-                    <h4 class="mb-2">Luna John</h4>
-                    <h5 class="fs-6 text-secondary mb-0">UX Designer</h5>
-                  </figcaption>
-                </figure>
-                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6">
-            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-              <div class="card-body p-4 p-xxl-5">
-                <figure>
-                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-2.jpg" alt="Mark Smith">
-                  <figcaption>
-                    <blockquote class="bsb-blockquote-icon mb-4">We were looking for a company that could help us develop a new website that was both visually appealing and user-friendly. We are so happy with the results, and we would highly recommend them to anyone looking for a new website.</blockquote>
-                    <h4 class="mb-2">Mark Smith</h4>
-                    <h5 class="fs-6 text-secondary mb-0">Marketing Specialist</h5>
-                  </figcaption>
-                </figure>
-                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6">
-            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-              <div class="card-body p-4 p-xxl-5">
-                <figure>
-                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-3.jpg" alt="Michael Wilson">
-                  <figcaption>
-                    <blockquote class="bsb-blockquote-icon mb-4">We were struggling to manage our finances effectively. We needed help developing a financial plan. They create a financial plan that worked for us, and they showed us how to track our spending more effectively. We are so grateful for the help.</blockquote>
-                    <h4 class="mb-2">Michael Wilson</h4>
-                    <h5 class="fs-6 text-secondary mb-0">SEO Expert</h5>
-                  </figcaption>
-                </figure>
-                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6">
-            <div class="card border-0 border-bottom border-primary shadow-sm overflow-hidden">
-              <div class="card-body p-4 p-xxl-5">
-                <figure>
-                  <img class="img-fluid rounded rounded-circle mb-4 border border-5" loading="lazy" src="./assets/img/testimonial/testimonial-img-4.jpg" alt="Luke Reeves">
-                  <figcaption>
-                    <blockquote class="bsb-blockquote-icon mb-4">We were looking for a company that could help us with our branding. We needed a website and marketing materials. They were able to create a brand identity that we loved. They worked with us to develop a logo that represented our company.</blockquote>
-                    <h4 class="mb-2">Luke Reeves</h4>
-                    <h5 class="fs-6 text-secondary mb-0">Sales Manager</h5>
-                  </figcaption>
-                </figure>
-                <div class="bsb-circle bg-accent border border-4 border-accent position-absolute top-100 start-100 translate-middle"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-</section> -->
-
-<!-- Section - Team -->
-<!-- Team 1 - Bootstrap Brain Component -->
-<section id="scrollspyTeam" class="py-5 py-xl-8 bsb-section-py-xxl-1">
+<!-- ══════════════════════════════════════════════
+     FITUR
+══════════════════════════════════════════════ -->
+<section id="fitur" class="py-5" style="padding-top:80px!important;padding-bottom:80px!important;">
   <div class="container">
-  <div class="row justify-content-md-center">
-    <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-      <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Apa kata Pengguna POSMI?</h3>
-      <h2 class="display-5 mb-4 mb-md-5 text-center">Pengalaman sobat yang telah menggunakan POSMI:</h2>
-      <hr class="w-50 mx-auto mb-2 mb-xl-6 border-dark-subtle">
+    <div class="text-center mb-5">
+      <div class="section-tag">Fitur Unggulan</div>
+      <h2 class="section-title">Semua yang Anda Butuhkan<br>dalam Satu Aplikasi</h2>
+      <p class="section-sub mx-auto mt-3">POSMI hadir dengan fitur lengkap yang dirancang khusus untuk kebutuhan kasir toko kecil hingga menengah.</p>
     </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade anim-delay-1">
+        <div class="feature-card">
+          <div class="feature-icon" ><i class="fa fa-shopping-cart"></i></div>
+          <div class="feature-title">Transaksi Penjualan</div>
+          <p class="feature-desc">Proses penjualan cepat dengan pencarian barang, pilih metode bayar cash atau transfer, dan cetak nota langsung.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade anim-delay-2">
+        <div class="feature-card">
+          <div class="feature-icon" ><i class="fa fa-bar-chart"></i></div>
+          <div class="feature-title">Dashboard & Laporan</div>
+          <p class="feature-desc">Pantau omzet, jumlah transaksi, dan barang terlaris langsung dari dashboard yang informatif dan mudah dibaca.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade anim-delay-3">
+        <div class="feature-card">
+          <div class="feature-icon" ><i class="fa fa-users"></i></div>
+          <div class="feature-title">Multi Kasir</div>
+          <p class="feature-desc">Tambah kasir tanpa batas pada paket berbayar. Setiap kasir memiliki akun sendiri dan terlacak aktivitasnya.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade anim-delay-4">
+        <div class="feature-card">
+          <div class="feature-icon" ><i class="fa fa-barcode"></i></div>
+          <div class="feature-title">Master Data Barang</div>
+          <p class="feature-desc">Upload ribuan barang sekaligus via Excel, atur harga ecer dan grosir, serta kelola stok dengan mudah.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade anim-delay-5">
+        <div class="feature-card">
+          <div class="feature-icon" ><i class="fa fa-print"></i></div>
+          <div class="feature-title">Nota & Kuitansi</div>
+          <p class="feature-desc">Cetak nota transaksi dan kuitansi langsung dari browser. Paket berbayar bebas watermark.</p>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade anim-delay-6">
+        <div class="feature-card">
+          <div class="feature-icon" ><i class="fa fa-download"></i></div>
+          <div class="feature-title">Download Laporan</div>
+          <p class="feature-desc">Ekspor laporan transaksi dan daftar barang ke file Excel kapan saja untuk keperluan pembukuan.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     HARGA PAKET BERLANGGANAN
+══════════════════════════════════════════════ -->
+<style>
+.dur-btn { background: #f3f4f6; border: none; color: #6b7280; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: all .15s; }
+.dur-btn.active { background: #0d6efd; color: #fff; }
+.price-row { display: flex; align-items: baseline; gap: 6px; margin: 16px 0 4px; }
+.price-main { font-size: 2rem; font-weight: 900; color: #0d1b3e; }
+.price-main sup { font-size: 1rem; font-weight: 700; vertical-align: top; margin-top: 6px; }
+.price-total-label { font-size: 12px; color: #9ca3af; }
+</style>
+
+<section id="harga" class="py-5 bg-soft" style="padding-top:80px!important;padding-bottom:80px!important;">
+  <div class="container">
+    <div class="text-center mb-4">
+      <div class="section-tag">Harga</div>
+      <h2 class="section-title">Pilih Paket yang Sesuai</h2>
+      <p class="section-sub mx-auto mt-3">Mulai gratis, upgrade kapan saja. Harga transparan, tanpa biaya tersembunyi.</p>
+      <div class="moneyback-banner">
+        <span class="moneyback-banner-icon"><i class="fa fa-shield"></i></span>
+        <span>30 Hari Money Back Guarantee!</span>
+        <button type="button" class="moneyback-info-btn" data-bs-toggle="modal" data-bs-target="#moneyBackGuaranteeModal" aria-label="Syarat dan ketentuan money back guarantee">
+          <i class="fa fa-info"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal fade" id="moneyBackGuaranteeModal" tabindex="-1" aria-labelledby="moneyBackGuaranteeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border:0;border-radius:12px;overflow:hidden;">
+          <div class="modal-header" style="border-bottom:1px solid #e8eef8;">
+            <h5 class="modal-title" id="moneyBackGuaranteeModalLabel" style="color:var(--ink);font-weight:900;">Syarat &amp; Ketentuan Refund</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+          </div>
+          <div class="modal-body" style="color:var(--ink2);font-size:14px;line-height:1.7;">
+            <ol class="mb-0 ps-3">
+              <li>Maksimal melakukan 50 transaksi penjualan.</li>
+              <li>Pengajuan dilakukan dalam range 30 hari dari pendaftaran paket.</li>
+              <li>Pengembalian dana diproses dalam 2x24 jam ke rekening pendaftaran awal.</li>
+              <li>Ketika paket dibatalkan, akun toko akan masuk ke paket gratis.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Durasi selector -->
+    <div class="d-flex justify-content-center gap-2 flex-wrap mb-5">
+      <button class="dur-btn active" onclick="setDur('bulanan',this)">1 Bulan</button>
+      <button class="dur-btn" onclick="setDur('3bulanan',this)">3 Bulan</button>
+      <button class="dur-btn" onclick="setDur('6bulanan',this)">6 Bulan</button>
+      <button class="dur-btn" onclick="setDur('tahunan',this)">1 Tahun</button>
+      <button class="dur-btn" onclick="setDur('2tahunan',this)">2 Tahun</button>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+      <!-- ── Paket Dasar (selalu tampil) ── -->
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-1">
+        <div class="price-card h-100">
+          <div class="price-name">Paket Dasar</div>
+          <div class="price-row">
+            <div class="price-main"><sup>Rp</sup>0</div>
+          </div>
+          <div class="price-total-label mb-3">Gratis selamanya</div>
+          <ul class="price-list">
+            <li><i class="fa fa-check"></i>1 Admin</li>
+            <li><i class="fa fa-check"></i>Maks. 75 transaksi/bulan berjalan</li>
+            <li><i class="fa fa-check"></i>Transaksi penjualan</li>
+            <li><i class="fa fa-check"></i>Upload master data</li>
+            <li><i class="fa fa-check"></i>Nota dengan watermark</li>
+            <li><i class="fa fa-times"></i>Multi kasir</li>
+            <li><i class="fa fa-times"></i>Download laporan</li>
+          </ul>
+          <form action="{% url 'payment_request' %}" method="post" class="mt-auto">
+            {% csrf_token %}
+            <button type="submit" class="btn-price btn-price-ghost">Coba Sekarang</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── Bisnis Kecil ── -->
+      {% if bisnis_kecil %}
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-2">
+        <div class="price-card featured h-100"
+          data-hb="{{ bisnis_kecil.harga_per_bulan }}"
+          data-h3="{{ bisnis_kecil.harga_per_tiga_bulan }}"
+          data-h6="{{ bisnis_kecil.harga_per_enam_bulan }}"
+          data-ht="{{ bisnis_kecil.harga_per_tahun }}"
+          data-h2t="{{ bisnis_kecil.harga_per_dua_tahun }}"
+          id="card-kecil">
+          <div class="price-badge">Paling Populer</div>
+          <div class="price-name">Bisnis Kecil</div>
+          <div class="price-row">
+            <div class="price-main" id="harga-kecil"><sup>Rp</sup>{{ bisnis_kecil.harga_per_bulan|intcomma }}</div>
+          </div>
+          <div class="price-total-label mb-3" id="label-kecil">per bulan &bull; total Rp {{ bisnis_kecil.harga_per_bulan|intcomma }}</div>
+          <ul class="price-list">
+            <li><i class="fa fa-check"></i>1 Admin</li>
+            <li><i class="fa fa-check"></i>Kasir
+              {% if bisnis_kecil.max_user_login == 0 %}<strong>unlimited</strong>{% else %}<strong>{{ bisnis_kecil.max_user_login }}</strong>{% endif %}
+            </li>
+            <li><i class="fa fa-check"></i>Maks. {{ bisnis_kecil.max_transaksi|intcomma }} transaksi/bulan</li>
+            <li><i class="fa fa-check"></i>Upload master data</li>
+            <li><i class="fa fa-check"></i>Nota <strong>tanpa watermark</strong></li>
+            <li><i class="fa fa-check"></i>Download laporan</li>
+            <li><i class="fa fa-check"></i>Log transaksi</li>
+            <li><i class="fa fa-check"></i>Ceklist barang sebelum payment</li>
+            {% if bisnis_kecil.is_add_ons %}<li><i class="fa fa-check"></i>Penambahan add-ons</li>{% endif %}
+            <li><i class="fa fa-check"></i>Garansi 30 hari uang kembali</li>
+          </ul>
+          <form action="{% url 'payment_request' %}" method="post" class="mt-auto">
+            {% csrf_token %}
+            <input type="hidden" name="bisnis_kecil" id="input-kecil" value="bulanan">
+            <button type="submit" class="btn-price btn-price-primary">Berlangganan Sekarang</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ── Bisnis Medium ── -->
+      {% if bisnis_medium %}
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-3">
+        <div class="price-card h-100"
+          data-hb="{{ bisnis_medium.harga_per_bulan }}"
+          data-h3="{{ bisnis_medium.harga_per_tiga_bulan }}"
+          data-h6="{{ bisnis_medium.harga_per_enam_bulan }}"
+          data-ht="{{ bisnis_medium.harga_per_tahun }}"
+          data-h2t="{{ bisnis_medium.harga_per_dua_tahun }}"
+          id="card-medium">
+          <div class="price-name">Bisnis Medium</div>
+          <div class="price-row">
+            <div class="price-main" id="harga-medium"><sup>Rp</sup>{{ bisnis_medium.harga_per_bulan|intcomma }}</div>
+          </div>
+          <div class="price-total-label mb-3" id="label-medium">per bulan &bull; total Rp {{ bisnis_medium.harga_per_bulan|intcomma }}</div>
+          <ul class="price-list">
+            <li><i class="fa fa-check"></i>1 Admin</li>
+            <li><i class="fa fa-check"></i>Kasir
+              {% if bisnis_medium.max_user_login == 0 %}<strong>unlimited</strong>{% else %}<strong>{{ bisnis_medium.max_user_login }}</strong>{% endif %}
+            </li>
+            <li><i class="fa fa-check"></i>Maks. {{ bisnis_medium.max_transaksi|intcomma }} transaksi/bulan</li>
+            <li><i class="fa fa-check"></i>Upload master data</li>
+            <li><i class="fa fa-check"></i>Nota <strong>tanpa watermark</strong></li>
+            <li><i class="fa fa-check"></i>Download laporan</li>
+            <li><i class="fa fa-check"></i>Log transaksi</li>
+            <li><i class="fa fa-check"></i>Ceklist barang sebelum payment</li>
+            {% if bisnis_medium.is_pembayaran_tempo %}
+            <li>
+              <i class="fa fa-check"></i>Pembayaran dengan tempo
+              <button type="button" class="btn-tempo-info" onclick="document.getElementById('overlayTempo').classList.add('show')" title="Pelajari tentang pembayaran tempo">
+                <i class="fa fa-info-circle"></i>
+              </button>
+            </li>
+            {% endif %}
+            {% if bisnis_medium.is_add_ons %}<li><i class="fa fa-check"></i>Penambahan add-ons</li>{% endif %}
+            <li><i class="fa fa-check"></i>Garansi 30 hari uang kembali</li>
+          </ul>
+          <form action="{% url 'payment_request' %}" method="post" class="mt-auto">
+            {% csrf_token %}
+            <input type="hidden" name="bisnis_medium" id="input-medium" value="bulanan">
+            <button type="submit" class="btn-price btn-price-outline">Berlangganan Sekarang</button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Overlay Pembayaran Tempo ── -->
+<div id="overlayTempo" class="tempo-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="tempo-box">
+    <button class="tempo-close" onclick="document.getElementById('overlayTempo').classList.remove('show')">&times;</button>
+    <div class="tempo-header">
+      <div class="tempo-icon"><i class="fa fa-clock-o"></i></div>
+      <div>
+        <h4 class="tempo-title">Pembayaran Tempo</h4>
+        <p class="tempo-subtitle">Fitur eksklusif Bisnis Medium</p>
+      </div>
+    </div>
+    <p class="tempo-desc">
+      Izinkan pelanggan membayar transaksi secara kredit dengan <strong>tanggal jatuh tempo yang dapat disesuaikan</strong>.
+      Cocok untuk toko yang melayani pelanggan langganan atau grosir.
+    </p>
+    <div class="tempo-features">
+      <div class="tempo-feat"><i class="fa fa-check-circle"></i>Transaksi bisa diselesaikan tanpa bayar penuh di kasir</div>
+      <div class="tempo-feat"><i class="fa fa-check-circle"></i>Atur tanggal jatuh tempo per transaksi</div>
+      <div class="tempo-feat"><i class="fa fa-check-circle"></i>Dashboard piutang — pantau semua tagihan belum lunas</div>
+      <div class="tempo-feat"><i class="fa fa-check-circle"></i>Notifikasi jatuh tempo otomatis</div>
+      <div class="tempo-feat"><i class="fa fa-check-circle"></i>Konfirmasi pelunasan dengan satu klik</div>
+      <div class="tempo-feat"><i class="fa fa-check-circle"></i>Laporan rekapitulasi piutang per pelanggan</div>
+    </div>
+    <div class="tempo-note">
+      <i class="fa fa-info-circle me-1"></i>
+      Fitur ini hanya tersedia pada paket <strong>Bisnis Medium</strong>.
+    </div>
+    <button class="tempo-btn" onclick="document.getElementById('overlayTempo').classList.remove('show')">Mengerti</button>
   </div>
 </div>
 
-<!-- dikasih carousel di sini -->
-  <div id="myCarousel1" class="container carousel carousel1 slide container" data-bs-ride="carousel">
-    <div class="carousel-inner w-100">
-      {% for testimoni in list_testimoni %}
-        {% if forloop.first %}
-          <div class="carousel-item active carousel-item1">
-              <div class="col-md-3">
-                  <div class="card card-body justify-content-center w-100" style="height: 300px;min-height: 300px;max-height: 300px;border:none;padding:10px  ">
-                    <div class="p-2 border-top border-bottom rounded border-primary border-5 w-100 vh-100 d-flex align-items-center" >
-                      <h5 class="text-center w-100">
-                        "{{testimoni.testimoni}}"
-                      </h5>
-                    </div>
-                    <div class="mt-2">
-                      <h5 class="fw-bold text-center text-success">
-                        {{testimoni.cabang.nama_toko}} 
-                      </h5>
-                    </div>
-                    <div class="mb-2">
-                      <h6 class="fw-bold text-center">
-                        Bergabung: {{testimoni.cabang.created_at|date:"d/M/Y"}}
-                      </h6>
-                    </div>
-                  </div>
-              </div>
+<style>
+.btn-tempo-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 5px;
+  padding: 0;
+  background: none;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  color: inherit;
+  font-size: 10px;
+  cursor: pointer;
+  opacity: .65;
+  vertical-align: middle;
+  transition: opacity .15s;
+}
+.btn-tempo-info:hover { opacity: 1; }
+
+.tempo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.5);
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.tempo-overlay.show { opacity: 1; pointer-events: auto; }
+
+.tempo-box {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 24px 60px rgba(15,23,42,.18);
+  transform: translateY(12px);
+  transition: transform .25s;
+}
+.tempo-overlay.show .tempo-box { transform: translateY(0); }
+
+.tempo-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  color: #64748b;
+  cursor: pointer;
+  line-height: 1;
+}
+.tempo-close:hover { background: #e2e8f0; color: #1e293b; }
+
+.tempo-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.tempo-icon {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  background: #fffbeb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d97706;
+  font-size: 22px;
+}
+.tempo-title { margin: 0; font-size: 18px; font-weight: 800; color: #1e293b; }
+.tempo-subtitle { margin: 2px 0 0; font-size: 12px; color: #f59e0b; font-weight: 700; }
+
+.tempo-desc { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 16px; }
+
+.tempo-features { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.tempo-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+}
+.tempo-feat i { color: #22c55e; font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+.tempo-note {
+  background: #f8fafc;
+  border-left: 3px solid #f59e0b;
+  border-radius: 0 6px 6px 0;
+  padding: 9px 12px;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 18px;
+}
+
+.tempo-btn {
+  width: 100%;
+  padding: 11px;
+  background: #1e3a5f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+.tempo-btn:hover { background: #2d5286; }
+</style>
+
+<script>
+const durLabel = {
+  bulanan:  { input:'bulanan',  label:'per bulan', bulan:1 },
+  '3bulanan':{ input:'3bulanan', label:'per bulan (3 bulan)', bulan:3 },
+  '6bulanan':{ input:'6bulanan', label:'per bulan (6 bulan)', bulan:6 },
+  tahunan:  { input:'tahunan',  label:'per bulan (1 tahun)', bulan:12 },
+  '2tahunan':{ input:'2tahunan', label:'per bulan (2 tahun)', bulan:24 },
+};
+const durData = {
+  bulanan:'hb', '3bulanan':'h3', '6bulanan':'h6', tahunan:'ht', '2tahunan':'h2t'
+};
+
+function fmt(n){ return 'Rp '+Number(n).toLocaleString('id-ID'); }
+
+function setDur(dur, btn){
+  document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const attr = durData[dur];
+  const info = durLabel[dur];
+
+  ['kecil','medium'].forEach(id=>{
+    const card = document.getElementById('card-'+id);
+    if(!card) return;
+    const total = parseInt(card.dataset[attr] || card.dataset.hb || 0);
+    const perBulan = Math.round(total / info.bulan);
+    document.getElementById('harga-'+id).innerHTML = '<sup>Rp</sup>'+perBulan.toLocaleString('id-ID');
+    document.getElementById('label-'+id).textContent = info.label+' • total '+fmt(total);
+    document.getElementById('input-'+id).value = info.input;
+  });
+}
+</script>
+
+<!-- ══════════════════════════════════════════════
+     ADD-ONS
+══════════════════════════════════════════════ -->
+<section id="addon" class="py-5" style="padding-top:80px!important;padding-bottom:80px!important;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-tag orange">Add-ons</div>
+      <h2 class="section-title">Layanan Tambahan</h2>
+      <p class="section-sub mx-auto mt-3">Upgrade paket, tambah kuota, atau aktifkan fitur tambahan — semua bisa dilakukan kapan saja.</p>
+    </div>
+
+    <!-- ── Trial Bundle Banner ── -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;box-shadow:0 12px 30px rgba(44,62,107,.07);">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex:1;min-width:260px;">
+        <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#e0f2fe,#dbeafe);color:#2563eb;display:flex;align-items:center;justify-content:center;flex:0 0 42px;box-shadow:0 10px 22px rgba(37,99,235,.12);">
+          <i class="fa fa-gift" style="font-size:18px;"></i>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+            Trial add-on premium
           </div>
-        {% else %}
-          <div class="carousel-item carousel-item1">
-              <div class="col-md-3">
-                  <div class="card card-body justify-content-center w-100" style="height: 300px;min-height: 300px;max-height: 300px;border:none;padding:10px">
-                    <div class="p-2 border-top border-bottom rounded border-primary border-5 w-100 vh-100 d-flex align-items-center" >
-                      <h5 class="text-center w-100">
-                        "{{testimoni.testimoni}}"
-                      </h5>
-                    </div>
-                    <div class="mt-2">
-                      <h5 class="fw-bold text-center text-success">
-                        {{testimoni.cabang.nama_toko}}
-                      </h5>
-                    </div>
-                    <div class="mb-2">
-                      <h6 class="fw-bold text-center">
-                        Bergabung: {{testimoni.cabang.created_at|date:"d/M/Y"}}
-                      </h6>
-                    </div>
-                  </div>
-              </div>
+          <div style="font-size:22px;font-weight:500;color:#111827;margin-bottom:4px;">Uji fitur premium sebelum berlangganan</div>
+          <div style="font-size:13px;color:var(--ink2);line-height:1.6;">
+            Aktifkan barcode, custom nota, dan laporan akunting selama 3 hari di toko Anda. Trial otomatis selesai jika tidak dilanjutkan.
           </div>
-        {% endif%}
+        </div>
+      </div>
+      <button type="button" onclick="bukaModalTrial()"
+        style="background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;border:1.5px solid #1d4ed8;border-radius:9px;padding:11px 18px;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap;flex-shrink:0;box-shadow:0 10px 22px rgba(37,99,235,.24);display:inline-flex;align-items:center;gap:8px;">
+        <i class="fa fa-rocket" aria-hidden="true"></i>
+        <span>Mulai Trial 3 Hari</span>
+        <i class="fa fa-arrow-right" aria-hidden="true" style="font-size:11px;opacity:.86;"></i>
+      </button>
+    </div>
+
+    <!-- ── Row 1: Add-on Berbayar ── -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <span style="font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:1.2px;white-space:nowrap;">
+        Fitur Tambahan Berlangganan
+      </span>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+
+    <div class="row g-4 mb-5">
+
+      <!-- Cetak Label Barcode -->
+      <div class="col-12 col-md-4 anim-fade anim-delay-1">
+        <div class="price-card h-100 addon-card-wrap" data-addon-type="barcode" style="display:flex;flex-direction:column;position:relative;">
+          <div class="addon-aktif-badge" style="display:none;position:absolute;top:12px;right:12px;background:#22c55e;color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.5px;z-index:2;"><i class="fa fa-check-circle me-1"></i>AKTIF</div>
+          <div class="addon-card-header" style="background:linear-gradient(135deg,#fff7ed,#fed7aa);border-radius:10px 10px 0 0;padding:20px 22px;color:#7c2d12;margin:-1px -1px 0;">
+            <div style="width:42px;height:42px;background:rgba(249,115,22,.14);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+              <i class="fa fa-barcode" style="font-size:20px;color:#c2410c;"></i>
+            </div>
+            <div style="font-size:11px;font-weight:800;opacity:.72;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Add-on Premium</div>
+            <div style="font-size:17px;font-weight:900;">Cetak Label Barcode</div>
+          </div>
+          <div style="padding:22px;flex:1;display:flex;flex-direction:column;">
+            <div class="price-row" style="margin-bottom:4px;">
+              <div class="price-main"><sup style="font-size:.85rem;">Rp</sup>50.000</div>
+            </div>
+            <div class="price-total-label mb-2">per bulan / toko</div>
+            <div class="addon-info-aktif" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:7px 11px;font-size:11px;color:#166534;font-weight:700;margin-bottom:10px;"></div>
+            <p style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:16px;">
+              Cetak label barcode profesional untuk semua produk langsung dari POSMI, tanpa aplikasi tambahan.
+            </p>
+            <ul class="price-list">
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Cetak massal & satuan</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Format PDF siap print</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Kompatibel printer thermal</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Ukuran label fleksibel</li>
+            </ul>
+            <button type="button" class="btn-price btn-price-outline mt-auto addon-btn"
+                    onclick="bukaModalAddon('barcode','Cetak Label Barcode','Rp 50.000/bulan')"
+                    style="text-align:center;">
+              <i class="fa fa-arrow-right me-2"></i><span class="addon-btn-label">Aktifkan Add-on</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Template Nota -->
+      <div class="col-12 col-md-4 anim-fade anim-delay-2">
+        <div class="price-card h-100 addon-card-wrap" data-addon-type="nota_custom" style="display:flex;flex-direction:column;position:relative;">
+          <div class="addon-aktif-badge" style="display:none;position:absolute;top:12px;right:12px;background:#22c55e;color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.5px;z-index:2;"><i class="fa fa-check-circle me-1"></i>AKTIF</div>
+          <div class="addon-card-header" style="background:linear-gradient(135deg,#f5f3ff,#ddd6fe);border-radius:10px 10px 0 0;padding:20px 22px;color:#4c1d95;margin:-1px -1px 0;">
+            <div style="width:42px;height:42px;background:rgba(124,58,237,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+              <i class="fa fa-file-text" style="font-size:20px;color:#6d28d9;"></i>
+            </div>
+            <div style="font-size:11px;font-weight:800;opacity:.72;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Add-on Premium</div>
+            <div style="font-size:17px;font-weight:900;">Custom Template Nota</div>
+          </div>
+          <div style="padding:22px;flex:1;display:flex;flex-direction:column;">
+            <div class="price-row" style="margin-bottom:4px;">
+              <div class="price-main"><sup style="font-size:.85rem;">Rp</sup>75.000</div>
+            </div>
+            <div class="price-total-label mb-2">per bulan / toko</div>
+            <div class="addon-info-aktif" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:7px 11px;font-size:11px;color:#166534;font-weight:700;margin-bottom:10px;"></div>
+            <p style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:16px;">
+              Beri identitas unik pada nota transaksi Anda — logo, warna brand, dan tata letak sesuai keinginan.
+            </p>
+            <ul class="price-list">
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Upload logo & foto toko</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Pilih font & warna brand</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Preview sebelum simpan</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Nota tanpa watermark POSMI</li>
+            </ul>
+            <button type="button" class="btn-price btn-price-outline mt-auto addon-btn"
+                    onclick="bukaModalAddon('nota_custom','Custom Template Nota','Rp 75.000/bulan')"
+                    style="text-align:center;">
+              <i class="fa fa-arrow-right me-2"></i><span class="addon-btn-label">Aktifkan Add-on</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Laporan Akunting Otomatis -->
+      <div class="col-12 col-md-4 anim-fade anim-delay-3">
+        <div class="price-card h-100 addon-card-wrap" data-addon-type="akunting" style="display:flex;flex-direction:column;position:relative;">
+          <div class="addon-aktif-badge" style="display:none;position:absolute;top:12px;right:12px;background:#22c55e;color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.5px;z-index:2;"><i class="fa fa-check-circle me-1"></i>AKTIF</div>
+          <div class="addon-card-header" style="background:linear-gradient(135deg,#ecfdf5,#a7f3d0);border-radius:10px 10px 0 0;padding:20px 22px;color:#064e3b;margin:-1px -1px 0;">
+            <div style="width:42px;height:42px;background:rgba(5,150,105,.13);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+              <i class="fa fa-calculator" style="font-size:20px;color:#047857;"></i>
+            </div>
+            <div style="font-size:11px;font-weight:800;opacity:.72;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Add-on Premium</div>
+            <div style="font-size:17px;font-weight:900;">Laporan Akunting Otomatis</div>
+          </div>
+          <div style="padding:22px;flex:1;display:flex;flex-direction:column;">
+            <div class="price-row" style="margin-bottom:4px;">
+              <div class="price-main"><sup style="font-size:.85rem;">Rp</sup>100.000</div>
+            </div>
+            <div class="price-total-label mb-2">per bulan / toko</div>
+            <div class="addon-info-aktif" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:7px 11px;font-size:11px;color:#166534;font-weight:700;margin-bottom:10px;"></div>
+            <p style="font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:16px;">
+              Laporan penjualan langsung terformat sebagai jurnal akuntansi — siap untuk pembukuan profesional.
+            </p>
+            <ul class="price-list">
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Jurnal umum otomatis</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Export Excel & PDF</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Kirim ke email bulanan</li>
+              <li><i class="fa fa-check" style="color:var(--ink);"></i>Buku besar & neraca saldo</li>
+            </ul>
+            <button type="button" class="btn-price btn-price-outline mt-auto addon-btn"
+                    onclick="bukaModalAddon('akunting','Laporan Akunting Otomatis','Rp 100.000/bulan')"
+                    style="text-align:center;">
+              <i class="fa fa-arrow-right me-2"></i><span class="addon-btn-label">Aktifkan Add-on</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <span style="font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:1.2px;white-space:nowrap;">
+        Upgrade & Kuota
+      </span>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+    <div class="row g-4 justify-content-center">
+
+      <!-- Upgrade Paket -->
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-1">
+        <div class="addon-card h-100">
+          <div class="feature-icon mb-3"><i class="fa fa-arrow-up" style="font-size:18px;"></i></div>
+          <div style="font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;">Upgrade / Perpanjangan</div>
+          <div style="font-size:18px;font-weight:800;color:#0d1b3e;margin:8px 0 4px;">Upgrade Paket</div>
+          <p style="font-size:13px;color:#6b7280;line-height:1.6;">Upgrade dari Gratis ke Bisnis Kecil/Medium, atau dari Kecil ke Medium. Perpanjangan lisensi juga tersedia. Biaya dihitung dari sisa masa aktif.</p>
+          <form action="{% url 'cek_lisensi' %}?tipe=upgrade" method="post" class="mt-auto">
+            {% csrf_token %}
+            <input type="text" name="id" class="form-control form-control-sm mb-2" placeholder="Kode toko..." required>
+            <button type="submit" class="btn btn-sm w-100 fw-bold" style="background:#e8f5ee;color:#0f5132;border:1.5px solid #b7dfc8;border-radius:7px;">Cek Biaya Upgrade</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tambah Kuota -->
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-2">
+        <div class="addon-card h-100">
+          <div class="feature-icon mb-3"><i class="fa fa-plus-circle" style="font-size:18px;"></i></div>
+          <div style="font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;">Tambah Kuota</div>
+          <div style="font-size:18px;font-weight:800;color:#0d1b3e;margin:8px 0 4px;">50 Transaksi</div>
+          <div style="font-size:26px;font-weight:900;color:#111;">10rb</div>
+          <p style="font-size:13px;color:#6b7280;line-height:1.6;margin-top:8px;">Tambah kuota transaksi ekstra kapan saja, tanpa harus ganti paket.</p>
+          <form action="{% url 'cek_lisensi' %}?tipe=kuota" method="post" class="mt-3">
+            {% csrf_token %}
+            <input type="text" name="id" class="form-control form-control-sm mb-2" placeholder="Kode toko..." required>
+            <button type="submit" class="btn btn-sm w-100 fw-bold" style="background:#fff4d6;color:#7a4b00;border:1.5px solid #f3d27a;border-radius:7px;">Cek Kode Toko</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Paket Korporasi -->
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-3">
+        <div class="addon-card h-100" style="border:2px solid #1e2c5a;position:relative;">
+          <div style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:#1e2c5a;color:#fff;font-size:11px;font-weight:700;padding:4px 18px;border-radius:50px;letter-spacing:.8px;white-space:nowrap;">BARU</div>
+          <div class="feature-icon mb-3" style="background:#e8edf8;"><i class="fa fa-building" style="font-size:18px;color:#1e2c5a;"></i></div>
+          <div style="font-size:13px;font-weight:700;color:#1e2c5a;text-transform:uppercase;letter-spacing:.8px;">Multi-Toko</div>
+          <div style="font-size:18px;font-weight:800;color:#0d1b3e;margin:8px 0 4px;">Paket Korporasi</div>
+          <div style="font-size:22px;font-weight:900;color:#111;">150rb<span style="font-size:13px;font-weight:400;color:#888;">/slot/bln</span></div>
+          <ul style="list-style:none;padding:0;margin:12px 0 16px;font-size:13px;color:#3a4f7a;line-height:1.8;">
+            <li><i class="fa fa-check" style="color:#1e2c5a;margin-right:7px;"></i>1 akun pemilik, banyak toko</li>
+            <li><i class="fa fa-check" style="color:#1e2c5a;margin-right:7px;"></i>500 transaksi/slot/bulan (pool)</li>
+            <li><i class="fa fa-check" style="color:#1e2c5a;margin-right:7px;"></i>Dashboard omzet semua toko</li>
+            <li><i class="fa fa-check" style="color:#1e2c5a;margin-right:7px;"></i>Masuk ke tiap toko dari 1 akun</li>
+            <li><i class="fa fa-check" style="color:#1e2c5a;margin-right:7px;"></i>Migrasi dari paket individual</li>
+          </ul>
+          <a href="{% url 'owner_register' %}" class="btn btn-dark btn-sm w-100 fw-bold mt-auto">Daftar Korporasi</a>
+          <a href="{% url 'owner_migrasi' %}" class="btn btn-outline-dark btn-sm w-100 fw-bold mt-2">Migrasi dari Paket Individual</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TESTIMONI
+══════════════════════════════════════════════ -->
+{% if list_testimoni %}
+<section id="testimoni" class="py-5 bg-soft" style="padding-top:80px!important;padding-bottom:80px!important;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-tag">Testimoni</div>
+      <h2 class="section-title">Apa Kata Pengguna POSMI?</h2>
+    </div>
+    <div class="row g-4">
+      {% for t in list_testimoni %}
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-{{ forloop.counter }}">
+        <div class="testi-card">
+          <div class="testi-quote">"</div>
+          <p class="testi-text">{{ t.testimoni }}</p>
+          <div class="d-flex align-items-center gap-3">
+            <div style="width:40px;height:40px;background:#0d6efd;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0;">
+              {{ t.cabang.nama_toko|first|upper }}
+            </div>
+            <div>
+              <div class="testi-name">{{ t.cabang.nama_toko }}</div>
+              <div class="testi-date">Bergabung {{ t.cabang.created_at|date:"M Y" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
       {% endfor %}
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel1" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel1" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
   </div>
-  <script>
-    $('.carousel1 .carousel-item1').each(function () {
-    var minPerSlide = 4;
-    var next = $(this).next();
-    if (!next.length) {
-    next = $(this).siblings(':first');
-    }
-    next.children(':first-child').clone().appendTo($(this));
-
-    for (var i = 0; i < minPerSlide; i++) { next=next.next(); if (!next.length) { next=$(this).siblings(':first'); } next.children(':first-child').clone().appendTo($(this)); } });
-  </script>
 </section>
+{% endif %}
 
-<!-- Section - Pricing -->
-<!-- Pricing 1 - Bootstrap Brain Component -->
-<section id="scrollspyPricing" class="bsb-pricing-1 bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
-<div class="container">
-<div class="row gy-5 gy-lg-0">
-  <div class="col-12 col-lg-4">
-    <h2 class="display-5 mb-3 mb-xl-4">Add-ons Paket</h2>
-    <p class="lead mb-4 mb-xl-5">
-      Digunakan untuk melakukan perpanjangan lisensi, upgrade paket bisnis dan membeli paket kuota. Silakan klik cek kode toko untuk pengecekan dan melihat <b>kode promo</b>!
-    </p>
+<!-- ══════════════════════════════════════════════
+     TUTORIAL
+══════════════════════════════════════════════ -->
+{% if image_tutorial %}
+<section id="tutorial" class="py-5" style="padding-top:80px!important;padding-bottom:80px!important;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div class="section-tag">Tutorial</div>
+      <h2 class="section-title">Panduan Penggunaan POSMI</h2>
+      <p class="section-sub mx-auto mt-3">Pelajari cara menggunakan POSMI dari artikel dan panduan yang kami siapkan.</p>
+    </div>
+    <div class="row g-4">
+      {% for item in image_tutorial %}
+      <div class="col-12 col-md-6 col-lg-4 anim-fade anim-delay-{{ forloop.counter }}">
+        <a href="{% url 'detail_cara' item.tutorial.id %}" style="text-decoration:none;">
+          <div class="tutorial-card">
+            <img src="{{ item.image.url }}" alt="{{ item.tutorial.judul }}" loading="lazy">
+            <div class="tutorial-card-body">
+              <div class="tutorial-label"><i class="fa fa-book me-1"></i>Tutorial</div>
+              <div class="tutorial-title">{{ item.tutorial.judul|title }}</div>
+              <div class="mt-3" style="font-size:12px;color:#888;">
+                <i class="fa fa-calendar me-1"></i>{{ item.tutorial.created_at|date:"d M Y" }}
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
   </div>
-  <div class="col-12 col-lg-8">
-    <div class="row justify-content-xl-end">
-      <div class="col-12 col-xl-11">
-        <div class="row gy-4 gy-md-0 gx-xxl-5">
-          <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="lisensismall">
-            <div class="card card-addons border-0 border-bottom border-primary shadow-sm" style="min-height: 600px !important; max-height: 600px !important;">
-              <div class="card-body p-4 p-xxl-5">
-                <h2 class="h4">Perpanjangan Lisensi</h2>
-                <h3 class="h5" style="color:black">Paket Bisnis Kecil</h3>
-                <h4 class="display-3 text-primary mb-0 bsb-tpl-font">250.000</h4>
-                <p class="text-secondary mb-4">Rupiah / Bulan</p>
-                <ul class="list-group list-group-flush mb-4">
-                  <li class="list-group-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                    </svg>
-                    <span><strong>1500</strong> Transaksi Perbulan</span>
-                  </li>
-                  <li class="list-group-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                    </svg>
-                    <span>Menambah User Kasir Unlimited</span>
-                  </li>
-                  <li class="list-group-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                    </svg>
-                    <span>Full Support Admin</span>
-                  </li>
-                </ul>
-                <form action="{% url 'cek_lisensi'%}?tipe=small" method="post">
-                  {% csrf_token %}
-                  <div class="my-3">
-                    <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                  </div>
-                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</button>                        
-                </form>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="lisensimedium">
-            <div class="card card-addons border-0 border-bottom border-primary shadow-sm" style="min-height: 600px !important; max-height: 600px !important;">
-              <div class="card-body p-4 p-xxl-5">
-                <h2 class="h4">Perpanjangan Lisensi</h2>
-                <h3 class="h5" style="color: black;">Paket Bisnis Medium</h3>
-                <h4 class="display-3 text-primary mb-0 bsb-tpl-font">350.000</h4>
-                <p class="text-secondary mb-4">Rupiah / Bulan</p>
-                <ul class="list-group list-group-flush mb-4">
-                  <li class="list-group-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                    </svg>
-                    <span><strong>6000</strong> Transaksi Perbulan</span>
-                  </li>
-                  <li class="list-group-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                    </svg>
-                    <span>Menambah User Kasir Unlimited</span>
-                  </li>
-                  <li class="list-group-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
-                      <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
-                    </svg>
-                    <span>Full Support Admin</span>
-                  </li>
-                </ul>
-                <form action="{% url 'cek_lisensi'%}?tipe=medium" method="post">
-                  {% csrf_token %}
-                  <div class="my-3">
-                    <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                  </div>
-                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: black;">Cek Kode Toko</button>                          
-                </form>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-12 col-lg-6 p-2  d-flex justify-content-center" id="upgradepaket">
-            <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" style="min-height: 450px !important; max-height: 450px !important;">
-              <div class="card-body p-4 p-xxl-5">
-                <h2 class="h3">Upgrade Paket</h2>
-                <h3 class="h5" style="color: black;">Upgrade paket bisnis dari bisnis kecil ke medium untuk skala transaksi lebih besar.</h3>
-                <ul class="list-group list-group-flush mb-4">
-                  <li class="list-group-item p-2" style="border-radius: 5px; background-color: whitesmoke;">
-                    <span style="font-weight: bold;">catatan:</span><br>
-                    <span>Biaya upgrade akan dihitung dari sisa tanggal expired paket.</span>
-                  </li>
-                </ul>
-                <form action="{% url 'cek_lisensi'%}?tipe=upgrade" method="post">
-                  {% csrf_token %}
-                  <div class="my-3">
-                    <input type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                  </div>
-                  <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Biaya Upgrade</button>
-                </form>
-              </div>
-            </div>
-          </div>
+</section>
+{% endif %}
 
-          <div class="col-12 col-lg-6 p-2 d-flex justify-content-center" id="tambahkuota">
-            <div class="card card-addons-upgrade border-0 border-bottom border-primary shadow-sm" style="min-height: 450px !important; max-height: 450px !important;">
-              <div class="card-body p-4 p-xxl-5">
-                <h2 class="h4">Tambah Kuota Transaksi</h2>
-                <h3  style="color: black;font-size: 19px;">Menambah kuota transaksi mu?<br>Bisa! Mulai dari:</h3>
-                <h4 class="display-4 text-primary mb-0 bsb-tpl-font">10.000</h4>
-                <p class="text-secondary mb-4">Rupiah / 50 Transaksi</p>
-                <form action="{% url 'cek_lisensi'%}?tipe=kuota" method="post">
-                  {% csrf_token %}
-                                          <div class="my-3">
-                                            <input required type="text" name="id" id="" class="form-control border rounded-pill border-secondary" placeholder="masukkan kode toko...">
-                                          </div>
-                                          <button type="submit" href="#!" class="btn bsb-btn-xl btn-accent btn-sm rounded-pill" style="font-size: 16px !important; margin-top:5px;height: 35px; padding-top:5px;padding-bottom: 10px !important;width: 100%;color: white;background-color: green;">Cek Kode Toko</button>
-                </form>
-              </div>
+<!-- ══════════════════════════════════════════════
+     REFERRAL
+══════════════════════════════════════════════ -->
+<section class="py-5 bg-soft" style="padding-top:80px!important;padding-bottom:80px!important;">
+  <div class="container">
+    <div class="referral-box">
+      <div class="row align-items-center gy-4 gx-lg-5">
+        <div class="col-12 col-lg-7">
+          <h2 class="referral-title">Ajak Toko Lain,<br><strong>Dapat Bonus 5%</strong></h2>
+          <p class="referral-copy">
+            Bagikan <strong>kode referral unik 4 karakter</strong> dari toko Anda. Saat toko referensi aktif bertransaksi, Anda mendapat <strong>bonus 5%</strong> yang bisa ditukar dengan add-ons atau perpanjangan lisensi.
+          </p>
+          <div class="referral-highlight">
+            <span class="referral-highlight-number">5%</span>
+            <span class="referral-highlight-label">bonus dari transaksi toko referensi</span>
+          </div>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="#harga" class="btn-hero-primary" style="font-size:14px;padding:12px 24px;border-radius:9px;background:#15803d;">
+              <i class="fa fa-check me-2"></i>Daftar &amp; Dapat Kode
+            </a>
+            <a href="#kontak" class="btn-price-ghost" style="width:auto;padding:11px 22px;border-radius:9px;background:#f97316;border-color:#f97316;color:#fff;font-size:14px;">
+              Tanya Program
+            </a>
+          </div>
+          <div class="referral-points">
+            <div class="referral-point">
+              <div class="referral-point-label">Kode</div>
+              <div class="referral-point-value">Unik 4 karakter</div>
+            </div>
+            <div class="referral-point">
+              <div class="referral-point-label">Bonus</div>
+              <div class="referral-point-value">5% dari transaksi</div>
+            </div>
+            <div class="referral-point">
+              <div class="referral-point-label">Penukaran</div>
+              <div class="referral-point-value">Add-ons atau lisensi</div>
             </div>
           </div>
-
+        </div>
+        <div class="col-12 col-lg-5">
+          <div class="referral-steps">
+            <div class="referral-steps-title">Cara Kerja</div>
+            {% for step in "123" %}
+            <div class="referral-step">
+              <div class="referral-step-number">{{ step }}</div>
+              <div class="referral-step-text">
+                {% if forloop.counter == 1 %}Daftar POSMI dan gunakan kode referral toko Anda.{% endif %}
+                {% if forloop.counter == 2 %}Bagikan kode ke toko lain saat mereka mendaftar.{% endif %}
+                {% if forloop.counter == 3 %}Bonus dapat ditukar dengan add-ons atau perpanjangan lisensi.{% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-</div>
 </section>
 
-<!-- Section - Blog -->
-<!-- Blog 2 - Bootstrap Brain Component -->
-<section id="scrollspyBlog" class="py-5 py-xl-8 bsb-section-py-xxl-1">
-<div class="container">
-<div class="row justify-content-md-center">
-  <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-    <h3 class="fs-6 mb-2 text-secondary text-center text-uppercase">Tutorial</h3>
-    <h2 class="display-5 mb-4 mb-md-5 text-center">Tutorial Penggunaan POSMI:</h2>
-    <hr class="w-50 mx-auto mb-5 mb-xl-9 border-dark-subtle">
-  </div>
-</div>
-</div>
+<!-- ══════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════ -->
+<section class="cta-section" id="kontak">
+  <div class="container text-center">
+    <h2 class="cta-title">Siap Mulai Jualan Lebih Mudah?</h2>
+    <p class="cta-sub">Mulai dari paket gratis selamanya dengan batas 75 transaksi per bulan berjalan. Upgrade bisa dilakukan kapan saja saat toko mulai ramai.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="#harga" class="cta-primary">
+        <i class="fa fa-arrow-right"></i>Mulai Gratis
+      </a>
+      <a href="https://wa.me/+6281213270275" target="_blank" class="cta-secondary">
+        <i class="fa fa-whatsapp"></i>Konsultasi
+      </a>
+    </div>
 
-<div class="container overflow-hidden">
-<div class="row gy-3 gy-lg-0 gx-xxl-5">
-{% for tutorialnya in image_tutorial %}
-  <div class="col-12 col-lg-4">
-    <article>
-      <figure class="rounded overflow-hidden mb-3 bsb-overlay-hover">
-        <a href="{% url 'detail_cara' tutorialnya.tutorial.id %}">
-           
-            <img class="img-fluid bsb-scale bsb-hover-scale-up" loading="lazy" src="{{tutorialnya.image.url}}" alt="Business">
-        </a>
-        <figcaption>
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-eye text-white bsb-hover-fadeInLeft" viewBox="0 0 16 16">
-            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
-            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-          </svg>
-          <h4 class="h6 text-white bsb-hover-fadeInRight mt-2">Read More</h4>
-        </figcaption>
-      </figure>
-      <div class="entry-header mb-3">
-        <ul class="entry-meta list-unstyled d-flex mb-2">
-          <li>
-            <a class="link-primary text-decoration-none" href="#!">Tutorial</a>
-          </li>
-        </ul>
-        <h2 class="entry-title h4 mb-0">
-          <a class="link-dark text-decoration-none" href="{% url 'detail_cara' tutorialnya.tutorial.id %}">{{tutorialnya.tutorial.judul|title}}</a>
-        </h2>
-      </div>
-      <div class="entry-footer">
-        <ul class="entry-meta list-unstyled d-flex align-items-center mb-0">
-          <li>
-            <a class="fs-7 link-secondary text-decoration-none d-flex align-items-center" href="#!">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
-                <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z" />
-                <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-              </svg>
-              <span class="ms-2 fs-7">{{tutorialnya.tutorial.created_at|date:"d/M/Y H:i:s"}}</span>
-            </a>
-          </li>
-          <li>
-            <span class="px-3">&bull;</span>
-          </li>
-          <li>
-            <a class="link-secondary text-decoration-none d-flex align-items-center" href="#!">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-                <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-                <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z" />
-              </svg>
-              <span class="ms-2 fs-7">{{tutorialnya.comment}}</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </article>
+    <!-- Contact quick links -->
+    <div class="d-flex flex-wrap justify-content-center gap-4 mt-4" style="font-size:13px;">
+      <a href="https://wa.me/+6281213270275" target="_blank" class="cta-contact">
+        <i class="fa fa-whatsapp me-1"></i>+62 812-1327-0275
+      </a>
+      <a href="mailto:adhy.chandra@gmail.com" class="cta-contact">
+        <i class="fa fa-envelope me-1"></i>adhy.chandra@gmail.com
+      </a>
+      <a href="https://leopardos.tech" target="_blank" class="cta-contact">
+        <i class="fa fa-globe me-1"></i>leopardos.tech
+      </a>
+    </div>
   </div>
-{% endfor %}
-</div>
-</div>
 </section>
-<!-- Section - Contact -->
-    <!-- Contact 3 - Bootstrap Brain Component -->
-    <section id="scrollspyContact" class="bsb-tpl-bg-alabaster py-5 py-xl-8 bsb-section-py-xxl-1">
-        <div class="container">
-          <div class="row gy-3 gy-md-4 gy-lg-0">
-            <div class="col-12 col-lg-6">
-              <div class="row justify-content-xl-center">
-                <div class="col-12 col-xl-11">
-                  <h2 class="display-5 mb-3 text-primary">Dari Pengembang:</h2>
-                  <p class="lead mb-5">Kami selalu memberikan pelayanan terbaik untuk pengguna POSMI. Apabila ada kendala, segera hubungi kami:</p>
-                  <div class="d-flex mb-5">
-                    <div class="me-4  fs-3" style="color: blue;">
-                      <i class="fa fa-facebook" aria-hidden="true"></i>
-                    </div>
-                    <div>
-                      <h4 class="mb-3">Facebook Profile</h4>
-                      <a href="https://www.facebook.com/suryo1982/" target="_blank" style="font-size: 20px;font-weight: bold;text-decoration: none;"><address class="mb-0 text-secondary">Suryo Adhy Chandra, ST</address></a>
-                    </div>
-                  </div>
-                  <div class="row mb-5">
-                    <div class="col-12 col-sm-6">
-                      <div class="d-flex mb-5 mb-sm-0">
-                        <div class="me-4 fs-1" style="color: green;">
-                          <i class="fa fa-whatsapp" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                          <h4 class="mb-3">Whatsapp</h4>
-                          <p class="mb-0">
-                            <a class="link-secondary text-decoration-none" href="https://wa.me/+6281213270275" target="_blank">Suryo Adhy Chandra</a>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-12 col-sm-6">
-                      <div class="d-flex mb-5 mb-sm-0">
-                        <div class="me-4 fs-1" style="color: blue;">
-                          <i class="fa fa-telegram" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                          <h4 class="mb-3">Telegram</h4>
-                          <p class="mb-0">
-                            <a class="link-secondary text-decoration-none" href="https://t.me/suryo_adhy" target="_blank">@suryo_adhy</a>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-12 col-sm-6 mt-4">
-                      <div class="d-flex mb-0">
-                        <div class="me-4 " style="color:blue">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-envelope-at" viewBox="0 0 16 16">
-                            <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z" />
-                            <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648Zm-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <h4 class="mb-3">E-Mail</h4>
-                          <p class="mb-0">
-                            <a class="link-secondary text-decoration-none" href="mailto:demo@yourdomain.com" target="_blank">adhy.chandra@gmail.com</a>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="d-flex">
-                    <div class="me-4 " style="color: blue;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16">
-                        <path d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z" />
-                        <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1h-3zm1.038 3.018a6.093 6.093 0 0 1 .924 0 6 6 0 1 1-.924 0zM0 3.5c0 .753.333 1.429.86 1.887A8.035 8.035 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5zM13.5 1c-.753 0-1.429.333-1.887.86a8.035 8.035 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 class="mb-3">Kami akan memberikan response sesegera mungkin.</h4>
-                      
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-lg-6">
-              <div class="bg-white position-relative border rounded shadow-sm overflow-hidden p-2 text-center">
-                
-                  <h2 class=" text-primary">Program Toko Get Toko</h2>  
-                  <div class="mb-3">(Khusus Pengguna Bisnis Kecil dan Medium)</div>
-                  <p class="text-center">Setiap Toko Memiliki Kode Unik berupa huruf 4 karakter. Untuk melihat kode toko bisa login ke pos dan klik tombol profile merah.</p>
-                  <img src="{% static 'images/profile1.png'%}" style="width: 250px;height: 100px;border-radius: 5px;" alt="">
-                  <div class="my-2">Kemudian akan muncul detail keterangan toko.</div>
-                  <img src="{% static 'images/profile2.png'%}" style="width: 300px;height: 250px;border-radius: 5px;box-shadow: 5px 5px 5px lightgrey;" alt="">
-                  <div class="my-2">Nah Kode toko itu bagikan kepada teman-teman yang belum memiliki aplikasi Penjualan pada saat pendaftaran sebagai referal.</div>
-                  <div class="my-2">Dengan kode referal, kamu akan mendapatkan bonus 5% dari transaksi pembelian kuota/perpanjangan lisensi dari toko yang memakai kode referalmu selamanya, dan dapat diuangkan.</div>
-                  <div class="my-2 text-primary"><h4>Yuk, segera referensikan teman-temanmu!</h4></div>
-              </div>
+
+<!-- ══ MODAL: Aktifkan Add-on ══ -->
+<style>
+#modalAddon .modal-dialog { margin-top: 60px; }
+</style>
+<div class="modal fade" id="modalAddon" tabindex="-1">
+  <div class="modal-dialog" style="max-width:500px;">
+    <div class="modal-content border-0 shadow" style="border-radius:14px;overflow:hidden;">
+
+      <!-- Header compact -->
+      <div style="background:linear-gradient(135deg,#1e2c5a,#3a5298);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#fff;" id="addonModalTitle">Aktifkan Add-on</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:1px;" id="addonModalSubtitle"></div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form action="{% url 'bayar_addon' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="addon_type" id="addonTypeInput">
+
+        <div style="padding:18px 20px;">
+
+          <!-- Trial banner -->
+          <div id="trialBanner" style="background:#fff8e1;border:1px solid #ffc107;border-radius:8px;padding:10px 14px;font-size:12px;color:#856404;margin-bottom:14px;display:none;">
+            <i class="fa fa-star me-1" style="color:#f59e0b;"></i>
+            <strong>Trial 3 Hari</strong> — Coba ketiga add-on sekaligus. Otomatis nonaktif setelah 3 hari jika tidak dilanjutkan.
+          </div>
+
+          <!-- Jenis akun -->
+          <div class="mb-3">
+            <div style="font-size:11px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Jenis Akun</div>
+            <div class="d-flex gap-2">
+              <button type="button" id="btnIndividual" onclick="setAddonMode('individual')"
+                style="flex:1;padding:8px 10px;border-radius:7px;border:1.5px solid #1e2c5a;background:#1e2c5a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">
+                Bisnis Kecil/Medium
+              </button>
+              <button type="button" id="btnKorporasi" onclick="setAddonMode('korporasi')"
+                style="flex:1;padding:8px 10px;border-radius:7px;border:1.5px solid #d8e3f5;background:#fff;color:#1e2c5a;font-size:12px;font-weight:700;cursor:pointer;">
+                Korporasi
+              </button>
             </div>
           </div>
+
+          <!-- Kode toko -->
+          <div id="fieldIndividual" class="mb-2">
+            <label style="font-size:12px;font-weight:700;color:#1e2c5a;margin-bottom:4px;display:block;">Kode Toko *</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="text" name="kode_toko" id="inputKodeToko" class="form-control form-control-sm"
+                     placeholder="abcd" maxlength="4" autocomplete="off"
+                     style="letter-spacing:4px;font-weight:700;text-transform:lowercase;font-size:.95rem;max-width:120px;">
+              <span id="addonCekLoader" style="display:none;font-size:11px;color:#8a92a6;"><i class="fa fa-spinner fa-spin me-1"></i>Mengecek...</span>
+            </div>
+            <div style="font-size:11px;color:#8a92a6;margin-top:3px;">4 huruf — lihat di Admin → Info Toko</div>
+            <!-- feedback validasi -->
+            <div id="addonCekFeedback" style="display:none;margin-top:6px;padding:7px 10px;border-radius:6px;font-size:12px;font-weight:600;"></div>
+          </div>
+
+          <!-- Email owner -->
+          <div id="fieldKorporasi" style="display:none;" class="mb-2">
+            <label style="font-size:12px;font-weight:700;color:#1e2c5a;margin-bottom:4px;display:block;">Email Pemilik Korporasi *</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="email" name="email_owner" id="inputEmailOwner" class="form-control form-control-sm"
+                     placeholder="email@owner.com" autocomplete="off">
+              <span id="addonCekLoaderEmail" style="display:none;font-size:11px;color:#8a92a6;"><i class="fa fa-spinner fa-spin me-1"></i>Mengecek...</span>
+            </div>
+            <div style="font-size:11px;color:#8a92a6;margin-top:3px;">Email login ke /owner/</div>
+            <div id="addonCekFeedbackEmail" style="display:none;margin-top:6px;padding:7px 10px;border-radius:6px;font-size:12px;font-weight:600;"></div>
+          </div>
+
+          <!-- Harga + info -->
+          <div style="background:#f8fafc;border-radius:8px;padding:10px 13px;font-size:12px;color:#4b5563;margin-top:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+            <span><i class="fa fa-tag me-1" style="color:#4e73df;"></i>
+              Harga: <strong id="addonHargaDisplay"></strong>
+            </span>
+            <span style="color:#8a92a6;">Aktif setelah pembayaran dikonfirmasi</span>
+          </div>
+
         </div>
-      </section>
+
+        <div style="padding:0 20px 16px;display:flex;gap:8px;">
+          <button type="button" class="btn btn-light btn-sm fw-bold" data-bs-dismiss="modal" style="border-radius:7px;">Batal</button>
+          <button type="submit" id="addonSubmitBtn" class="btn btn-primary btn-sm fw-bold flex-fill" disabled style="border-radius:7px;opacity:.5;cursor:not-allowed;">
+            <i class="fa fa-lock me-1" id="addonSubmitIcon"></i><span id="addonSubmitLabel">Masukkan kode toko dulu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay konfirmasi addon sudah berlangganan -->
+<div id="overlayAddonKonfirmasi" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(3px);z-index:10000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:28px 26px 22px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(15,23,42,.2);position:relative;">
+    <button onclick="_tutupKonfirmasiAddon()" style="position:absolute;top:12px;right:14px;width:28px;height:28px;background:#f1f5f9;border:none;border-radius:50%;font-size:18px;color:#64748b;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">&times;</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="width:42px;height:42px;background:#fef3c7;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fa fa-refresh" style="color:#d97706;font-size:18px;"></i>
+      </div>
+      <div>
+        <div style="font-weight:800;font-size:15px;color:#1e293b;">Perpanjang Langganan?</div>
+        <div style="font-size:11px;color:#f59e0b;font-weight:700;" id="addonKonfirmasiSubtitle">Add-on Aktif</div>
+      </div>
+    </div>
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:13px;color:#78350f;margin-bottom:16px;line-height:1.6;" id="addonKonfirmasiPesan">
+    </div>
+    <div style="font-size:12px;color:#64748b;margin-bottom:18px;">
+      Anda tetap dapat mengaktifkan kembali untuk memperpanjang atau memperbarui langganan add-on ini.
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="_tutupKonfirmasiAddon()" style="flex:1;padding:10px;border-radius:7px;border:1.5px solid #e2e8f0;background:#fff;color:#475569;font-weight:700;font-size:13px;cursor:pointer;">Batal</button>
+      <button onclick="_lanjutkanAddon()" style="flex:2;padding:10px;border-radius:7px;border:none;background:#1e2c5a;color:#fff;font-weight:700;font-size:13px;cursor:pointer;">
+        <i class="fa fa-paper-plane me-1"></i>Ya, Lanjutkan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+var _addonPendingType = null, _addonPendingNama = null, _addonPendingHarga = null;
+var _addonStatus = {{ addon_status|default:"{}"|safe }};
+
+function bukaModalAddon(type, nama, harga) {
+  // Cek apakah add-on sudah aktif
+  if (_addonStatus[type]) {
+    var info = _addonStatus[type];
+    _addonPendingType = type;
+    _addonPendingNama = nama;
+    _addonPendingHarga = harga;
+    document.getElementById('addonKonfirmasiSubtitle').textContent = nama;
+    document.getElementById('addonKonfirmasiPesan').innerHTML =
+      'Toko <strong>' + info.nama_toko + '</strong> sudah berlangganan ' +
+      '<strong>' + nama + '</strong> sampai <strong>' + info.expired_at + '</strong>.<br>' +
+      'Apakah Anda ingin memperpanjang atau memperbarui langganan ini?';
+    var ov = document.getElementById('overlayAddonKonfirmasi');
+    ov.style.display = 'flex';
+    return;
+  }
+  _bukaModalAddonLangsung(type, nama, harga);
+}
+
+function _tutupKonfirmasiAddon() {
+  document.getElementById('overlayAddonKonfirmasi').style.display = 'none';
+  _addonPendingType = null;
+}
+
+function _lanjutkanAddon() {
+  document.getElementById('overlayAddonKonfirmasi').style.display = 'none';
+  _bukaModalAddonLangsung(_addonPendingType, _addonPendingNama, _addonPendingHarga);
+  _addonPendingType = null;
+}
+
+function _bukaModalAddonLangsung(type, nama, harga) {
+  document.getElementById('addonTypeInput').value = type;
+  document.getElementById('addonModalTitle').textContent = nama;
+  document.getElementById('addonModalSubtitle').textContent = harga;
+  document.getElementById('addonHargaDisplay').textContent = harga;
+  document.getElementById('trialBanner').style.display = 'none';
+  // Reset state validasi setiap buka modal
+  document.getElementById('inputKodeToko').value = '';
+  document.getElementById('inputEmailOwner').value = '';
+  _addonShowFeedback('addonCekFeedback', false, '');
+  _addonShowFeedback('addonCekFeedbackEmail', false, '');
+  _addonResetBtn();
+  document.getElementById('addonSubmitLabel').textContent = 'Masukkan kode toko dulu';
+  setAddonMode('individual');
+  new bootstrap.Modal(document.getElementById('modalAddon')).show();
+}
+
+function bukaModalTrial() {
+  document.getElementById('addonTypeInput').value = 'trial_bundle';
+  document.getElementById('addonModalTitle').textContent = 'Trial 3 Hari — Semua Add-on';
+  document.getElementById('addonModalSubtitle').textContent = 'Barcode + Custom Nota + Laporan Akunting · Gratis 3 hari';
+  document.getElementById('addonHargaDisplay').textContent = 'Gratis 3 hari, lalu Rp 225.000/bulan jika dilanjutkan';
+  document.getElementById('trialBanner').style.display = '';
+  setAddonMode('individual');
+  new bootstrap.Modal(document.getElementById('modalAddon')).show();
+}
+
+function setAddonMode(mode) {
+  var fi = document.getElementById('fieldIndividual');
+  var fk = document.getElementById('fieldKorporasi');
+  var bi = document.getElementById('btnIndividual');
+  var bk = document.getElementById('btnKorporasi');
+  var ki = document.getElementById('inputKodeToko');
+  var eo = document.getElementById('inputEmailOwner');
+
+  if (mode === 'individual') {
+    fi.style.display = ''; fk.style.display = 'none';
+    bi.style.cssText += ';background:#1e2c5a;color:#fff;border-color:#1e2c5a;';
+    bk.style.cssText += ';background:#fff;color:#1e2c5a;border-color:#d8e3f5;';
+    ki.required = true; eo.required = false; eo.value = '';
+  } else {
+    fi.style.display = 'none'; fk.style.display = '';
+    bk.style.cssText += ';background:#1e2c5a;color:#fff;border-color:#1e2c5a;';
+    bi.style.cssText += ';background:#fff;color:#1e2c5a;border-color:#d8e3f5;';
+    eo.required = true; ki.required = false; ki.value = '';
+  }
+}
+
+// ── Live-check kode toko / email di modal addon ──
+var _addonCekTimer = null;
+var _addonCekValid = false;
+
+function _addonResetBtn() {
+  var btn = document.getElementById('addonSubmitBtn');
+  var lbl = document.getElementById('addonSubmitLabel');
+  var ico = document.getElementById('addonSubmitIcon');
+  btn.disabled = true;
+  btn.style.opacity = '.5';
+  btn.style.cursor = 'not-allowed';
+  lbl.textContent = 'Masukkan kode toko dulu';
+  ico.className = 'fa fa-lock me-1';
+  _addonCekValid = false;
+}
+
+function _addonSetBtn(ok, label, icon) {
+  var btn = document.getElementById('addonSubmitBtn');
+  var lbl = document.getElementById('addonSubmitLabel');
+  var ico = document.getElementById('addonSubmitIcon');
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '.5';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+  lbl.textContent = label;
+  ico.className = 'fa fa-' + icon + ' me-1';
+  _addonCekValid = ok;
+}
+
+function _addonShowFeedback(elId, ok, pesan) {
+  var el = document.getElementById(elId);
+  if (!pesan) { el.style.display = 'none'; return; }
+  el.style.display = '';
+  el.style.background = ok ? '#f0fdf4' : '#fef2f2';
+  el.style.color = ok ? '#166534' : '#991b1b';
+  el.style.border = '1px solid ' + (ok ? '#bbf7d0' : '#fecaca');
+  el.innerHTML = (ok ? '<i class="fa fa-check-circle me-1"></i>' : '<i class="fa fa-times-circle me-1"></i>') + pesan;
+}
+
+function _addonCekKodeToko(kode) {
+  var addonType = document.getElementById('addonTypeInput').value;
+  if (kode.length < 3) { _addonResetBtn(); _addonShowFeedback('addonCekFeedback', false, ''); return; }
+  document.getElementById('addonCekLoader').style.display = '';
+  _addonShowFeedback('addonCekFeedback', false, '');
+  fetch('{% url "addon_status" %}?kode=' + encodeURIComponent(kode) + '&addon_type=' + encodeURIComponent(addonType))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      document.getElementById('addonCekLoader').style.display = 'none';
+      if (!d.ok) {
+        _addonShowFeedback('addonCekFeedback', false, d.pesan);
+        _addonResetBtn();
+        document.getElementById('addonSubmitLabel').textContent = d.pesan.length > 40 ? 'Toko tidak valid' : d.pesan;
+      } else if (d.sudah_aktif) {
+        _addonShowFeedback('addonCekFeedback', true, d.pesan);
+        _addonSetBtn(true, 'Perpanjang Langganan', 'refresh');
+      } else {
+        _addonShowFeedback('addonCekFeedback', true, d.pesan);
+        _addonSetBtn(true, 'Langganan Sekarang', 'check-circle');
+      }
+    })
+    .catch(function(){ document.getElementById('addonCekLoader').style.display = 'none'; });
+}
+
+function _addonCekEmail(email) {
+  var addonType = document.getElementById('addonTypeInput').value;
+  if (!email.includes('@')) { _addonResetBtn(); _addonShowFeedback('addonCekFeedbackEmail', false, ''); return; }
+  document.getElementById('addonCekLoaderEmail').style.display = '';
+  _addonShowFeedback('addonCekFeedbackEmail', false, '');
+  fetch('{% url "addon_status" %}?email=' + encodeURIComponent(email) + '&addon_type=' + encodeURIComponent(addonType))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      document.getElementById('addonCekLoaderEmail').style.display = 'none';
+      if (!d.ok) {
+        _addonShowFeedback('addonCekFeedbackEmail', false, d.pesan);
+        _addonResetBtn();
+      } else if (d.sudah_aktif) {
+        _addonShowFeedback('addonCekFeedbackEmail', true, d.pesan);
+        _addonSetBtn(true, 'Perpanjang Langganan', 'refresh');
+      } else {
+        _addonShowFeedback('addonCekFeedbackEmail', true, d.pesan);
+        _addonSetBtn(true, 'Langganan Sekarang', 'check-circle');
+      }
+    })
+    .catch(function(){ document.getElementById('addonCekLoaderEmail').style.display = 'none'; });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var inputKode  = document.getElementById('inputKodeToko');
+  var inputEmail = document.getElementById('inputEmailOwner');
+
+  if (inputKode) {
+    inputKode.addEventListener('input', function () {
+      clearTimeout(_addonCekTimer);
+      var val = this.value.trim().toLowerCase();
+      if (!val) { _addonResetBtn(); _addonShowFeedback('addonCekFeedback', false, ''); return; }
+      _addonCekTimer = setTimeout(function(){ _addonCekKodeToko(val); }, 500);
+    });
+  }
+  if (inputEmail) {
+    inputEmail.addEventListener('input', function () {
+      clearTimeout(_addonCekTimer);
+      var val = this.value.trim();
+      if (!val) { _addonResetBtn(); _addonShowFeedback('addonCekFeedbackEmail', false, ''); return; }
+      _addonCekTimer = setTimeout(function(){ _addonCekEmail(val); }, 600);
+    });
+  }
+});
+
+// Inject indikator "AKTIF" ke kartu add-on jika sudah berlangganan
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.addon-card-wrap').forEach(function (card) {
+    var type = card.getAttribute('data-addon-type');
+    if (!type || !_addonStatus[type]) return;
+    var info = _addonStatus[type];
+
+    // Badge AKTIF di pojok kanan atas
+    var badge = card.querySelector('.addon-aktif-badge');
+    if (badge) badge.style.display = '';
+
+    // Warna border kartu jadi hijau
+    card.style.border = '2px solid #22c55e';
+    card.style.boxShadow = '0 0 0 4px rgba(34,197,94,.10)';
+
+    // Info strip di bawah harga
+    var infoEl = card.querySelector('.addon-info-aktif');
+    if (infoEl) {
+      infoEl.style.display = '';
+      infoEl.innerHTML =
+        '<i class="fa fa-check-circle me-1"></i>' +
+        'Toko <strong>' + info.nama_toko + '</strong> — aktif s/d <strong>' + info.expired_at + '</strong>';
+    }
+
+    // Ubah teks tombol jadi "Perpanjang"
+    var btnLabel = card.querySelector('.addon-btn-label');
+    if (btnLabel) btnLabel.textContent = 'Perpanjang Langganan';
+    var btn = card.querySelector('.addon-btn');
+    if (btn) {
+      btn.style.background = '#166534';
+      btn.style.borderColor = '#166534';
+      btn.style.color = '#fff';
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var revealItems = document.querySelectorAll('main section, .anim-fade');
+  revealItems.forEach(function(el) {
+    if (el.tagName && el.tagName.toLowerCase() === 'section') {
+      el.classList.add('section-reveal');
+    }
+  });
+
+  if (!('IntersectionObserver' in window)) {
+    revealItems.forEach(function(el) { el.classList.add('is-visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function(entries, obs) {
+    entries.forEach(function(entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      obs.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -8% 0px'
+  });
+
+  revealItems.forEach(function(el) {
+    observer.observe(el);
+  });
+});
+</script>
+
 {% endblock %}

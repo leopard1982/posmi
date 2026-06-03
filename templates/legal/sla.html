@@ -1,0 +1,668 @@
+{% extends "base-landing.html" %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>SLA — POSMI</title>
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, #1e2c5a 0%, #2e4080 100%);
+    padding: 60px 0 50px;
+    color: #fff;
+  }
+  .legal-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .legal-hero p {
+    color: rgba(255,255,255,.75);
+    font-size: 15px;
+    margin-bottom: 0;
+  }
+  .legal-body {
+    padding: 56px 0 72px;
+  }
+  .legal-card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    padding: 40px 44px;
+    box-shadow: 0 2px 16px rgba(30,44,90,.07);
+    margin-bottom: 28px;
+  }
+  .section-title-lg {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e2c5a;
+    margin-bottom: 6px;
+  }
+  .section-subtitle {
+    font-size: 14px;
+    color: #7a8ab0;
+    margin-bottom: 24px;
+  }
+  .legal-section {
+    margin-bottom: 40px;
+  }
+  .legal-section:last-child {
+    margin-bottom: 0;
+  }
+  .legal-section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e2c5a;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+  }
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1e2c5a;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .legal-section p {
+    color: #555;
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 10px;
+  }
+  .legal-section ul, .legal-section ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+  }
+  .legal-section ul li, .legal-section ol li {
+    color: #555;
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 6px;
+  }
+  .legal-section ul li strong, .legal-section ol li strong {
+    color: #1e2c5a;
+  }
+
+  /* ---- SLA Comparison Table ---- */
+  .sla-table-wrap {
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+  .sla-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+  }
+  .sla-table thead tr th {
+    padding: 14px 18px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    vertical-align: middle;
+    border-bottom: 2px solid #e9ecef;
+  }
+  .sla-table thead .th-feature {
+    text-align: left;
+    background: #f8f9fc;
+    color: #1e2c5a;
+    border-radius: 10px 0 0 0;
+    border-right: 1px solid #e9ecef;
+  }
+  .sla-table thead .th-gratis {
+    background: #f8f9fc;
+    color: #555;
+  }
+  .sla-table thead .th-kecil {
+    background: #eef3ff;
+    color: #2e4080;
+  }
+  .sla-table thead .th-medium {
+    background: #e3eaff;
+    color: #1e2c5a;
+  }
+  .sla-table thead .th-korporasi {
+    background: #1e2c5a;
+    color: #fff;
+    border-radius: 0 10px 0 0;
+  }
+  .sla-table thead .th-korporasi .badge-popular {
+    display: inline-block;
+    background: rgba(255,255,255,.2);
+    color: #fff;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .sla-table tbody tr td {
+    padding: 13px 18px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+    color: #555;
+    font-size: 14px;
+  }
+  .sla-table tbody tr:last-child td { border-bottom: none; }
+  .sla-table tbody tr td:first-child {
+    font-weight: 600;
+    color: #1e2c5a;
+    background: #f8f9fc;
+    border-right: 1px solid #e9ecef;
+    white-space: nowrap;
+  }
+  .sla-table tbody tr:nth-child(even) td:not(:first-child) {
+    background: #fafbff;
+  }
+  .sla-table tbody td.col-korporasi {
+    background: #f0f4ff !important;
+    font-weight: 600;
+    color: #1e2c5a;
+  }
+  .sla-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-gray   { background: #f0f0f0; color: #666; }
+  .badge-blue   { background: #dde8ff; color: #2e4080; }
+  .badge-navy   { background: #c9d7ff; color: #1e2c5a; }
+  .badge-gold   { background: #fff3cd; color: #856404; }
+  .badge-green  { background: #d4edda; color: #155724; }
+  .check-icon   { color: #1e8c47; font-size: 16px; }
+  .dash-icon    { color: #bbb; font-size: 16px; }
+
+  /* ---- Tier header cards ---- */
+  .tier-header-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .tier-card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .tier-card.featured {
+    border-color: #1e2c5a;
+    border-width: 2px;
+    background: #f0f4ff;
+  }
+  .tier-card .tier-name {
+    font-weight: 700;
+    color: #1e2c5a;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .tier-card .tier-uptime {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1e2c5a;
+    line-height: 1.2;
+  }
+  .tier-card .tier-uptime-label {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  /* ---- Info & warning boxes ---- */
+  .info-box {
+    background: #f0f4ff;
+    border: 1px solid #c7d4ff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .info-box p { margin-bottom: 0; color: #2e4080; font-size: 14px; }
+  .warning-box {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .warning-box p { margin-bottom: 0; color: #7a5c00; font-size: 14px; }
+  .success-box {
+    background: #d4edda;
+    border: 1px solid #a8d5b5;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .success-box p { margin-bottom: 0; color: #155724; font-size: 14px; }
+
+  /* ---- Incident response steps ---- */
+  .incident-steps {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .incident-step {
+    display: flex;
+    gap: 14px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 16px;
+    align-items: flex-start;
+  }
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1e2c5a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .step-content .step-title {
+    font-weight: 700;
+    color: #1e2c5a;
+    font-size: 13.5px;
+    margin-bottom: 4px;
+  }
+  .step-content .step-desc {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ---- Compensation table ---- */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 14px;
+  }
+  .comp-table th {
+    background: #1e2c5a;
+    color: #fff;
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .comp-table th:first-child { border-radius: 8px 0 0 0; }
+  .comp-table th:last-child  { border-radius: 0 8px 0 0; }
+  .comp-table td {
+    padding: 10px 16px;
+    color: #555;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .comp-table tr:last-child td { border-bottom: none; }
+  .comp-table tr:nth-child(even) td { background: #f8f9fc; }
+
+  /* Maintenance window */
+  .maintenance-card {
+    background: linear-gradient(135deg, #1e2c5a 0%, #2e4080 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 14px;
+  }
+  .maintenance-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .maintenance-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .maintenance-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,.8);
+    margin-bottom: 0;
+    line-height: 1.6;
+  }
+
+  .last-updated {
+    font-size: 13px;
+    color: #999;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    text-align: right;
+  }
+
+  @media (max-width: 991px) {
+    .tier-header-cards { grid-template-columns: repeat(2, 1fr); }
+    .incident-steps { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .legal-card { padding: 28px 20px; }
+    .tier-header-cards { grid-template-columns: repeat(2, 1fr); }
+    .legal-hero h1 { font-size: 1.5rem; }
+    .maintenance-card { flex-direction: column; gap: 12px; text-align: center; }
+  }
+  @media (max-width: 480px) {
+    .tier-header-cards { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block contents %}
+<!-- Hero -->
+<section class="legal-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 text-center">
+        <div style="display:inline-block;background:rgba(255,255,255,.15);border-radius:30px;padding:4px 16px;font-size:12px;font-weight:600;letter-spacing:1px;color:#fff;text-transform:uppercase;margin-bottom:16px;">Dokumen Legal</div>
+        <h1>Service Level Agreement (SLA)</h1>
+        <p>Komitmen ketersediaan layanan, dukungan teknis, dan prosedur respons insiden POSMI untuk setiap tingkatan paket berlangganan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Body -->
+<section class="legal-body">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-9">
+
+        <!-- Uptime Overview Cards -->
+        <div class="tier-header-cards">
+          <div class="tier-card">
+            <div class="tier-name">Paket Gratis</div>
+            <div class="tier-uptime">—</div>
+            <div class="tier-uptime-label">Best Effort</div>
+          </div>
+          <div class="tier-card">
+            <div class="tier-name">Bisnis Kecil</div>
+            <div class="tier-uptime">99%</div>
+            <div class="tier-uptime-label">per bulan</div>
+          </div>
+          <div class="tier-card">
+            <div class="tier-name">Bisnis Medium</div>
+            <div class="tier-uptime">99.5%</div>
+            <div class="tier-uptime-label">per bulan</div>
+          </div>
+          <div class="tier-card featured">
+            <div class="tier-name">Korporasi</div>
+            <div class="tier-uptime">99.5%</div>
+            <div class="tier-uptime-label">Prioritas + Onboarding</div>
+          </div>
+        </div>
+
+        <!-- Main SLA card -->
+        <div class="legal-card">
+
+          <!-- SLA Comparison Table Section -->
+          <div class="legal-section">
+            <div class="section-title-lg">Perbandingan SLA Per Paket</div>
+            <div class="section-subtitle">Komitmen layanan yang berlaku untuk setiap tingkatan paket POSMI</div>
+
+            <div class="sla-table-wrap">
+              <table class="sla-table">
+                <thead>
+                  <tr>
+                    <th class="th-feature">Kriteria SLA</th>
+                    <th class="th-gratis">
+                      <div>Gratis</div>
+                      <div style="font-size:11px;font-weight:400;color:#888;margin-top:2px;">Rp 0</div>
+                    </th>
+                    <th class="th-kecil">
+                      <div>Bisnis Kecil</div>
+                      <div style="font-size:11px;font-weight:400;color:#7a8ab0;margin-top:2px;">Bulanan / Tahunan</div>
+                    </th>
+                    <th class="th-medium">
+                      <div>Bisnis Medium</div>
+                      <div style="font-size:11px;font-weight:400;color:#2e4080;margin-top:2px;">Bulanan / Tahunan</div>
+                    </th>
+                    <th class="th-korporasi">
+                      <div>Korporasi</div>
+                      <div class="badge-popular">Prioritas</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Jaminan Uptime</td>
+                    <td class="text-center"><span class="sla-badge badge-gray">Best Effort</span></td>
+                    <td class="text-center"><span class="sla-badge badge-blue">99% / bulan</span></td>
+                    <td class="text-center"><span class="sla-badge badge-navy">99,5% / bulan</span></td>
+                    <td class="text-center col-korporasi"><span class="sla-badge badge-gold">99,5% / bulan</span></td>
+                  </tr>
+                  <tr>
+                    <td>Jaminan SLA Tertulis</td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-check check-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-check check-icon"></i></td>
+                    <td class="text-center col-korporasi"><i class="fa fa-check check-icon"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Saluran Dukungan</td>
+                    <td class="text-center"><span class="sla-badge badge-gray">Komunitas</span></td>
+                    <td class="text-center"><span class="sla-badge badge-blue">Email</span></td>
+                    <td class="text-center"><span class="sla-badge badge-navy">Email</span></td>
+                    <td class="text-center col-korporasi"><span class="sla-badge badge-gold">Email Prioritas</span></td>
+                  </tr>
+                  <tr>
+                    <td>Waktu Respons Support</td>
+                    <td class="text-center" style="color:#bbb;font-style:italic;">Tidak dijamin</td>
+                    <td class="text-center">2 × 24 jam</td>
+                    <td class="text-center">1 × 24 jam</td>
+                    <td class="text-center col-korporasi"><strong>12 jam</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Onboarding Khusus</td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center col-korporasi"><i class="fa fa-check check-icon"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Notifikasi Insiden</td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-check check-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-check check-icon"></i></td>
+                    <td class="text-center col-korporasi"><i class="fa fa-check check-icon"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Kompensasi Downtime</td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-check check-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-check check-icon"></i></td>
+                    <td class="text-center col-korporasi"><i class="fa fa-check check-icon"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Backup Data</td>
+                    <td class="text-center">Harian</td>
+                    <td class="text-center">Harian</td>
+                    <td class="text-center">Harian</td>
+                    <td class="text-center col-korporasi"><strong>Harian</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Akses API</td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center"><i class="fa fa-times dash-icon"></i></td>
+                    <td class="text-center col-korporasi"><i class="fa fa-check check-icon"></i></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 1. Definisi Uptime -->
+          <div class="legal-section">
+            <h2><span class="section-num">1</span> Definisi Uptime &amp; Downtime</h2>
+            <p><strong>Uptime</strong> adalah persentase waktu dalam satu bulan kalender di mana Layanan POSMI tersedia dan dapat diakses oleh Pengguna secara normal. Uptime dihitung menggunakan formula berikut:</p>
+            <div style="background:#f8f9fc;border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;font-size:15px;color:#1e2c5a;font-weight:700;">
+              Uptime (%) = ((Total Menit/Bulan − Menit Downtime) / Total Menit/Bulan) × 100
+            </div>
+            <p><strong>Downtime</strong> adalah periode di mana Layanan POSMI tidak dapat diakses atau tidak berfungsi secara signifikan yang disebabkan oleh kegagalan pada infrastruktur Perusahaan. Downtime <strong>tidak mencakup</strong>:</p>
+            <ul>
+              <li>Waktu pemeliharaan terjadwal (<em>scheduled maintenance</em>) yang telah diberitahukan sebelumnya.</li>
+              <li>Gangguan akibat kondisi di luar kendali Perusahaan (<em>force majeure</em>), termasuk bencana alam, pemadaman listrik nasional, atau gangguan jaringan internet regional.</li>
+              <li>Gangguan yang disebabkan oleh tindakan Pengguna, termasuk penggunaan yang tidak sesuai ketentuan atau serangan yang berasal dari akun Pengguna.</li>
+              <li>Periode gangguan yang berlangsung kurang dari <strong>5 (lima) menit berturut-turut</strong>.</li>
+            </ul>
+            <div class="info-box">
+              <p><i class="fa fa-calculator me-2"></i>
+                Contoh: Dengan 99% uptime pada bulan dengan 30 hari (43.200 menit), total downtime yang diizinkan adalah <strong>432 menit (±7,2 jam)</strong> per bulan.
+                Dengan 99,5% uptime, downtime yang diizinkan adalah <strong>216 menit (±3,6 jam)</strong> per bulan.
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. Scheduled Maintenance -->
+          <div class="legal-section">
+            <h2><span class="section-num">2</span> Jendela Pemeliharaan Terjadwal</h2>
+            <p>Untuk memastikan performa dan keamanan platform yang optimal, POSMI melakukan pemeliharaan sistem secara rutin pada jendela waktu berikut:</p>
+            <div class="maintenance-card">
+              <div class="maintenance-icon"><i class="fa fa-wrench"></i></div>
+              <div>
+                <div class="maintenance-title">Jendela Pemeliharaan Rutin</div>
+                <p class="maintenance-desc">
+                  <strong>Setiap Minggu, pukul 00:00 – 04:00 WIB</strong><br>
+                  Selama periode ini, Layanan POSMI mungkin tidak dapat diakses sebagian atau seluruhnya. Pemeliharaan dalam jendela ini <strong>tidak dihitung sebagai downtime</strong> untuk keperluan perhitungan SLA.
+                </p>
+              </div>
+            </div>
+            <p style="margin-top:14px;">Ketentuan tambahan terkait pemeliharaan:</p>
+            <ul>
+              <li>Pemeliharaan di luar jendela rutin akan diberitahukan melalui email minimal <strong>24 jam</strong> sebelumnya, kecuali untuk perbaikan keamanan mendesak (<em>emergency patch</em>).</li>
+              <li>Durasi pemeliharaan terjadwal diupayakan tidak melebihi 4 jam per sesi.</li>
+              <li>Status pemeliharaan dan insiden dapat dipantau melalui halaman status yang kami sediakan.</li>
+            </ul>
+          </div>
+
+          <!-- 3. Incident Response -->
+          <div class="legal-section">
+            <h2><span class="section-num">3</span> Prosedur Respons Insiden</h2>
+            <p>Apabila terjadi gangguan layanan yang tidak terjadwal, POSMI akan menanganinya melalui prosedur berikut:</p>
+            <div class="incident-steps">
+              <div class="incident-step">
+                <div class="step-circle">1</div>
+                <div class="step-content">
+                  <div class="step-title">Deteksi &amp; Eskalasi</div>
+                  <div class="step-desc">Insiden terdeteksi melalui sistem monitoring otomatis atau laporan Pengguna. Tim on-call segera dinotifikasi dan insiden diklasifikasikan berdasarkan tingkat keparahan.</div>
+                </div>
+              </div>
+              <div class="incident-step">
+                <div class="step-circle">2</div>
+                <div class="step-content">
+                  <div class="step-title">Pemberitahuan Awal</div>
+                  <div class="step-desc">Dalam <strong>30 menit</strong> setelah insiden dikonfirmasi, Pengguna pada paket berbayar akan menerima notifikasi awal melalui email dan/atau pengumuman di platform.</div>
+                </div>
+              </div>
+              <div class="incident-step">
+                <div class="step-circle">3</div>
+                <div class="step-content">
+                  <div class="step-title">Investigasi &amp; Mitigasi</div>
+                  <div class="step-desc">Tim teknis melakukan investigasi untuk mengidentifikasi akar masalah dan menerapkan tindakan mitigasi untuk memulihkan layanan secepat mungkin.</div>
+                </div>
+              </div>
+              <div class="incident-step">
+                <div class="step-circle">4</div>
+                <div class="step-content">
+                  <div class="step-title">Pemulihan Layanan</div>
+                  <div class="step-desc">Layanan dipulihkan ke kondisi normal. Pengguna diberitahu bahwa insiden telah selesai beserta estimasi waktu pemulihan jika relevan.</div>
+                </div>
+              </div>
+              <div class="incident-step">
+                <div class="step-circle">5</div>
+                <div class="step-content">
+                  <div class="step-title">Laporan Pasca-Insiden</div>
+                  <div class="step-desc">Untuk insiden dengan durasi lebih dari <strong>2 jam</strong> pada paket berbayar, Perusahaan akan menerbitkan laporan pasca-insiden (<em>post-mortem</em>) dalam 72 jam, mencakup penyebab dan langkah pencegahan.</div>
+                </div>
+              </div>
+              <div class="incident-step">
+                <div class="step-circle">6</div>
+                <div class="step-content">
+                  <div class="step-title">Kompensasi (jika berlaku)</div>
+                  <div class="step-desc">Apabila downtime melebihi batas SLA yang dijanjikan, Pengguna berhak mengajukan klaim kompensasi sesuai tabel pada bagian berikutnya.</div>
+                </div>
+              </div>
+            </div>
+            <div class="warning-box" style="margin-top:20px;">
+              <p><i class="fa fa-exclamation-triangle me-2"></i> Untuk melaporkan gangguan layanan, hubungi kami di <strong>adhy.chandra@live.co.uk</strong> atau WhatsApp <strong>+62 812-1327-0275</strong>. Sertakan tangkapan layar dan waktu kejadian untuk mempercepat penanganan.</p>
+            </div>
+          </div>
+
+          <!-- 4. Compensation -->
+          <div class="legal-section">
+            <h2><span class="section-num">4</span> Kompensasi Downtime</h2>
+            <p>Apabila Layanan mengalami downtime yang melebihi batas yang dijanjikan dalam SLA (setelah dikurangi pengecualian), Pengguna berhak mendapatkan kompensasi berupa <strong>kredit layanan (service credit)</strong> yang dapat digunakan untuk perpanjangan berlangganan. Ketentuan kompensasi adalah sebagai berikut:</p>
+            <table class="comp-table">
+              <thead>
+                <tr>
+                  <th>Kelebihan Downtime dalam 1 Bulan</th>
+                  <th>Kompensasi (Service Credit)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Melebihi SLA hingga 1 jam</td>
+                  <td>5% dari biaya berlangganan bulan berjalan</td>
+                </tr>
+                <tr>
+                  <td>Melebihi SLA 1 – 4 jam</td>
+                  <td>10% dari biaya berlangganan bulan berjalan</td>
+                </tr>
+                <tr>
+                  <td>Melebihi SLA 4 – 12 jam</td>
+                  <td>25% dari biaya berlangganan bulan berjalan</td>
+                </tr>
+                <tr>
+                  <td>Melebihi SLA lebih dari 12 jam</td>
+                  <td>50% dari biaya berlangganan bulan berjalan</td>
+                </tr>
+              </tbody>
+            </table>
+            <ul style="margin-top:16px;">
+              <li>Klaim kompensasi harus diajukan dalam <strong>30 (tiga puluh) hari kalender</strong> setelah insiden terjadi melalui saluran dukungan resmi.</li>
+              <li>Total kompensasi dalam satu bulan tidak akan melebihi 50% dari biaya berlangganan bulan tersebut.</li>
+              <li>Kompensasi diberikan dalam bentuk kredit layanan, bukan pengembalian uang tunai, kecuali disepakati lain secara tertulis.</li>
+              <li>Paket Gratis tidak berhak atas kompensasi apapun karena tidak ada SLA yang dijamin.</li>
+            </ul>
+            <div class="success-box">
+              <p><i class="fa fa-check-circle me-2"></i> Kompensasi akan dikreditkan ke akun Pengguna dalam <strong>7 hari kerja</strong> setelah klaim diverifikasi dan disetujui oleh tim POSMI.</p>
+            </div>
+          </div>
+
+          <!-- Last updated -->
+          <div class="last-updated">
+            <i class="fa fa-calendar me-1"></i> Terakhir diperbarui: <strong>1 Juni 2026</strong>
+          </div>
+
+        </div><!-- /.legal-card -->
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

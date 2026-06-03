@@ -1,0 +1,117 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Barang — {{ barang.nama }}</title>
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Poppins',sans-serif;background:#f4f6fb;}
+    #accordionSidebar{background:linear-gradient(180deg,#1e2c5a,#2c3e6b)!important;}
+    .sidebar-brand{padding:20px 16px!important;}.sidebar-brand-text{font-size:15px!important;font-weight:900!important;}
+    .sidebar .nav-item .nav-link{color:rgba(255,255,255,.65)!important;font-size:13px;font-weight:600;padding:10px 20px;}
+    .sidebar .nav-item .nav-link:hover,.sidebar .nav-item.active .nav-link{color:#fff!important;background:rgba(255,255,255,.08)!important;}
+    .sidebar .nav-item .nav-link i{width:18px;text-align:center;}
+    .sidebar hr{border-color:rgba(255,255,255,.12)!important;}
+    .sidebar-heading{color:rgba(255,255,255,.4)!important;font-size:10px;font-weight:700;letter-spacing:1.2px;padding:10px 20px 4px!important;}
+    .form-card{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:none;max-width:680px;}
+    .form-card .card-header{background:linear-gradient(135deg,#1e2c5a,#3a5298);padding:18px 22px;color:#fff;border-radius:14px 14px 0 0;}
+    .form-label{font-size:13px;font-weight:700;color:#1e2c5a;margin-bottom:5px;}
+    .form-control,.form-select{border:1.5px solid #d8e3f5;border-radius:8px;padding:10px 14px;font-size:13px;font-family:'Poppins',sans-serif;}
+    .form-control:focus,.form-select:focus{border-color:#4e73df;box-shadow:0 0 0 3px rgba(78,115,223,.1);}
+  </style>
+</head>
+<body id="page-top"><div id="wrapper">
+  {% include 'owner/_sidebar.html' with active='barang' %}
+  <div id="content-wrapper" class="d-flex flex-column"><div id="content">
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+    <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Edit Barang
+            </li>
+          </ol>
+        </nav>
+
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{% url 'owner_barang_toko' cabang.id %}" style="font-size:13px;color:#4e73df;"><i class="fa fa-arrow-left me-1"></i>Kembali</a>
+        <h4 style="font-weight:900;color:#1e2c5a;margin:0;">Edit Barang — {{ cabang.nama_toko }}</h4>
+      </div>
+      {% for msg in messages %}<div class="alert alert-danger" style="border-radius:8px;font-size:13px;">{{ msg }}</div>{% endfor %}
+      <div class="form-card">
+        <div class="card-header"><h5 style="font-size:14px;font-weight:800;margin:0;"><i class="fa fa-pencil me-2"></i>{{ barang.nama }}</h5></div>
+        <div class="p-4">
+          <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Barcode</label>
+                <input type="text" class="form-control" value="{{ barang.barcode }}" disabled style="background:#f8fafc;">
+                <small class="text-muted">Barcode tidak dapat diubah.</small>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Satuan</label>
+                <select name="satuan" class="form-select">
+                  <option value="PCS" {% if barang.satuan == 'PCS' %}selected{% endif %}>PCS</option>
+                  <option value="PACK" {% if barang.satuan == 'PACK' %}selected{% endif %}>PACK</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Nama Barang</label>
+                <input type="text" name="nama" class="form-control" value="{{ barang.nama }}" required>
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Stok</label>
+                <input type="number" name="stok" class="form-control" value="{{ barang.stok }}" min="0">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Harga Beli (Rp)</label>
+                <input type="number" name="harga_beli" class="form-control" value="{{ barang.harga_beli }}" min="0">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Harga Ecer (Rp)</label>
+                <input type="number" name="harga_ecer" class="form-control" value="{{ barang.harga_ecer }}" min="0">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Harga Grosir (Rp)</label>
+                <input type="number" name="harga_grosir" class="form-control" value="{{ barang.harga_grosir }}" min="0">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Min. Beli Grosir</label>
+                <input type="number" name="min_beli_grosir" class="form-control" value="{{ barang.min_beli_grosir }}" min="0">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Keterangan</label>
+                <input type="text" name="keterangan" class="form-control" value="{{ barang.keterangan|default:'' }}">
+              </div>
+              <div class="col-12 mt-2">
+                <button type="submit" class="btn btn-primary fw-bold w-100" style="border-radius:9px;padding:12px;">
+                  <i class="fa fa-save me-2"></i>Simpan Perubahan
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="sticky-footer bg-white mt-auto"><div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">&copy; POSMI — Korporasi</div></footer>
+  </div></div>
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+</body></html>

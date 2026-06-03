@@ -1,0 +1,49 @@
+{% extends 'base-landing.html' %}
+{% load static %}
+
+{% block contents %}
+<style>
+body { background:#eef3f6; }
+.login-wrap { max-width:420px; margin:80px auto; padding:0 16px; }
+.login-card { background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.08); overflow:hidden; }
+.login-header { background:linear-gradient(135deg,#1e2c5a,#3a5298); padding:28px 32px; color:#fff; }
+.login-header h1 { font-size:1.2rem; font-weight:900; margin:0 0 6px; }
+.login-header p  { font-size:13px; opacity:.75; margin:0; }
+.login-body { padding:32px; }
+.form-label { font-size:13px; font-weight:700; color:#1e2c5a; margin-bottom:4px; display:block; }
+.form-control { width:100%; border:1.5px solid #d8e3f5; border-radius:8px; padding:10px 14px; font-size:14px; outline:none; font-family:'Poppins',sans-serif; }
+.form-control:focus { border-color:#4e73df; }
+.btn-submit { width:100%; background:#4e73df; color:#fff; border:none; border-radius:10px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; margin-top:8px; }
+</style>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-header">
+      <h1><i class="fa fa-building me-2"></i>Login Korporasi</h1>
+      <p>Masuk ke dashboard manajemen multi-toko.</p>
+    </div>
+    <div class="login-body">
+      {% for msg in messages %}
+        <div style="background:{% if 'Upgrade berhasil' in msg.message or 'berhasil' in msg.message %}#d1fae5;color:#065f46{% else %}#fee2e2;color:#991b1b{% endif %};border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;">
+          <i class="fa {% if 'berhasil' in msg.message %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>{{ msg }}
+        </div>
+      {% endfor %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="email@toko.com" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-submit">Masuk ke Dashboard</button>
+        <p style="font-size:12px;color:#8899bb;text-align:center;margin-top:14px;">
+          Belum punya akun Korporasi? <a href="{% url 'owner_register' %}">Daftar sekarang</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

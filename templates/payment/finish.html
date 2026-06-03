@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if paid %}Pembayaran Berhasil{% else %}Menunggu Konfirmasi{% endif %} — POSMI</title>
+  <link rel="icon" href="{% static 'images/posmi.ico' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+  <style>
+    body { background:#f0f4f8; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; font-family:'Nunito',sans-serif; }
+    .card { border:none; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.1); max-width:440px; width:100%; padding:40px 36px; text-align:center; }
+    .icon-circle { width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:36px; }
+    .icon-success { background:#dcfce7; color:#16a34a; }
+    .icon-pending { background:#fef9c3; color:#ca8a04; }
+    .icon-failed  { background:#fee2e2; color:#dc2626; }
+    h2 { font-weight:900; font-size:22px; color:#1e293b; margin-bottom:8px; }
+    p  { color:#64748b; font-size:14px; line-height:1.6; }
+    .order-pill { display:inline-block; background:#f1f5f9; color:#475569; font-size:11px; font-weight:700; padding:4px 12px; border-radius:99px; letter-spacing:.5px; margin-top:8px; }
+    .btn-home { display:inline-block; margin-top:24px; padding:11px 28px; background:#1e2c5a; color:#fff; border-radius:8px; text-decoration:none; font-weight:700; font-size:14px; }
+    .btn-home:hover { background:#2d5286; color:#fff; }
+  </style>
+</head>
+<body>
+<div class="card">
+  {% if paid %}
+  <div class="icon-circle icon-success"><i class="fa fa-check"></i></div>
+  <h2>Pembayaran Berhasil!</h2>
+  <p>Transaksi Anda telah dikonfirmasi. Akun / layanan akan segera aktif dalam beberapa menit.</p>
+  {% elif status == 'pending' %}
+  <div class="icon-circle icon-pending"><i class="fa fa-clock-o"></i></div>
+  <h2>Menunggu Pembayaran</h2>
+  <p>Pembayaran Anda sedang diproses. Akun / layanan akan aktif otomatis setelah pembayaran dikonfirmasi oleh bank.</p>
+  {% else %}
+  <div class="icon-circle icon-failed"><i class="fa fa-times"></i></div>
+  <h2>Pembayaran Gagal</h2>
+  <p>Transaksi dibatalkan atau ditolak. Silakan coba kembali dari halaman utama.</p>
+  {% endif %}
+
+  {% if order_id %}
+  <div class="order-pill">Order: {{ order_id }}</div>
+  {% endif %}
+
+  <br>
+  <a href="/" class="btn-home"><i class="fa fa-home me-2"></i>Kembali ke Beranda</a>
+</div>
+</body>
+</html>

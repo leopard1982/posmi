@@ -1,0 +1,553 @@
+{% load humanize %}
+{% if addon_type == 'barcode' %}
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+{% endif %}
+
+<style>
+.settings-page { color:#4b5563; max-width:680px; margin:0 auto; }
+.settings-back {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:13px; font-weight:700; color:#6b7280;
+  cursor:pointer; background:none; border:none; padding:0; margin-bottom:20px;
+}
+.settings-back:hover { color:#4e73df; }
+
+.settings-header {
+  background:#fff; border:1px solid #e4e8f0; border-radius:14px;
+  box-shadow:0 2px 14px rgba(0,0,0,.06); overflow:hidden; margin-bottom:18px;
+}
+.settings-header-top {
+  display:flex; align-items:center; gap:16px;
+  padding:20px 24px; border-bottom:1px solid #f0f4f8;
+}
+.settings-header-icon {
+  width:48px; height:48px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:12px; font-size:20px;
+}
+.settings-header-name  { font-size:17px; font-weight:900; color:#1e2c5a; margin-bottom:2px; }
+.settings-header-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  background:#d1fae5; color:#065f46; font-size:11px; font-weight:700;
+  padding:3px 10px; border-radius:50px;
+}
+
+.settings-card {
+  background:#fff; border:1px solid #e4e8f0; border-radius:12px;
+  box-shadow:0 1px 8px rgba(0,0,0,.04); margin-bottom:14px; overflow:hidden;
+}
+.settings-card-header {
+  padding:14px 20px; border-bottom:1px solid #f0f4f8;
+  font-size:11px; font-weight:800; color:#8a92a6;
+  letter-spacing:.7px; text-transform:uppercase;
+}
+.settings-card-body { padding:18px 20px; }
+
+.settings-row {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:16px; padding:10px 0; border-bottom:1px solid #f3f4f6;
+}
+.settings-row:last-child { border-bottom:none; padding-bottom:0; }
+.settings-label  { font-size:13px; font-weight:700; color:#374151; min-width:160px; }
+.settings-hint   { font-size:11px; color:#9ca3af; margin-top:2px; }
+.settings-control { flex:1; }
+
+.form-select-sm, .form-control-sm {
+  font-size:13px; border-radius:7px; border:1.5px solid #d1d5db;
+  padding:7px 10px; width:100%; color:#374151;
+  background:#fafafa; transition:border .15s;
+}
+.form-select-sm:focus, .form-control-sm:focus {
+  border-color:#4e73df; outline:none; background:#fff;
+}
+textarea.form-control-sm { resize:vertical; min-height:70px; }
+
+/* Toggle switch */
+.toggle-wrap { display:flex; align-items:center; gap:10px; }
+.toggle { position:relative; width:40px; height:22px; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider {
+  position:absolute; inset:0; cursor:pointer;
+  background:#d1d5db; border-radius:22px; transition:.2s;
+}
+.toggle-slider:before {
+  content:''; position:absolute;
+  width:16px; height:16px; left:3px; bottom:3px;
+  background:#fff; border-radius:50%; transition:.2s;
+}
+.toggle input:checked + .toggle-slider { background:#4e73df; }
+.toggle input:checked + .toggle-slider:before { transform:translateX(18px); }
+.toggle-label { font-size:13px; color:#374151; font-weight:600; }
+
+/* Tombol simpan */
+.btn-row-settings { display:flex; gap:10px; margin-top:20px; }
+.btn-settings-batal {
+  flex:1; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:11px; background:#fff; color:#5a5c69;
+  border:1.5px solid #d1d5db; border-radius:9px;
+  font-size:13px; font-weight:700; cursor:pointer;
+}
+.btn-settings-batal:hover { background:#f3f4f6; }
+.btn-settings-simpan {
+  flex:2; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:11px; background:#4e73df; color:#fff;
+  border:none; border-radius:9px;
+  font-size:13px; font-weight:800; cursor:pointer;
+}
+.btn-settings-simpan:hover { background:#3a5fc8; }
+
+.alert-saved {
+  background:#d1fae5; border:1px solid #6ee7b7; border-radius:9px;
+  padding:12px 16px; font-size:13px; color:#065f46; font-weight:700;
+  margin-bottom:16px; display:flex; align-items:center; gap:8px;
+}
+</style>
+
+<div class="settings-page">
+
+  <button class="settings-back" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+    <i class="fa fa-arrow-left"></i> Kembali ke Add-ons
+  </button>
+
+  {% if saved %}
+  <div class="alert-saved">
+    <i class="fa fa-check-circle"></i> Pengaturan berhasil disimpan.
+  </div>
+  {% endif %}
+
+  <!-- Header addon -->
+  <div class="settings-header">
+    <div class="settings-header-top">
+      {% if addon_type == 'barcode' %}
+        <div class="settings-header-icon" style="background:#fef3c718;"><i class="fa fa-barcode" style="color:#d97706;"></i></div>
+        <div>
+          <div class="settings-header-name">Cetak Label Barcode</div>
+          <span class="settings-header-badge"><i class="fa fa-check"></i> Aktif</span>
+        </div>
+      {% elif addon_type == 'nota_custom' %}
+        <div class="settings-header-icon" style="background:#ede9fe18;"><i class="fa fa-file-text" style="color:#7c3aed;"></i></div>
+        <div>
+          <div class="settings-header-name">Custom Template Nota</div>
+          <span class="settings-header-badge"><i class="fa fa-check"></i> Aktif</span>
+        </div>
+      {% elif addon_type == 'akunting' %}
+        <div class="settings-header-icon" style="background:#d1fae518;"><i class="fa fa-calculator" style="color:#059669;"></i></div>
+        <div>
+          <div class="settings-header-name">Laporan Akunting Otomatis</div>
+          <span class="settings-header-badge"><i class="fa fa-check"></i> Aktif</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <form hx-post="{% url 'cms_addon_settings' addon_type %}" hx-trigger="submit" hx-target="#mainpage" method="post">
+    {% csrf_token %}
+
+    <!-- ===== BARCODE ===== -->
+    {% if addon_type == 'barcode' %}
+    <div style="display:grid;grid-template-columns:1fr 200px;gap:18px;align-items:start;">
+
+      <!-- Kolom kiri: form -->
+      <div>
+
+        <div class="settings-card">
+          <div class="settings-card-header">Format Label</div>
+          <div class="settings-card-body">
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Ukuran Label</div>
+                <div class="settings-hint">Sesuaikan dengan ukuran kertas label</div>
+              </div>
+              <div class="settings-control">
+                <select name="ukuran_label" class="form-select-sm">
+                  <option value="38x25"  {% if config.config.ukuran_label|default:'38x25' == '38x25'  %}selected{% endif %}>38 × 25 mm</option>
+                  <option value="50x30"  {% if config.config.ukuran_label == '50x30'  %}selected{% endif %}>50 × 30 mm</option>
+                  <option value="57x32"  {% if config.config.ukuran_label == '57x32'  %}selected{% endif %}>57 × 32 mm</option>
+                  <option value="100x50" {% if config.config.ukuran_label == '100x50' %}selected{% endif %}>100 × 50 mm</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Tipe Barcode</div>
+                <div class="settings-hint">Format kode batang yang dicetak</div>
+              </div>
+              <div class="settings-control">
+                <select name="tipe_barcode" id="id_tipe_barcode" class="form-select-sm">
+                  <option value="CODE128" {% if config.config.tipe_barcode|default:'CODE128' == 'CODE128' %}selected{% endif %}>CODE 128 (Umum)</option>
+                  <option value="CODE39"  {% if config.config.tipe_barcode == 'CODE39'  %}selected{% endif %}>CODE 39</option>
+                  <option value="EAN13"   {% if config.config.tipe_barcode == 'EAN13'   %}selected{% endif %}>EAN-13</option>
+                  <option value="QR"      {% if config.config.tipe_barcode == 'QR'      %}selected{% endif %}>QR Code</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Kolom per Baris</div>
+                <div class="settings-hint">Jumlah label dalam satu baris cetakan</div>
+              </div>
+              <div class="settings-control">
+                <select name="kolom_per_baris" class="form-select-sm">
+                  <option value="1" {% if config.config.kolom_per_baris == 1 %}selected{% endif %}>1 kolom</option>
+                  <option value="2" {% if config.config.kolom_per_baris|default:2 == 2 %}selected{% endif %}>2 kolom</option>
+                  <option value="3" {% if config.config.kolom_per_baris == 3 %}selected{% endif %}>3 kolom</option>
+                  <option value="4" {% if config.config.kolom_per_baris == 4 %}selected{% endif %}>4 kolom</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-header">Konten Label</div>
+          <div class="settings-card-body">
+            <div class="settings-row">
+              <div><div class="settings-label">Tampilkan Nama Produk</div></div>
+              <div class="settings-control">
+                <label class="toggle">
+                  <input type="checkbox" id="id_tampilkan_nama_produk" name="tampilkan_nama_produk"
+                    {% if config.config.tampilkan_nama_produk != False %}checked{% endif %}>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Tampilkan Harga</div></div>
+              <div class="settings-control">
+                <label class="toggle">
+                  <input type="checkbox" id="id_tampilkan_harga" name="tampilkan_harga"
+                    {% if config.config.tampilkan_harga != False %}checked{% endif %}>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Tampilkan Nama Toko</div></div>
+              <div class="settings-control">
+                <label class="toggle">
+                  <input type="checkbox" id="id_tampilkan_nama_toko" name="tampilkan_nama_toko"
+                    {% if config.config.tampilkan_nama_toko != False %}checked{% endif %}>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /kolom kiri -->
+
+      <!-- Kolom kanan: preview -->
+      <div style="position:sticky;top:16px;">
+        <div style="font-size:11px;font-weight:800;color:#8a92a6;letter-spacing:.7px;text-transform:uppercase;margin-bottom:8px;text-align:center;">Preview Label</div>
+        <div style="border:1px dashed #d1d5db;border-radius:8px;padding:10px 12px;background:#fafafa;text-align:center;max-width:180px;margin:0 auto;">
+          <div id="previewNamaToko"
+               style="font-size:10px;font-weight:700;color:#374151;margin-bottom:2px;display:{% if config.config.tampilkan_nama_toko == False %}none{% else %}block{% endif %};">
+            {{ cabang.nama_toko }}
+          </div>
+          <svg id="barcodePreviewSvg"></svg>
+          <div id="previewNamaProduk"
+               style="font-size:10px;color:#374151;margin-top:2px;display:{% if config.config.tampilkan_nama_produk == False %}none{% else %}block{% endif %};">
+            Nama Produk Contoh
+          </div>
+          <div id="previewHarga"
+               style="font-size:10px;font-weight:700;color:#059669;margin-top:1px;display:{% if config.config.tampilkan_harga == False %}none{% else %}block{% endif %};">
+            Rp 25.000
+          </div>
+        </div>
+        <div style="font-size:10px;color:#9ca3af;text-align:center;margin-top:8px;">Update otomatis</div>
+      </div><!-- /kolom kanan -->
+
+    </div><!-- /grid -->
+
+    <!-- ===== NOTA CUSTOM ===== -->
+    {% elif addon_type == 'nota_custom' %}
+
+    <div style="display:grid;grid-template-columns:1fr 200px;gap:18px;align-items:start;">
+
+      <!-- Kolom kiri: form pengaturan -->
+      <div>
+
+        <div class="settings-card">
+          <div class="settings-card-header">Format Nota</div>
+          <div class="settings-card-body">
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Lebar Nota</div>
+                <div class="settings-hint">Sesuaikan dengan lebar printer thermal</div>
+              </div>
+              <div class="settings-control">
+                <select name="lebar_nota" id="id_lebar_nota" class="form-select-sm">
+                  {% with v=config.config.lebar_nota|default:'58mm' %}
+                  <option value="58mm" {% if v == '58mm' %}selected{% endif %}>58 mm (kecil)</option>
+                  <option value="80mm" {% if v == '80mm' %}selected{% endif %}>80 mm (standar)</option>
+                  {% endwith %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-header">Header</div>
+          <div class="settings-card-body">
+            <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+              <div>
+                <div class="settings-label">Main Header</div>
+                <div class="settings-hint">Judul utama — kosongkan untuk pakai nama toko</div>
+              </div>
+              <input type="text" name="main_header" id="id_main_header" class="form-control-sm"
+                placeholder="{{ cabang.nama_toko }}"
+                value="{{ config.config.main_header|default:'' }}">
+            </div>
+            <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+              <div>
+                <div class="settings-label">Sub Header</div>
+                <div class="settings-hint">Tagline atau alamat kustom di bawah judul</div>
+              </div>
+              <input type="text" name="sub_header" id="id_sub_header" class="form-control-sm"
+                placeholder="{{ cabang.alamat_toko }} · {{ cabang.telpon }}"
+                value="{{ config.config.sub_header|default:'' }}">
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-header">Konten</div>
+          <div class="settings-card-body">
+            <div class="settings-row">
+              <div><div class="settings-label">Tampilkan Tanggal & Jam</div></div>
+              <div class="settings-control">
+                <label class="toggle"><input type="checkbox" name="tampilkan_tanggal" id="id_tampilkan_tanggal"
+                  {% if config.config.tampilkan_tanggal != False %}checked{% endif %}>
+                  <span class="toggle-slider"></span></label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Tampilkan Nama Kasir</div></div>
+              <div class="settings-control">
+                <label class="toggle"><input type="checkbox" name="tampilkan_kasir" id="id_tampilkan_kasir"
+                  {% if config.config.tampilkan_kasir != False %}checked{% endif %}>
+                  <span class="toggle-slider"></span></label>
+              </div>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">Tampilkan No. Nota</div></div>
+              <div class="settings-control">
+                <label class="toggle"><input type="checkbox" name="tampilkan_no_nota" id="id_tampilkan_no_nota"
+                  {% if config.config.tampilkan_no_nota != False %}checked{% endif %}>
+                  <span class="toggle-slider"></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-header">Footer</div>
+          <div class="settings-card-body">
+            <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+              <div>
+                <div class="settings-label">Footer 1</div>
+                <div class="settings-hint">Baris pertama di bagian bawah nota</div>
+              </div>
+              <input type="text" name="footer_text_1" id="id_footer_text_1" class="form-control-sm"
+                placeholder="Terima kasih sudah berbelanja!"
+                value="{{ config.config.footer_text_1|default:'' }}">
+            </div>
+            <div class="settings-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+              <div>
+                <div class="settings-label">Footer 2</div>
+                <div class="settings-hint">Baris kedua (opsional)</div>
+              </div>
+              <input type="text" name="footer_text_2" id="id_footer_text_2" class="form-control-sm"
+                placeholder="Barang yang sudah dibeli tidak dapat dikembalikan."
+                value="{{ config.config.footer_text_2|default:'' }}">
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /kolom kiri -->
+
+      <!-- Kolom kanan: live preview nota -->
+      <div style="position:sticky;top:16px;">
+        <div style="font-size:11px;font-weight:800;color:#8a92a6;letter-spacing:.7px;text-transform:uppercase;margin-bottom:8px;text-align:center;">Preview</div>
+        <div id="notaPreview" style="
+          background:#fff;border:1px solid #d1d5db;border-radius:8px;
+          padding:12px 10px;font-family:'Courier New',monospace;font-size:10px;
+          line-height:1.6;color:#111;max-width:200px;margin:0 auto;
+          box-shadow:0 2px 8px rgba(0,0,0,.08);">
+          <div id="np_main_header" style="font-weight:700;font-size:12px;text-align:center;">{{ cabang.nama_toko }}</div>
+          <div id="np_sub_header" style="text-align:center;font-size:10px;">{{ cabang.alamat_toko }} · {{ cabang.telpon }}</div>
+          <div style="border-top:1px dashed #555;margin:5px 0;"></div>
+          <div id="np_tanggal" style="font-size:9px;">tanggal: <b>03/06/2026 04:23:01</b></div>
+          <div id="np_kasir" style="font-size:9px;">kasir: <b>Suryo Adhy Cha... (mhhd1)</b></div>
+          <div style="font-size:9px;">pembeli: <b>Aaa</b></div>
+          <div id="np_no_nota" style="font-size:9px;">no. nota: <b>00006</b></div>
+          <div style="border-top:1px dashed #555;margin:5px 0;"></div>
+          <div style="font-size:10px;"><b>Barang Contoh</b></div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;"><span>1×Rp.230.000</span><span>Rp.230.000</span></div>
+          <div style="border-top:1px dashed #555;margin:5px 0;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;"><span>cash</span><span>Rp.230.000</span></div>
+          <div style="border-top:1px dashed #555;margin:5px 0;"></div>
+          <div id="np_footer1" style="text-align:center;font-weight:700;font-size:10px;">Terima Kasih,</div>
+          <div id="np_footer2" style="text-align:center;font-size:9px;">Sudah Berbelanja.</div>
+        </div>
+      </div><!-- /kolom kanan -->
+
+    </div><!-- /grid -->
+
+    <!-- ===== AKUNTING ===== -->
+    {% elif addon_type == 'akunting' %}
+
+    <div class="settings-card">
+      <div class="settings-card-header">Laporan Otomatis</div>
+      <div class="settings-card-body">
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Periode Default</div>
+            <div class="settings-hint">Periode tampilan default halaman laporan</div>
+          </div>
+          <div class="settings-control">
+            <select name="periode_default" class="form-select-sm">
+              {% with v=config.config.periode_default|default:'bulanan' %}
+              <option value="harian"   {% if v == 'harian'   %}selected{% endif %}>Harian</option>
+              <option value="mingguan" {% if v == 'mingguan' %}selected{% endif %}>Mingguan</option>
+              <option value="bulanan"  {% if v == 'bulanan'  %}selected{% endif %}>Bulanan</option>
+              {% endwith %}
+            </select>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Kirim Laporan via Email</div>
+            <div class="settings-hint">Laporan dikirim otomatis sesuai periode</div>
+          </div>
+          <div class="settings-control">
+            <label class="toggle">
+              <input type="checkbox" name="kirim_otomatis" id="toggleKirimOtomatis"
+                {% if config.config.kirim_otomatis %}checked{% endif %}
+                onchange="document.getElementById('emailLaporanRow').style.display=this.checked?'flex':'none'">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="settings-row" id="emailLaporanRow"
+             style="display:{% if config.config.kirim_otomatis %}flex{% else %}none{% endif %};">
+          <div>
+            <div class="settings-label">Email Penerima</div>
+            <div class="settings-hint">Laporan akan dikirim ke email ini</div>
+          </div>
+          <div class="settings-control">
+            <input type="email" name="email_laporan" class="form-control-sm"
+              placeholder="{{ cabang.email }}"
+              value="{{ config.config.email_laporan|default:'' }}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:10px;padding:13px 16px;font-size:12px;color:#065f46;margin-bottom:4px;">
+      <i class="fa fa-bar-chart me-2"></i>
+      Lihat laporan akunting lengkap di menu
+      <a href="#" hx-get="{% url 'cms_laporan_akunting' %}" hx-target="#mainpage"
+         style="color:#059669;font-weight:700;text-decoration:underline;">Laporan Akunting</a>.
+    </div>
+
+    {% endif %}
+
+    <div class="btn-row-settings">
+      <button type="button" class="btn-settings-batal" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+        <i class="fa fa-arrow-left"></i> Kembali
+      </button>
+      <button type="submit" class="btn-settings-simpan">
+        <i class="fa fa-save"></i> Simpan Pengaturan
+      </button>
+    </div>
+
+  </form>
+
+{% if addon_type == 'nota_custom' %}
+<script>
+(function() {
+  var NAMA_TOKO   = '{{ cabang.nama_toko|escapejs }}';
+  var ALAMAT_TOKO = '{{ cabang.alamat_toko|escapejs }}';
+  var TELPON_TOKO = '{{ cabang.telpon|escapejs }}';
+
+  function v(id) { return document.getElementById(id); }
+  function val(name) {
+    var el = document.querySelector('[name="' + name + '"]');
+    return el ? el.value.trim() : '';
+  }
+  function chk(name) {
+    var el = document.querySelector('[name="' + name + '"]');
+    return el ? el.checked : true;
+  }
+
+  function updatePreview() {
+    var mainH = val('main_header') || NAMA_TOKO;
+    var subH  = val('sub_header')  || (ALAMAT_TOKO + ' · ' + TELPON_TOKO);
+    var f1    = val('footer_text_1') || 'Terima Kasih,';
+    var f2    = val('footer_text_2') || 'Sudah Berbelanja.';
+
+    v('np_main_header').textContent = mainH;
+    v('np_sub_header').textContent  = subH;
+    v('np_tanggal').style.display   = chk('tampilkan_tanggal') ? '' : 'none';
+    v('np_kasir').style.display     = chk('tampilkan_kasir')   ? '' : 'none';
+    v('np_no_nota').style.display   = chk('tampilkan_no_nota') ? '' : 'none';
+    v('np_footer1').textContent     = f1;
+    v('np_footer2').textContent     = f2;
+    v('np_footer2').style.display   = f2 ? '' : 'none';
+  }
+
+  var watchIds = ['id_main_header','id_sub_header','id_footer_text_1','id_footer_text_2'];
+  watchIds.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', updatePreview);
+  });
+  var checkNames = ['tampilkan_tanggal','tampilkan_kasir','tampilkan_no_nota'];
+  checkNames.forEach(function(name) {
+    var el = document.querySelector('[name="' + name + '"]');
+    if (el) el.addEventListener('change', updatePreview);
+  });
+
+  updatePreview();
+})();
+</script>
+{% endif %}
+
+{% if addon_type == 'barcode' %}
+<script>
+(function() {
+  function el(id) { return document.getElementById(id); }
+  function chk(id) { var e = el(id); return e ? e.checked : true; }
+
+  function renderPreview() {
+    var tipe = el('id_tipe_barcode') ? el('id_tipe_barcode').value : 'CODE128';
+
+    el('previewNamaToko').style.display   = chk('id_tampilkan_nama_toko')   ? '' : 'none';
+    el('previewNamaProduk').style.display = chk('id_tampilkan_nama_produk') ? '' : 'none';
+    el('previewHarga').style.display      = chk('id_tampilkan_harga')       ? '' : 'none';
+
+    try {
+      JsBarcode('#barcodePreviewSvg', '123456789012', {
+        format: tipe === 'QR' ? 'qrcode' : tipe,
+        width: 1.5, height: 36, displayValue: true, fontSize: 9, margin: 2,
+      });
+    } catch(e) { el('barcodePreviewSvg').innerHTML = ''; }
+  }
+
+  ['id_tipe_barcode','id_tampilkan_nama_toko','id_tampilkan_nama_produk','id_tampilkan_harga']
+    .forEach(function(id) {
+      var e = el(id);
+      if (e) e.addEventListener('change', renderPreview);
+    });
+
+  renderPreview();
+})();
+</script>
+{% endif %}
+
+</div>

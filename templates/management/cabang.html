@@ -1,0 +1,132 @@
+{% extends 'management/base.html' %}
+{% load humanize %}
+{% block title %}Data Cabang{% endblock %}
+{% block menu_cabang %}active{% endblock %}
+
+{% block contents %}
+<div class="page-header">
+  <h2 class="fw-bold">Data Cabang</h2>
+  <p class="text-muted">Kelola seluruh cabang terdaftar — total {{ cabangs.count|intcomma }} cabang</p>
+</div>
+
+<div class="card shadow">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th><th>Nama Toko</th><th>Cabang</th>
+            <th>Email</th><th>Kode</th><th>Paket</th>
+            <th>Lisensi Expired</th><th class="text-center">Status</th>
+            <th class="text-center" style="min-width:200px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in cabangs %}
+          <tr class="{% if not c.is_active %}table-secondary{% endif %}">
+            <td>{{ forloop.counter }}</td>
+            <td><strong>{{ c.nama_toko }}</strong></td>
+            <td>{{ c.nama_cabang }}</td>
+            <td class="small">{{ c.email|default:"-" }}</td>
+            <td><code>{{ c.prefix|default:"-" }}</code></td>
+            <td>
+              {% if c.paket %}<span class="badge bg-primary">{{ c.paket.nama }}</span>
+              {% else %}<span class="badge bg-light text-dark border">Paket Dasar</span>{% endif %}
+            </td>
+            <td class="small">
+              {% if c.paket and c.lisensi_expired %}{{ c.lisensi_expired|date:"d/m/Y H:i" }}
+              {% elif not c.paket %}<span class="text-success">Selamanya</span>
+              {% else %}<span class="text-muted">-</span>{% endif %}
+            </td>
+            <td class="text-center">
+              {% if c.is_active %}<span class="badge bg-success">Aktif</span>
+              {% else %}<span class="badge bg-danger">Nonaktif</span>{% endif %}
+            </td>
+            <td class="text-center">
+              <form method="post" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="aksi" value="toggle">
+                <input type="hidden" name="cabang_id" value="{{ c.pk }}">
+                <button type="submit" class="btn btn-sm {% if c.is_active %}btn-secondary{% else %}btn-success{% endif %} me-1">
+                  {% if c.is_active %}Off{% else %}On{% endif %}
+                </button>
+              </form>
+              <button class="btn btn-sm btn-info me-1"
+                onclick="isiSetPaket('{{ c.pk }}','{{ c.paket.pk|default:'' }}')"
+                data-bs-toggle="modal" data-bs-target="#modalSetPaket">Paket</button>
+              <button class="btn btn-sm btn-warning"
+                onclick="isiSetLisensi('{{ c.pk }}','{{ c.lisensi_expired|date:"Y-m-d\TH:i"|default:"" }}','{{ c.lisensi_grace|date:"Y-m-d\TH:i"|default:"" }}')"
+                data-bs-toggle="modal" data-bs-target="#modalSetLisensi">Lisensi</button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="9" class="text-center py-5 text-muted">Belum ada cabang.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Set Paket -->
+<div class="modal fade" id="modalSetPaket" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">{% csrf_token %}
+        <input type="hidden" name="aksi" value="set_paket">
+        <input type="hidden" name="cabang_id" id="sp_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Atur Paket Cabang</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <label class="form-label fw-bold">Pilih Paket</label>
+          <select name="paket_id" id="sp_paket" class="form-control">
+            <option value="">-- Paket Dasar (tanpa paket) --</option>
+            {% for p in pakets %}<option value="{{ p.pk }}">{{ p.nama }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary fw-bold">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Set Lisensi -->
+<div class="modal fade" id="modalSetLisensi" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">{% csrf_token %}
+        <input type="hidden" name="aksi" value="set_lisensi">
+        <input type="hidden" name="cabang_id" id="sl_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Atur Lisensi Cabang</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Tanggal Expired Lisensi</label>
+            <input type="datetime-local" name="lisensi_expired" id="sl_expired" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Tanggal Grace Period</label>
+            <input type="datetime-local" name="lisensi_grace" id="sl_grace" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning fw-bold">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function isiSetPaket(cabangId, paketId) {
+  document.getElementById('sp_id').value = cabangId;
+  document.getElementById('sp_paket').value = paketId || '';
+}
+function isiSetLisensi(cabangId, expired, grace) {
+  document.getElementById('sl_id').value = cabangId;
+  document.getElementById('sl_expired').value = expired;
+  document.getElementById('sl_grace').value = grace;
+}
+</script>
+{% endblock %}

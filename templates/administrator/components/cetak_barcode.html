@@ -1,0 +1,158 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Cetak Barcode — {{ barang.nama }}</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f3f4f6; }
+
+    /* Toolbar (no-print) */
+    .toolbar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 12px 20px; background: #1e2c5a; color: #fff;
+      font-size: 13px;
+    }
+    .toolbar-title { font-weight: 700; font-size: 14px; flex: 1; }
+    .toolbar label { font-size: 12px; color: #c7d7f5; }
+    .toolbar input[type=number] {
+      width: 60px; padding: 5px 8px; border-radius: 6px;
+      border: none; font-size: 13px; text-align: center;
+    }
+    .btn-print {
+      padding: 8px 20px; background: #4e73df; color: #fff;
+      border: none; border-radius: 7px; font-size: 13px;
+      font-weight: 700; cursor: pointer;
+    }
+    .btn-print:hover { background: #3a5fc8; }
+    .btn-back {
+      padding: 8px 16px; background: rgba(255,255,255,.15); color: #fff;
+      border: 1px solid rgba(255,255,255,.3); border-radius: 7px;
+      font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+    }
+
+    /* Label area */
+    .label-area {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat({{ kolom }}, auto);
+      gap: 6px;
+      justify-content: start;
+    }
+
+    .label-card {
+      border: 1px dashed #9ca3af;
+      border-radius: 4px;
+      padding: 6px 8px;
+      text-align: center;
+      background: #fff;
+      width: 120px;
+    }
+    .label-nama-toko { font-size: 8px; font-weight: 700; color: #374151; margin-bottom: 2px; }
+    .label-nama-produk { font-size: 8px; color: #374151; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 104px; }
+    .label-harga { font-size: 9px; font-weight: 700; color: #059669; margin-top: 1px; }
+    .label-barcode svg { max-width: 104px; }
+
+    @media print {
+      .toolbar { display: none; }
+      body { background: #fff; }
+      .label-area { padding: 4mm; gap: 3px; }
+      .label-card { border: 1px dashed #aaa; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar no-print">
+  <div class="toolbar-title">
+    <i class="fa fa-barcode" style="margin-right:6px;"></i>
+    Cetak Barcode — {{ barang.nama }}
+  </div>
+  <label>Jumlah label:</label>
+  <input type="number" id="jumlahInput" min="1" max="200" value="{{ jumlah }}">
+  <button class="btn-print" onclick="generateAndPrint()">&#128438; Cetak</button>
+  <a href="javascript:history.back()" class="btn-back">&#8592; Kembali</a>
+</div>
+
+<div class="label-area" id="labelArea" style="grid-template-columns: repeat({{ kolom }}, auto);">
+</div>
+
+<script>
+var BARCODE_VAL  = '{{ barang.barcode|escapejs }}';
+var NAMA_PRODUK  = '{{ barang.nama|escapejs }}';
+var NAMA_TOKO    = '{{ cabang.nama_toko|escapejs }}';
+var HARGA        = 'Rp {{ barang.harga_ecer|intcomma }}';
+var TIPE         = '{{ barcode_config.tipe_barcode|default:"CODE128"|escapejs }}';
+var SHOW_NAMA_TOKO   = {{ barcode_config.tampilkan_nama_toko|yesno:"true,false" }};
+var SHOW_NAMA_PRODUK = {{ barcode_config.tampilkan_nama_produk|yesno:"true,false" }};
+var SHOW_HARGA       = {{ barcode_config.tampilkan_harga|yesno:"true,false" }};
+
+function makeLabel() {
+  var wrapper = document.createElement('div');
+  wrapper.className = 'label-card';
+
+  if (SHOW_NAMA_TOKO) {
+    var t = document.createElement('div');
+    t.className = 'label-nama-toko';
+    t.textContent = NAMA_TOKO;
+    wrapper.appendChild(t);
+  }
+
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.className = 'label-barcode';
+  var barcodeDiv = document.createElement('div');
+  barcodeDiv.className = 'label-barcode';
+  barcodeDiv.appendChild(svg);
+  wrapper.appendChild(barcodeDiv);
+
+  try {
+    var fmt = TIPE === 'QR' ? 'qrcode' : TIPE;
+    JsBarcode(svg, BARCODE_VAL, {
+      format: fmt, width: 1.2, height: 28,
+      displayValue: true, fontSize: 8, margin: 2,
+    });
+  } catch(e) {
+    svg.innerHTML = '<text x="5" y="20" font-size="8">Error barcode</text>';
+  }
+
+  if (SHOW_NAMA_PRODUK) {
+    var p = document.createElement('div');
+    p.className = 'label-nama-produk';
+    p.textContent = NAMA_PRODUK;
+    wrapper.appendChild(p);
+  }
+  if (SHOW_HARGA) {
+    var h = document.createElement('div');
+    h.className = 'label-harga';
+    h.textContent = HARGA;
+    wrapper.appendChild(h);
+  }
+  return wrapper;
+}
+
+function generateLabels(n) {
+  var area = document.getElementById('labelArea');
+  area.innerHTML = '';
+  for (var i = 0; i < n; i++) {
+    area.appendChild(makeLabel());
+  }
+}
+
+function generateAndPrint() {
+  var n = parseInt(document.getElementById('jumlahInput').value) || 1;
+  generateLabels(n);
+  setTimeout(function() { window.print(); }, 300);
+}
+
+// Initial render
+generateLabels(parseInt(document.getElementById('jumlahInput').value) || {{ jumlah }});
+
+document.getElementById('jumlahInput').addEventListener('input', function() {
+  var n = parseInt(this.value) || 1;
+  generateLabels(Math.min(n, 200));
+});
+</script>
+</body>
+</html>

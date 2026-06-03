@@ -1,0 +1,636 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Konfirmasi Penerimaan {{ pengiriman.nomor_pengiriman }} — {{ cabang.nama_toko }}</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f4f6fb; }
+
+    /* ── Sidebar ── */
+    html, body { height: 100%; overflow: hidden; }
+    #wrapper { height: 100vh; overflow: hidden; }
+    #content-wrapper { height: 100vh; min-width: 0; overflow-y: auto !important; overflow-x: hidden !important; overscroll-behavior: contain; }
+    #content { flex: 1 1 auto; min-height: 0; overflow: visible; }
+
+    .sidebar {
+      width: 16rem !important; min-width: 16rem !important;
+      height: 100vh; min-height: 0 !important;
+      overflow: hidden !important;
+      display: flex !important; flex-direction: column !important;
+      background: linear-gradient(180deg, #1e2c5a 0%, #2c3e6b 100%) !important;
+    }
+
+    .sidebar-header-static {
+      flex-shrink: 0; background: rgba(0,0,0,.12);
+      padding: 18px 14px 12px; border-bottom: 1px solid rgba(255,255,255,.1); text-align: center;
+    }
+    .sidebar-header-static img {
+      display: block; width: 112px; max-width: 100%; height: auto !important;
+      margin: 0 auto; object-fit: contain;
+    }
+
+    .sidebar-scroll-body {
+      flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;
+      padding-bottom: 16px; overscroll-behavior: contain;
+    }
+    .sidebar-scroll-body::-webkit-scrollbar { width: 3px; }
+    .sidebar-scroll-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 2px; }
+
+    .sidebar .sidebar-heading {
+      font-size: 10px; letter-spacing: 1.5px; font-weight: 700;
+      color: rgba(255,255,255,.4); padding: 14px 20px 4px; text-transform: uppercase;
+    }
+    .sidebar .nav-link {
+      color: rgba(255,255,255,.75) !important; font-size: 13px; padding: 9px 18px;
+      border-radius: 6px; margin: 1px 8px; font-weight: 600;
+    }
+    .sidebar .nav-link:hover { color: #fff !important; background: rgba(255,255,255,.1) !important; }
+    .sidebar .nav-link i { width: 18px; text-align: center; margin-right: 6px; }
+    .sidebar .nav-item.active .nav-link { color: #fff !important; background: rgba(255,255,255,.12) !important; }
+    .sidebar hr { border-color: rgba(255,255,255,.12) !important; margin: 6px 16px !important; }
+
+    /* Topbar */
+    .topbar-user-text { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; max-width: 180px; }
+    .topbar-user-name { max-width: 100%; color: #4b5563; font-size: 13px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .topbar-user-store { max-width: 100%; color: #8a92a6; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Page */
+    .cms-page { padding: 0 16px 28px; }
+    .cms-dashboard { max-width: 1200px; margin: 0 auto; }
+
+    /* Breadcrumb */
+    .breadcrumb-custom { font-size: 12px; margin-bottom: 4px; }
+    .breadcrumb-custom a { color: #4e73df; text-decoration: none; font-weight: 600; }
+    .breadcrumb-custom a:hover { text-decoration: underline; }
+    .breadcrumb-custom span { color: #8899bb; }
+
+    /* Header info card */
+    .header-card {
+      background: linear-gradient(135deg, #1e2c5a 0%, #2c3e6b 100%);
+      border-radius: 14px; padding: 24px 28px; margin-bottom: 24px;
+      box-shadow: 0 4px 18px rgba(30,44,90,.18); color: #fff;
+    }
+    .header-card .nomor {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.4rem; font-weight: 900; letter-spacing: 1.5px;
+      background: rgba(255,255,255,.12); display: inline-block;
+      padding: 4px 14px; border-radius: 8px; margin-bottom: 12px;
+    }
+    .header-card .info-row { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 6px; opacity: .85; }
+    .header-card .info-row i { width: 16px; opacity: .7; }
+
+    /* Progress bar */
+    .progress-wrap { background: #eef1f6; border-radius: 50px; height: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 50px; background: linear-gradient(90deg, #4e73df, #0ea5e9); transition: width .4s; }
+    .progress-card {
+      background: #fff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      border: none; padding: 16px 20px; margin-bottom: 20px;
+    }
+
+    /* Section card */
+    .section-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.05); border: none; overflow: hidden; margin-bottom: 24px; }
+    .section-card .card-header { background: #fff; border-bottom: 1px solid #eef1f6; padding: 16px 20px; font-size: 14px; font-weight: 800; color: #1e2c5a; }
+    .section-card .card-header .sub { font-size: 12px; font-weight: 400; color: #8899bb; margin-top: 2px; }
+
+    /* Table */
+    .item-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .item-table thead th {
+      background: #f8fafc; border-bottom: 1.5px solid #eef1f6;
+      padding: 10px 14px; font-size: 11px; font-weight: 700;
+      color: #8899bb; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .item-table tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .1s; }
+    .item-table tbody tr:last-child { border: none; }
+    .item-table tbody tr:hover { background: #f8fafc; }
+    .item-table td { padding: 12px 14px; vertical-align: middle; }
+
+    /* Item status badges */
+    .badge-status { font-size: 11px; font-weight: 700; padding: 3px 11px; border-radius: 50px; display: inline-block; white-space: nowrap; }
+    .status-pending     { background: #fef3c7; color: #92400e; }
+    .status-diterima    { background: #d1fae5; color: #065f46; }
+    .status-dikembalikan { background: #fee2e2; color: #991b1b; }
+    .status-kembali     { background: #f1f5f9; color: #64748b; }
+
+    /* Action buttons */
+    .btn-terima {
+      background: #059669; color: #fff; border: none; border-radius: 7px;
+      padding: 6px 13px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s;
+    }
+    .btn-terima:hover { background: #047857; }
+    .btn-kembalikan {
+      background: #dc2626; color: #fff; border: none; border-radius: 7px;
+      padding: 6px 13px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s;
+    }
+    .btn-kembalikan:hover { background: #b91c1c; }
+
+    /* Modal overrides */
+    .modal-content { border-radius: 14px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,.15); }
+    .modal-header { border-bottom: 1px solid #eef1f6; padding: 18px 22px; }
+    .modal-header .modal-title { font-size: 14px; font-weight: 800; color: #1e2c5a; }
+    .modal-body { padding: 20px 22px; }
+    .modal-footer { border-top: 1px solid #eef1f6; padding: 14px 22px; }
+    .modal-label { font-size: 13px; font-weight: 700; color: #1e2c5a; margin-bottom: 6px; display: block; }
+    .modal-textarea {
+      border: 1.5px solid #d8e3f5; border-radius: 8px;
+      padding: 10px 12px; font-size: 13px; width: 100%; resize: vertical; min-height: 90px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .modal-textarea:focus { outline: none; border-color: #4e73df; box-shadow: 0 0 0 3px rgba(78,115,223,.1); }
+
+    /* Flash */
+    .flash-alert { border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; margin-bottom: 16px; border: none; }
+
+    /* Nomor sm */
+    .nomor-sm {
+      font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: 700;
+      background: #eef3fb; color: #3a5298; padding: 2px 8px; border-radius: 5px;
+    }
+
+    @media (max-width: 767.98px) {
+      html, body, #wrapper, #content-wrapper { height: auto; overflow: visible !important; }
+      .sidebar { min-width: 6.5rem !important; height: auto; min-height: 100vh !important; }
+      .cms-page { padding: 0 6px 24px; }
+    }
+  </style>
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- ══════ SIDEBAR ══════ -->
+  <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <div class="sidebar-header-static">
+      <a href="/cms/" style="text-decoration:none;">
+        <img src="{% static 'images/posmi-logo.png' %}" alt="POSMI"
+             style="height:52px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,.25);">
+      </a>
+      <div style="color:rgba(255,255,255,.45); font-size:11px; margin-top:6px;">&copy;2025 — POSMI</div>
+    </div>
+
+    <div class="sidebar-scroll-body">
+
+      <li class="nav-item mt-2">
+        <a class="nav-link" href="/cms/">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      <hr class="sidebar-divider">
+      <div class="sidebar-heading">Gudang</div>
+
+      <li class="nav-item active">
+        <a class="nav-link" href="/cms/penerimaan/">
+          <i class="fa fa-fw fa-truck"></i>
+          <span>Penerimaan Barang</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/cms/transfer/">
+          <i class="fa fa-fw fa-exchange"></i>
+          <span>Transfer Stok</span>
+        </a>
+      </li>
+
+      <hr class="sidebar-divider">
+
+      <li class="nav-item">
+        <a class="nav-link" href="/logout/">
+          <i class="fas fa-fw fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+
+      <hr class="sidebar-divider">
+      <div class="text-center pb-2">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </div>
+  </ul>
+  <!-- ══════ END SIDEBAR ══════ -->
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- ══════ TOPBAR ══════ -->
+      <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+          <i class="fa fa-bars"></i>
+        </button>
+        <ul class="navbar-nav ml-auto">
+          <div class="topbar-divider d-none d-sm-block"></div>
+          <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+               id="userDropdown" role="button" data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false" style="gap:10px;">
+              <span class="topbar-user-text d-none d-lg-flex">
+                <span class="topbar-user-name">{{ cabang.nama_toko }}</span>
+                <span class="topbar-user-store">{{ cabang.prefix }} &bull; Korporasi</span>
+              </span>
+              <div style="width:38px; height:38px; background:#1e2c5a; border-radius:50%;
+                          display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <span style="color:#fff; font-size:14px; font-weight:900; line-height:1;">
+                  {{ cabang.prefix|slice:":2"|upper }}
+                </span>
+              </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                 aria-labelledby="userDropdown"
+                 style="border:none; border-radius:10px; overflow:hidden; min-width:200px;">
+              <div style="padding:14px 16px; background:#f8fafc; border-bottom:1px solid #eef1f6;">
+                <div style="font-weight:800; font-size:13px; color:#1e2c5a;">{{ cabang.nama_toko }}</div>
+                <div style="font-size:11px; color:#8899bb;">{{ cabang.prefix }}</div>
+              </div>
+              <a href="/cms/" class="dropdown-item" style="font-size:13px; padding:12px 16px;">
+                <i class="fas fa-tachometer-alt mr-2" style="color:#4e73df; width:16px;"></i>Dashboard
+              </a>
+              <div class="dropdown-divider m-0"></div>
+              <a href="/logout/" class="dropdown-item text-danger" style="font-size:13px; padding:12px 16px;">
+                <i class="fas fa-sign-out-alt mr-2" style="width:16px;"></i>Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <!-- ══════ END TOPBAR ══════ -->
+
+      <!-- ══════ PAGE CONTENT ══════ -->
+      <div class="container-fluid cms-page">
+        <div class="cms-dashboard">
+
+          <!-- Breadcrumb -->
+          <div class="breadcrumb-custom mb-3 d-flex align-items-center" style="gap:6px;">
+            <a href="/cms/penerimaan/">
+              <i class="fa fa-truck mr-1"></i>Penerimaan
+            </a>
+            <span><i class="fa fa-chevron-right" style="font-size:10px;"></i></span>
+            <span style="color:#1e2c5a; font-weight:700;">{{ pengiriman.nomor_pengiriman }}</span>
+          </div>
+
+          <!-- Flash messages -->
+          {% if messages %}
+          <div class="mb-3">
+            {% for message in messages %}
+            <div class="flash-alert d-flex align-items-center justify-content-between"
+                 style="background:{% if 'berhasil' in message|lower or message.tags == 'success' %}#d1fae5;color:#065f46;{% elif message.tags == 'error' or message.tags == 'danger' %}#fee2e2;color:#991b1b;{% else %}#dbeafe;color:#1e40af;{% endif %}">
+              <span><i class="fas fa-info-circle mr-2"></i>{{ message }}</span>
+              <button onclick="this.parentElement.style.display='none'"
+                      style="background:none;border:none;cursor:pointer;opacity:.6;font-size:16px;line-height:1;padding:0 4px;">&times;</button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Header card -->
+          <div class="header-card">
+            <div class="nomor">{{ pengiriman.nomor_pengiriman }}</div>
+            <div class="row g-0">
+              <div class="col-12 col-md-6">
+                <div class="info-row">
+                  <i class="fa fa-route"></i>
+                  <span>Gudang Utama &rarr; {{ cabang.nama_toko }}</span>
+                </div>
+                <div class="info-row">
+                  <i class="fa fa-calendar"></i>
+                  <span>{{ pengiriman.tanggal|date:"d F Y, H:i" }}</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="info-row">
+                  <i class="fa fa-tag"></i>
+                  <span>Status:&nbsp;
+                    {% if pengiriman.status == 'dikirim' %}
+                      <span style="background:rgba(219,234,254,.3); color:#93c5fd; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px;">
+                        <i class="fa fa-paper-plane mr-1"></i>Dikirim
+                      </span>
+                    {% elif pengiriman.status == 'selesai' %}
+                      <span style="background:rgba(209,250,229,.3); color:#6ee7b7; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px;">
+                        <i class="fa fa-check-circle mr-1"></i>Selesai
+                      </span>
+                    {% elif pengiriman.status == 'sebagian' %}
+                      <span style="background:rgba(254,243,199,.3); color:#fde68a; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px;">
+                        <i class="fa fa-adjust mr-1"></i>Sebagian
+                      </span>
+                    {% else %}
+                      <span style="background:rgba(241,245,249,.3); color:#cbd5e1; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px;">
+                        Draft
+                      </span>
+                    {% endif %}
+                  </span>
+                </div>
+                {% if pengiriman.catatan %}
+                <div class="info-row">
+                  <i class="fa fa-comment"></i>
+                  <span>{{ pengiriman.catatan }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress indicator -->
+          {% with total_items=items|length %}
+          {% with confirmed=0 %}
+          <div class="progress-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div style="font-size:13px; font-weight:700; color:#1e2c5a;">
+                <i class="fa fa-tasks mr-2"></i>Progress Konfirmasi
+              </div>
+              <div style="font-size:12px; color:#8899bb;" id="progressLabel">
+                Memuat...
+              </div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+            </div>
+          </div>
+          {% endwith %}
+          {% endwith %}
+
+          <!-- Items table card -->
+          <div class="section-card">
+            <div class="card-header">
+              <div><i class="fa fa-boxes mr-2"></i>Item Pengiriman</div>
+              <div class="sub">{{ items|length }} item — klik Terima / Kembalikan untuk tiap item</div>
+            </div>
+
+            {% if items %}
+            <div class="table-responsive">
+              <table class="item-table" id="itemTable">
+                <thead>
+                  <tr>
+                    <th style="width:36px;">#</th>
+                    <th>Nama Barang</th>
+                    <th class="text-center">Jml Dikirim</th>
+                    <th class="text-center">Status</th>
+                    <th>Catatan Toko</th>
+                    <th class="text-center" style="min-width:200px;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in items %}
+                  <tr data-status="{{ item.status }}">
+                    <td style="color:#b0b7c3; font-size:12px; font-weight:600;">{{ forloop.counter }}</td>
+                    <td>
+                      <div style="font-weight:700; color:#1e2c5a; font-size:13px;">{{ item.barang.nama }}</div>
+                      {% if item.barang.barcode %}
+                      <div style="font-size:11px; color:#8899bb; font-family:monospace; margin-top:2px;">{{ item.barang.barcode }}</div>
+                      {% endif %}
+                    </td>
+                    <td class="text-center" style="font-weight:800; font-size:14px; color:#1e2c5a;">
+                      {{ item.jumlah_dikirim }}
+                      <div style="font-size:11px; color:#8899bb; font-weight:400;">{{ item.barang.satuan }}</div>
+                    </td>
+                    <td class="text-center">
+                      {% if item.status == 'pending' %}
+                        <span class="badge-status status-pending">
+                          <i class="fa fa-clock mr-1"></i>Menunggu
+                        </span>
+                      {% elif item.status == 'diterima' %}
+                        <span class="badge-status status-diterima">
+                          <i class="fa fa-check mr-1"></i>Diterima
+                        </span>
+                      {% elif item.status == 'dikembalikan' %}
+                        <span class="badge-status status-dikembalikan">
+                          <i class="fa fa-clock mr-1"></i>Menunggu Konfirmasi Gudang
+                        </span>
+                      {% elif item.status == 'kembali_gudang' %}
+                        <span class="badge-status status-kembali">
+                          <i class="fa fa-undo mr-1"></i>Dikembalikan ke Gudang
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td style="font-size:12px; color:#64748b;">
+                      {{ item.catatan_toko|default:"—" }}
+                    </td>
+                    <td class="text-center">
+                      {% if item.status == 'pending' %}
+                      <div class="d-flex align-items-center justify-content-center" style="gap:6px;">
+                        <!-- Terima button -->
+                        <button type="button"
+                                class="btn-terima"
+                                onclick="openModal('terimaModal{{ item.id }}')">
+                          <i class="fa fa-check mr-1"></i>Terima
+                        </button>
+                        <!-- Kembalikan button -->
+                        <button type="button"
+                                class="btn-kembalikan"
+                                onclick="openModal('kembalikanModal{{ item.id }}')">
+                          <i class="fa fa-times mr-1"></i>Kembalikan
+                        </button>
+                      </div>
+                      {% elif item.status == 'diterima' %}
+                        <span class="badge-status status-diterima">
+                          <i class="fa fa-check-circle mr-1"></i>Diterima
+                        </span>
+                      {% elif item.status == 'dikembalikan' %}
+                        <span class="badge-status status-dikembalikan" style="font-size:10px;">
+                          <i class="fa fa-hourglass-half mr-1"></i>Menunggu Konfirmasi Gudang
+                        </span>
+                      {% elif item.status == 'kembali_gudang' %}
+                        <span class="badge-status status-kembali">
+                          <i class="fa fa-undo mr-1"></i>Dikembalikan ke Gudang
+                        </span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            {% else %}
+            <div class="text-center py-5" style="color:#8899bb;">
+              <i class="fa fa-box-open" style="font-size:40px; opacity:.15; display:block; margin-bottom:14px;"></i>
+              Tidak ada item dalam pengiriman ini.
+            </div>
+            {% endif %}
+
+          </div><!-- /section-card -->
+
+          <!-- Back button -->
+          <div class="mb-4">
+            <a href="/cms/penerimaan/"
+               style="color:#4e73df; font-size:13px; font-weight:600; text-decoration:none;">
+              <i class="fa fa-arrow-left mr-2"></i>Kembali ke Daftar Penerimaan
+            </a>
+          </div>
+
+        </div><!-- /cms-dashboard -->
+      </div><!-- /cms-page -->
+      <!-- ══════ END PAGE CONTENT ══════ -->
+
+    </div><!-- /content -->
+
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px; color:#b0b7c3;">
+        &copy; POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+  </div><!-- /content-wrapper -->
+</div><!-- /wrapper -->
+
+<!-- ══════ MODALS ══════ -->
+{% for item in items %}
+{% if item.status == 'pending' %}
+
+<!-- Modal: Terima -->
+<div class="modal fade" id="terimaModal{{ item.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fa fa-check-circle mr-2" style="color:#059669;"></i>
+          Konfirmasi Penerimaan
+        </h5>
+        <button type="button" class="close" onclick="closeModal('terimaModal{{ item.id }}')"
+                style="background:none;border:none;font-size:20px;line-height:1;opacity:.5;cursor:pointer;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="/cms/penerimaan/{{ pengiriman.id }}/">
+        {% csrf_token %}
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <input type="hidden" name="aksi" value="terima">
+        <div class="modal-body">
+          <div style="background:#f0fdf4; border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:13px; color:#065f46; font-weight:600;">
+            <i class="fa fa-box mr-2"></i>
+            <strong>{{ item.barang.nama }}</strong> — {{ item.jumlah_dikirim }} {{ item.barang.satuan }}
+          </div>
+          <label class="modal-label" for="catatanTerima{{ item.id }}">
+            Catatan Penerimaan <span style="font-weight:400; color:#8899bb;">(opsional)</span>
+          </label>
+          <textarea id="catatanTerima{{ item.id }}" name="catatan_toko"
+                    class="modal-textarea"
+                    placeholder="Contoh: Barang diterima dalam kondisi baik..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('terimaModal{{ item.id }}')"
+                  class="btn btn-secondary btn-sm" style="border-radius:7px; font-size:12px;">
+            Batal
+          </button>
+          <button type="submit"
+                  class="btn btn-success btn-sm fw-bold"
+                  style="border-radius:7px; font-size:12px; padding:7px 18px;">
+            <i class="fa fa-check mr-1"></i>Konfirmasi Diterima
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Kembalikan -->
+<div class="modal fade" id="kembalikanModal{{ item.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fa fa-undo mr-2" style="color:#dc2626;"></i>
+          Kembalikan Barang
+        </h5>
+        <button type="button" class="close" onclick="closeModal('kembalikanModal{{ item.id }}')"
+                style="background:none;border:none;font-size:20px;line-height:1;opacity:.5;cursor:pointer;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="/cms/penerimaan/{{ pengiriman.id }}/">
+        {% csrf_token %}
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <input type="hidden" name="aksi" value="kembalikan">
+        <div class="modal-body">
+          <div style="background:#fff3f3; border-radius:10px; padding:12px 14px; margin-bottom:14px; font-size:13px; color:#991b1b; font-weight:600;">
+            <i class="fa fa-box mr-2"></i>
+            <strong>{{ item.barang.nama }}</strong> — {{ item.jumlah_dikirim }} {{ item.barang.satuan }}
+          </div>
+          <label class="modal-label" for="catatanKembali{{ item.id }}">
+            Alasan Pengembalian <span style="font-weight:400; color:#8899bb;">(opsional)</span>
+          </label>
+          <textarea id="catatanKembali{{ item.id }}" name="catatan_toko"
+                    class="modal-textarea"
+                    placeholder="Contoh: Barang rusak, salah kirim, kelebihan stok..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('kembalikanModal{{ item.id }}')"
+                  class="btn btn-secondary btn-sm" style="border-radius:7px; font-size:12px;">
+            Batal
+          </button>
+          <button type="submit"
+                  class="btn btn-danger btn-sm fw-bold"
+                  style="border-radius:7px; font-size:12px; padding:7px 18px;">
+            <i class="fa fa-undo mr-1"></i>Kembalikan ke Gudang
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+{% endfor %}
+<!-- ══════ END MODALS ══════ -->
+
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script>
+// Modal helpers (Bootstrap 4/5 compatible)
+function openModal(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  // Try Bootstrap 5 first
+  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    var m = bootstrap.Modal.getOrCreateInstance(el);
+    m.show();
+  } else if (typeof $ !== 'undefined' && $.fn.modal) {
+    $('#' + id).modal('show');
+  }
+}
+
+function closeModal(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    var m = bootstrap.Modal.getInstance(el);
+    if (m) m.hide();
+  } else if (typeof $ !== 'undefined' && $.fn.modal) {
+    $('#' + id).modal('hide');
+  }
+}
+
+// Progress bar calculation
+(function() {
+  var rows = document.querySelectorAll('#itemTable tbody tr[data-status]');
+  var total = rows.length;
+  var confirmed = 0;
+  rows.forEach(function(r) {
+    var s = r.getAttribute('data-status');
+    if (s === 'diterima' || s === 'dikembalikan' || s === 'kembali_gudang') confirmed++;
+  });
+  var pct = total > 0 ? Math.round(confirmed / total * 100) : 0;
+  var fill = document.getElementById('progressFill');
+  var label = document.getElementById('progressLabel');
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = confirmed + ' dari ' + total + ' item dikonfirmasi (' + pct + '%)';
+})();
+</script>
+</body>
+</html>

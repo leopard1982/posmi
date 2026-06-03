@@ -1,0 +1,288 @@
+{% load humanize %}
+
+<style>
+.aktifkan-page { color:#4b5563; max-width:680px; margin:0 auto; }
+.aktifkan-back {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:13px; font-weight:700; color:#6b7280; text-decoration:none;
+  margin-bottom:20px;
+  cursor:pointer; background:none; border:none; padding:0;
+}
+.aktifkan-back:hover { color:#4e73df; }
+
+.aktifkan-hero {
+  background:#fff;
+  border:1px solid #e4e8f0;
+  border-radius:14px;
+  box-shadow:0 2px 14px rgba(0,0,0,.06);
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.aktifkan-hero-top {
+  display:flex; align-items:center; gap:18px;
+  padding:24px 26px 20px;
+  border-bottom:1px solid #f0f4f8;
+}
+.aktifkan-hero-icon {
+  width:60px; height:60px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:14px; font-size:26px;
+}
+.aktifkan-hero-name  { font-size:20px; font-weight:900; color:#1e2c5a; margin-bottom:4px; }
+.aktifkan-hero-price { font-size:14px; color:#8a92a6; font-weight:600; }
+.aktifkan-hero-desc  { padding:18px 26px; font-size:13px; color:#4b5563; line-height:1.7; }
+
+.aktifkan-info-card {
+  background:#f8fafc; border:1px solid #e4e8f0; border-radius:12px;
+  padding:18px 22px; margin-bottom:18px; font-size:13px;
+}
+.aktifkan-info-row {
+  display:flex; justify-content:space-between;
+  padding:5px 0; border-bottom:1px solid #edf1f6; color:#4b5563;
+}
+.aktifkan-info-row:last-child { border-bottom:none; }
+.aktifkan-info-label { color:#8a92a6; font-weight:600; }
+.aktifkan-info-value { font-weight:700; color:#1e2c5a; text-align:right; }
+
+.aktifkan-price-box {
+  background:#eef3ff; border:1px solid #c7d7f5; border-radius:12px;
+  padding:20px 24px; margin-bottom:20px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px;
+}
+.aktifkan-price-main   { font-size:28px; font-weight:900; color:#1e2c5a; }
+.aktifkan-price-period { font-size:13px; color:#8a92a6; margin-top:2px; }
+
+.aktifkan-notice {
+  background:#fef9ec; border:1px solid #f6d860; border-radius:10px;
+  padding:14px 18px; font-size:13px; color:#7a5c0a; margin-bottom:20px;
+  display:flex; gap:10px; align-items:flex-start;
+}
+.sudah-pending {
+  background:#fef3c7; border:1px solid #fde68a; border-radius:10px;
+  padding:16px 20px; font-size:13px; color:#92400e; margin-bottom:16px;
+}
+
+/* Tombol sejajar */
+.btn-row {
+  display:flex; gap:12px; margin-top:4px;
+}
+.btn-batal {
+  flex:1; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  padding:12px 16px; background:#fff; color:#5a5c69;
+  border:1.5px solid #d1d5db; border-radius:10px;
+  font-size:13px; font-weight:700; cursor:pointer;
+  transition:background .15s; text-decoration:none;
+}
+.btn-batal:hover { background:#f3f4f6; color:#374151; border-color:#adb5bd; }
+.btn-aktifkan {
+  flex:2; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 20px; background:#4e73df; color:#fff;
+  border:none; border-radius:10px;
+  font-size:14px; font-weight:800; cursor:pointer;
+  transition:background .15s;
+}
+.btn-aktifkan:hover { background:#3a5fc8; }
+
+/* Modal konfirmasi */
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.45); z-index:9000;
+  align-items:center; justify-content:center;
+}
+.modal-overlay.active { display:flex; }
+.modal-box {
+  background:#fff; border-radius:16px; padding:32px 28px;
+  max-width:400px; width:90%; box-shadow:0 8px 40px rgba(0,0,0,.18);
+  text-align:center;
+}
+.modal-icon {
+  width:60px; height:60px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:26px; margin-bottom:16px;
+}
+.modal-title { font-size:17px; font-weight:900; color:#1e2c5a; margin-bottom:8px; }
+.modal-desc  { font-size:13px; color:#6b7280; line-height:1.65; margin-bottom:24px; }
+.modal-btn-row { display:flex; gap:10px; }
+.modal-btn-cancel {
+  flex:1; padding:10px; background:#f3f4f6; color:#5a5c69;
+  border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
+}
+.modal-btn-cancel:hover { background:#e5e7eb; }
+.modal-btn-confirm {
+  flex:2; padding:10px; background:#4e73df; color:#fff;
+  border:none; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;
+}
+.modal-btn-confirm:hover { background:#3a5fc8; }
+
+/* Modal sukses */
+.modal-success-icon { background:#d1fae5; color:#059669; }
+</style>
+
+<div class="aktifkan-page">
+
+  <button class="aktifkan-back" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+    <i class="fa fa-arrow-left"></i> Kembali ke Add-ons
+  </button>
+
+  <!-- Hero card -->
+  <div class="aktifkan-hero">
+    <div class="aktifkan-hero-top">
+      <div class="aktifkan-hero-icon" style="background:{{ addon.color }}18;">
+        <i class="fa {{ addon.icon }}" style="color:{{ addon.color }};"></i>
+      </div>
+      <div>
+        <div class="aktifkan-hero-name">{{ addon.nama }}</div>
+        <div class="aktifkan-hero-price">Rp {{ addon.harga|intcomma }} / bulan</div>
+      </div>
+    </div>
+    <div class="aktifkan-hero-desc">{{ addon.deskripsi }}</div>
+  </div>
+
+  <!-- Info toko -->
+  <div class="aktifkan-info-card">
+    <div style="font-size:11px;font-weight:800;color:#8a92a6;letter-spacing:.7px;text-transform:uppercase;margin-bottom:10px;">
+      Informasi Toko
+    </div>
+    <div class="aktifkan-info-row">
+      <span class="aktifkan-info-label">Nama Toko</span>
+      <span class="aktifkan-info-value">{{ cabang.nama_toko }}</span>
+    </div>
+    <div class="aktifkan-info-row">
+      <span class="aktifkan-info-label">Kode Toko</span>
+      <span class="aktifkan-info-value">{{ cabang.prefix }}</span>
+    </div>
+    <div class="aktifkan-info-row">
+      <span class="aktifkan-info-label">Paket Aktif</span>
+      <span class="aktifkan-info-value">
+        {% if cabang.paket %}{{ cabang.paket.nama }}{% elif cabang.owner_id %}Korporasi{% else %}Gratis{% endif %}
+      </span>
+    </div>
+    <div class="aktifkan-info-row">
+      <span class="aktifkan-info-label">Lisensi Berlaku s.d.</span>
+      <span class="aktifkan-info-value">
+        {% if cabang.lisensi_expired %}{{ cabang.lisensi_expired|date:"d M Y" }}{% else %}-{% endif %}
+      </span>
+    </div>
+  </div>
+
+  <!-- Harga -->
+  <div class="aktifkan-price-box">
+    <div>
+      <div class="aktifkan-price-main">Rp {{ addon.harga|intcomma }}</div>
+      <div class="aktifkan-price-period">per bulan &bull; berlaku sampai akhir masa langganan</div>
+    </div>
+    <div style="background:{{ addon.color }}18;color:{{ addon.color }};font-size:12px;font-weight:800;padding:6px 14px;border-radius:50px;">
+      <i class="fa {{ addon.icon }} me-1"></i>{{ addon.nama }}
+    </div>
+  </div>
+
+  <!-- Pending notice -->
+  {% if existing and existing.status == 'nonaktif' %}
+  <div class="sudah-pending">
+    <i class="fa fa-clock-o me-2"></i>
+    <strong>Permintaan sedang diproses.</strong> Tim POSMI akan mengaktifkan add-on ini setelah pembayaran dikonfirmasi.
+  </div>
+  {% endif %}
+
+  <!-- Catatan -->
+  <div class="aktifkan-notice">
+    <i class="fa fa-info-circle" style="margin-top:1px;flex-shrink:0;"></i>
+    <div>
+      Setelah mengklik <strong>"Ajukan Permintaan"</strong>, tim POSMI akan menghubungi Anda melalui WhatsApp atau email
+      untuk konfirmasi pembayaran. Add-on akan diaktifkan segera setelah pembayaran diterima.
+    </div>
+  </div>
+
+  {% if not cabang.paket and not cabang.owner_id %}
+  <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:16px 20px;font-size:13px;color:#991b1b;text-align:center;">
+    <i class="fa fa-exclamation-circle me-2"></i>
+    <strong>Paket Gratis</strong> tidak dapat menggunakan add-on berbayar. Upgrade ke paket Bisnis terlebih dahulu.
+  </div>
+  {% else %}
+  <!-- Tombol sejajar: Batal kiri, Ajukan kanan -->
+  <div class="btn-row">
+    <button type="button" class="btn-batal" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+      <i class="fa fa-times"></i> Batal
+    </button>
+    <button type="button" class="btn-aktifkan" onclick="document.getElementById('modalKonfirmasi').classList.add('active')">
+      <i class="fa fa-send"></i> Ajukan Permintaan Aktivasi
+    </button>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- Modal: Konfirmasi -->
+<div class="modal-overlay" id="modalKonfirmasi">
+  <div class="modal-box">
+    <div class="modal-icon" style="background:#eef3ff;color:#4e73df;">
+      <i class="fa fa-puzzle-piece"></i>
+    </div>
+    <div class="modal-title">Konfirmasi Aktivasi</div>
+    <div class="modal-desc">
+      Anda akan mengajukan permintaan aktivasi <strong>{{ addon.nama }}</strong>
+      untuk toko <strong>{{ cabang.nama_toko }}</strong>.
+      <br><br>
+      Tim POSMI akan menghubungi Anda untuk konfirmasi pembayaran.
+    </div>
+    <div class="modal-btn-row">
+      <button class="modal-btn-cancel" onclick="document.getElementById('modalKonfirmasi').classList.remove('active')">
+        Tidak Jadi
+      </button>
+      <button class="modal-btn-confirm" id="btnKonfirmasi" onclick="submitAjukan()">
+        Ya, Ajukan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Sukses -->
+<div class="modal-overlay" id="modalSukses">
+  <div class="modal-box">
+    <div class="modal-icon modal-success-icon">
+      <i class="fa fa-check"></i>
+    </div>
+    <div class="modal-title">Permintaan Terkirim!</div>
+    <div class="modal-desc">
+      Permintaan aktivasi <strong>{{ addon.nama }}</strong> berhasil dikirim.
+      Tim POSMI akan menghubungi Anda setelah pembayaran dikonfirmasi.
+    </div>
+    <div class="modal-btn-row">
+      <button class="modal-btn-confirm" style="flex:1;" onclick="kembaliKeAddon()">
+        Oke, Kembali ke Add-ons
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function submitAjukan() {
+  const btn = document.getElementById('btnKonfirmasi');
+  btn.disabled = true;
+  btn.textContent = 'Mengirim...';
+
+  const csrfToken = document.cookie.match(/csrftoken=([^;]+)/);
+  fetch("{% url 'cms_addon_aktifkan' addon_type %}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': csrfToken ? csrfToken[1] : '',
+    },
+    body: 'csrfmiddlewaretoken=' + (csrfToken ? csrfToken[1] : ''),
+  })
+  .then(function() {
+    document.getElementById('modalKonfirmasi').classList.remove('active');
+    document.getElementById('modalSukses').classList.add('active');
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Ya, Ajukan';
+  });
+}
+
+function kembaliKeAddon() {
+  document.getElementById('modalSukses').classList.remove('active');
+  htmx.ajax('GET', "{% url 'cms_addon_status' %}", {target: '#mainpage'});
+}
+</script>

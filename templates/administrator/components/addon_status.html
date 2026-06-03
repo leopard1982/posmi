@@ -1,0 +1,134 @@
+{% load humanize %}
+
+<style>
+.addon-page { color:#4b5563; }
+.addon-page-title { font-size:26px; font-weight:900; color:#2f3446; margin:0 0 4px; }
+.addon-page-sub   { font-size:13px; color:#8a92a6; font-weight:600; }
+
+.addon-item {
+  background:#fff;
+  border:1px solid #e4e8f0;
+  border-radius:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.05);
+  overflow:hidden;
+  margin-bottom:16px;
+  display:flex;
+  align-items:stretch;
+  gap:0;
+}
+.addon-icon-col {
+  width:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+}
+.addon-body { padding:18px 20px; flex:1; }
+.addon-name { font-size:15px; font-weight:800; color:#2f3446; margin-bottom:3px; }
+.addon-harga { font-size:12px; color:#8a92a6; }
+
+.badge-aktif   { background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:4px 12px; border-radius:50px; display:inline-block; }
+.badge-nonaktif{ background:#f3f4f6; color:#6b7280; font-size:11px; font-weight:700; padding:4px 12px; border-radius:50px; display:inline-block; }
+.badge-expired { background:#fee2e2; color:#991b1b; font-size:11px; font-weight:700; padding:4px 12px; border-radius:50px; display:inline-block; }
+.badge-belum   { background:#fef3c7; color:#92400e; font-size:11px; font-weight:700; padding:4px 12px; border-radius:50px; display:inline-block; }
+
+.via-tag { font-size:11px; color:#8a92a6; margin-top:5px; }
+</style>
+
+<div class="addon-page">
+
+  <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="addon-page-title"><i class="fa fa-puzzle-piece me-2" style="font-size:22px;color:#8a92a6;"></i>Add-ons</h2>
+      <div class="addon-page-sub">Status fitur tambahan untuk {{ cabang.nama_toko }}</div>
+    </div>
+  </div>
+
+  <!-- Info tipe paket -->
+  {% if not cabang.paket and not cabang.owner_id %}
+  <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:13px 16px;font-size:13px;color:#856404;margin-bottom:20px;">
+    <i class="fa fa-exclamation-triangle me-2"></i>
+    <strong>Paket Gratis</strong> tidak dapat menggunakan add-on berbayar.
+    <a href="/#harga" target="_blank" style="color:#856404;text-decoration:underline;font-weight:700;">Upgrade ke Bisnis</a> untuk mengakses fitur ini.
+  </div>
+  {% endif %}
+
+  <!-- Daftar add-on -->
+  {% for a in addon_display %}
+  <div class="addon-item">
+    <div class="addon-icon-col" style="background:{{ a.color }}15;">
+      <i class="fa {{ a.icon }}" style="color:{{ a.color }};"></i>
+    </div>
+    <div class="addon-body">
+      <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+          <div class="addon-name">{{ a.nama }}</div>
+          <div class="addon-harga">Rp {{ a.harga|intcomma }}/bulan</div>
+          {% if a.addon %}
+            <div class="via-tag">
+              {% if a.via == 'korporasi' %}
+                <i class="fa fa-building me-1"></i>Diaktifkan via akun Korporasi
+              {% else %}
+                <i class="fa fa-store me-1"></i>Diaktifkan untuk toko ini
+              {% endif %}
+              {% if a.addon.expired_at %}
+                &bull; Berlaku s.d. {{ a.addon.expired_at|date:"d M Y" }}
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          {% if not a.addon %}
+            <span class="badge-belum">Belum Diaktifkan</span>
+            {% if cabang.paket or cabang.owner_id %}
+            <a href="#" hx-get="{% url 'cms_addon_aktifkan' a.type %}" hx-target="#mainpage"
+               style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#4e73df;color:#fff;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">
+              <i class="fa fa-plus-circle"></i>Aktifkan
+            </a>
+            {% endif %}
+          {% elif a.aktif %}
+            <span class="badge-aktif"><i class="fa fa-check me-1"></i>Aktif</span>
+            {% if a.type == 'barcode' %}
+            <a href="#" hx-get="{% url 'cms_cetak_barcode_page' %}" hx-target="#mainpage"
+               style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#fef3c7;color:#d97706;border:1.5px solid #fde68a;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">
+              <i class="fa fa-barcode"></i>Cetak Barcode
+            </a>
+            {% endif %}
+            {% if a.type == 'akunting' %}
+            <a href="#" hx-get="{% url 'cms_laporan_akunting' %}" hx-target="#mainpage"
+               style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#d1fae5;color:#065f46;border:1.5px solid #6ee7b7;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">
+              <i class="fa fa-bar-chart"></i>Buat Laporan
+            </a>
+            {% else %}
+            <a href="#" hx-get="{% url 'cms_addon_settings' a.type %}" hx-target="#mainpage"
+               style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#f0f4ff;color:#4e73df;border:1.5px solid #c7d7f5;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">
+              <i class="fa fa-cog"></i>Pengaturan
+            </a>
+            {% endif %}
+          {% elif a.addon.status == 'expired' %}
+            <span class="badge-expired"><i class="fa fa-clock-o me-1"></i>Expired</span>
+            <a href="#" hx-get="{% url 'cms_addon_aktifkan' a.type %}" hx-target="#mainpage"
+               style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:#4e73df;color:#fff;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">
+              <i class="fa fa-refresh"></i>Perpanjang
+            </a>
+          {% else %}
+            <span class="badge-nonaktif">Tidak Aktif</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Info -->
+  {% if not cabang.paket and not cabang.owner_id %}
+  {% else %}
+  <div style="background:#f8fafc;border:1px solid #e4e8f0;border-radius:10px;padding:16px 20px;font-size:13px;color:#6b7280;margin-top:8px;">
+    <i class="fa fa-info-circle me-2"></i>
+    Klik tombol <strong>"Aktifkan"</strong> pada add-on yang ingin digunakan.
+    Add-on aktif berlaku sampai akhir masa langganan dan dapat diperbarui saat perpanjangan.
+  </div>
+  {% endif %}
+
+</div>

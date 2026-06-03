@@ -1,0 +1,96 @@
+{% extends 'management/base.html' %}
+{% load humanize %}
+{% block title %}Riwayat Pembelian{% endblock %}
+{% block menu_pembelian %}active{% endblock %}
+
+{% block contents %}
+<div class="page-header d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h2 class="fw-bold mb-0">Riwayat Pembelian</h2>
+    <p class="text-muted mb-0">Semua transaksi yang dikonfirmasi Midtrans</p>
+  </div>
+  <div class="badge bg-success fs-6 px-3 py-2">
+    Total: Rp {{ total_pendapatan|intcomma }}
+  </div>
+</div>
+
+<!-- Filter -->
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <input type="text" name="q" class="form-control form-control-sm" placeholder="Cari toko / order ID..." value="{{ q_filter }}">
+  </div>
+  <div class="col-auto">
+    <select name="tipe" class="form-select form-select-sm">
+      <option value="">Semua tipe</option>
+      {% for val, label in tipe_choices %}
+      <option value="{{ val }}" {% if tipe_filter == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-sm btn-primary">Filter</button>
+    <a href="{% url 'management_pembelian' %}" class="btn btn-sm btn-secondary">Reset</a>
+  </div>
+</form>
+
+<div class="card shadow">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Order ID</th>
+            <th>Pelanggan</th>
+            <th>Tipe</th>
+            <th>Keterangan</th>
+            <th class="text-end">Harga</th>
+            <th>Tanggal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in page_obj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><code style="font-size:11px;">{{ t.order_id }}</code></td>
+            <td>
+              {% if t.cabang %}<span class="fw-bold">{{ t.cabang.nama_toko }}</span><br><small class="text-muted">{{ t.cabang.prefix }} — Individual</small>
+              {% elif t.owner %}<span class="fw-bold">{{ t.owner.nama }}</span><br><small class="text-muted">Korporasi</small>
+              {% else %}<span class="text-muted">—</span>{% endif %}
+            </td>
+            <td>
+              {% if t.tipe == 'registrasi' %}<span class="badge bg-primary">Registrasi</span>
+              {% elif t.tipe == 'upgrade' %}<span class="badge bg-info text-dark">Upgrade</span>
+              {% elif t.tipe == 'kuota' %}<span class="badge bg-warning text-dark">Kuota</span>
+              {% elif t.tipe == 'addon' %}<span class="badge bg-success">Add-on</span>
+              {% elif t.tipe == 'owner_upgrade' %}<span class="badge bg-purple" style="background:#7c3aed;">Korporasi</span>
+              {% else %}<span class="badge bg-secondary">{{ t.tipe }}</span>{% endif %}
+            </td>
+            <td style="font-size:12px;">{{ t.keterangan }}</td>
+            <td class="text-end fw-bold text-success">Rp {{ t.harga|intcomma }}</td>
+            <td style="font-size:12px;">{{ t.created_at|date:"d/m/Y H:i" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center py-5 text-muted">Belum ada data pembelian.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav class="mt-3">
+  <ul class="pagination pagination-sm justify-content-center">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&tipe={{ tipe_filter }}&q={{ q_filter }}">‹</a></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&tipe={{ tipe_filter }}&q={{ q_filter }}">›</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

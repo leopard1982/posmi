@@ -1,0 +1,149 @@
+{% extends 'management/base.html' %}
+{% load humanize %}
+{% block title %}Promo & Voucher{% endblock %}
+{% block menu_promo %}active{% endblock %}
+
+{% block contents %}
+<div class="page-header d-flex justify-content-between align-items-start">
+  <div>
+    <h2 class="fw-bold">Promo &amp; Voucher</h2>
+    <p class="text-muted">Kelola kode promo dan voucher diskon</p>
+  </div>
+  <button class="btn btn-success px-4" data-bs-toggle="modal" data-bs-target="#modalTambah">
+    <i class="fas fa-plus me-1"></i> Tambah Promo
+  </button>
+</div>
+
+<div class="card shadow">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th><th>Nama</th><th>Kode</th>
+            <th class="text-center">Diskon (Rp)</th>
+            <th class="text-center">Kuota</th>
+            <th class="text-center">Terpakai</th>
+            <th>Berlaku s/d</th>
+            <th class="text-center">Tipe</th>
+            <th class="text-center">Status</th>
+            <th class="text-center" style="min-width:200px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in promos %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><strong>{{ p.nama }}</strong></td>
+            <td><span class="badge bg-dark">{{ p.kode }}</span></td>
+            <td class="text-center fw-bold text-danger">Rp {{ p.disc|intcomma }}</td>
+            <td class="text-center">{{ p.kuota|intcomma }}</td>
+            <td class="text-center">
+              <span class="badge {% if p.terpakai >= p.kuota and p.kuota > 0 %}bg-danger{% elif p.terpakai > 0 %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                {{ p.terpakai }}
+              </span>
+            </td>
+            <td>{% if p.end_period %}{{ p.end_period|date:"d/m/Y" }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
+            <td class="text-center" style="font-size:12px">
+              {% if p.is_registrasi %}<span class="badge bg-primary me-1">Reg</span>{% endif %}
+              {% if p.is_perpanjangan %}<span class="badge bg-info me-1">Perp</span>{% endif %}
+              {% if p.is_upgrade_lisensi %}<span class="badge bg-success me-1">Upg</span>{% endif %}
+              {% if p.is_tambah_kuota %}<span class="badge bg-orange" style="background:#fd7e14">+Kuota</span>{% endif %}
+            </td>
+            <td class="text-center">
+              {% if p.is_active %}<span class="badge bg-success">Aktif</span>
+              {% else %}<span class="badge bg-danger">Nonaktif</span>{% endif %}
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-warning me-1"
+                onclick="isiEdit('{{ p.pk }}','{{ p.nama }}','{{ p.kode }}',{{ p.disc }},{{ p.kuota }},'{% if p.end_period %}{{ p.end_period|date:"Y-m-d" }}{% endif %}',{{ p.is_registrasi|yesno:'true,false' }},{{ p.is_perpanjangan|yesno:'true,false' }},{{ p.is_upgrade_lisensi|yesno:'true,false' }},{{ p.is_tambah_kuota|yesno:'true,false' }})"
+                data-bs-toggle="modal" data-bs-target="#modalEdit">Edit</button>
+              <form method="post" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="aksi" value="toggle">
+                <input type="hidden" name="promo_id" value="{{ p.pk }}">
+                <button type="submit" class="btn btn-sm {% if p.is_active %}btn-secondary{% else %}btn-success{% endif %} me-1">
+                  {% if p.is_active %}Off{% else %}On{% endif %}
+                </button>
+              </form>
+              <button class="btn btn-sm btn-danger"
+                onclick="isiHapus('{{ p.pk }}','{{ p.nama }}')"
+                data-bs-toggle="modal" data-bs-target="#modalHapus">Hapus</button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="10" class="text-center py-5 text-muted">Belum ada promo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah -->
+<div class="modal fade" id="modalTambah" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post">{% csrf_token %}<input type="hidden" name="aksi" value="tambah">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Tambah Promo Baru</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">{% include 'management/_form_promo.html' with prefix="t_" %}</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success fw-bold">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="modalEdit" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post">{% csrf_token %}<input type="hidden" name="aksi" value="edit"><input type="hidden" name="promo_id" id="ep_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Edit Promo</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">{% include 'management/_form_promo.html' with prefix="e_" %}</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning fw-bold">Perbarui</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Hapus -->
+<div class="modal fade" id="modalHapus" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">{% csrf_token %}<input type="hidden" name="aksi" value="hapus"><input type="hidden" name="promo_id" id="hp_id">
+        <div class="modal-header bg-danger text-white"><h5 class="modal-title fw-bold">Hapus Promo</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">Yakin hapus promo "<strong id="hp_nama"></strong>"?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger fw-bold">Ya, Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function isiEdit(id,nama,kode,disc,kuota,end,reg,perp,upg,add){
+  document.getElementById('ep_id').value=id;
+  const m=document.getElementById('modalEdit');
+  m.querySelector('[name=nama]').value=nama;
+  m.querySelector('[name=kode]').value=kode;
+  m.querySelector('[name=disc]').value=disc;
+  m.querySelector('[name=kuota]').value=kuota;
+  m.querySelector('[name=end_period]').value=end;
+  m.querySelector('[name=is_registrasi]').checked=reg;
+  m.querySelector('[name=is_perpanjangan]').checked=perp;
+  m.querySelector('[name=is_upgrade_lisensi]').checked=upg;
+  m.querySelector('[name=is_tambah_kuota]').checked=add;
+}
+function isiHapus(id,nama){
+  document.getElementById('hp_id').value=id;
+  document.getElementById('hp_nama').textContent=nama;
+}
+</script>
+{% endblock %}

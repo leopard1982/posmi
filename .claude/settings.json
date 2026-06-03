@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py startapp management)",
+      "Bash(python manage.py shell -c \"from django.urls import reverse; print\\(reverse\\('management_index'\\)\\); print\\(reverse\\('management_paket'\\)\\); print\\(reverse\\('management_promo'\\)\\)\")",
+      "Bash(sed -i 's/id=\"scrollspyServices\"/id=\"fitur\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/id=\"scrollspyTeam\"/id=\"testimoni\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/id=\"scrollspyPricing\"/id=\"addon\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/id=\"scrollspyBlog\"/id=\"tutorial\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/id=\"scrollspyContact\"/id=\"kontak\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/style=\"background:#e8f0ff;\"><i class=\"fa fa-shopping-cart\" style=\"color:#0d6efd;\"/><i class=\"fa fa-shopping-cart\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/style=\"background:#fff3e0;\"><i class=\"fa fa-bar-chart\" style=\"color:#ff6f00;\"/><i class=\"fa fa-bar-chart\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/style=\"background:#e8faf1;\"><i class=\"fa fa-users\" style=\"color:#10b981;\"/><i class=\"fa fa-users\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/style=\"background:#fdf4ff;\"><i class=\"fa fa-barcode\" style=\"color:#9b59b6;\"/><i class=\"fa fa-barcode\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(sed -i 's/style=\"background:#fff0f0;\"><i class=\"fa fa-print\" style=\"color:#e53e3e;\"/><i class=\"fa fa-print\"/g' /home/suryo/project/kelontong_mami/templates/components/landing.html)",
+      "Bash(python manage.py makemigrations cms --name=\"add_reset_password_token\")",
+      "Bash(python manage.py shell -c ' *)",
+      "Bash(sed -i '94s/if request.user.is_superuser or request.user.is_staff:/if request.user.is_staff:/' /home/suryo/project/kelontong_mami/pos/views.py)",
+      "Bash(sed -i '432s/if request.user.is_superuser or request.user.is_staff:/if request.user.is_staff:/' /home/suryo/project/kelontong_mami/pos/views.py)",
+      "Bash(sed -i '441s/if user.is_superuser or user.is_staff:/if user.is_staff:/' /home/suryo/project/kelontong_mami/pos/views.py)",
+      "Bash(python manage.py migrate --run-syncdb)",
+      "Bash(python -c \"import owner.views; import pos.views; print\\('OK'\\)\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import django; django.setup\\(\\); import owner.views; import pos.views; print\\('OK'\\)\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c ' *)",
+      "Bash(python manage.py migrate owner)",
+      "Bash(python manage.py migrate stock)",
+      "Bash(python -c \"import rest_framework; print\\('DRF OK'\\)\")",
+      "Bash(python manage.py makemigrations cms --name email_verification_token)",
+      "Bash(python manage.py startapp api)",
+      "Bash(python manage.py makemigrations api)",
+      "Bash(python manage.py migrate api)",
+      "Bash(python manage.py makemigrations payment --name toko_addon)",
+      "Bash(python manage.py migrate payment)",
+      "Bash(python manage.py migrate pos)",
+      "Bash(python -c \"import django; django.setup\\(\\); from cms.views import cmsAddonAktifkan; print\\('OK'\\)\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import django; django.setup\\(\\); from cms.views import cmsAddonAktifkan; print\\('OK'\\)\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import django; django.setup\\(\\); from cms.urls import urlpatterns; print\\('URLs OK:', len\\(urlpatterns\\), 'patterns'\\)\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python manage.py makemigrations payment --name=\"add_addon_config\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python manage.py migrate payment)",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python manage.py shell -c ' *)",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import openpyxl; print\\('openpyxl OK', openpyxl.__version__\\)\")",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings python -c \"import reportlab; print\\('reportlab OK'\\)\")",
+      "Bash(mkdir -p /home/suryo/.claude/projects/-home-suryo-project-kelontong-mami/memory/)"
+    ],
+    "additionalDirectories": [
+      "/home/suryo/.claude/projects/-home-suryo-project-kelontong-mami"
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{% extends 'management/base.html' %}
+{% load humanize %}
+{% block title %}Pengguna{% endblock %}
+{% block menu_users %}active{% endblock %}
+
+{% block contents %}
+<div class="page-header">
+  <h2 class="fw-bold">Manajemen Pengguna</h2>
+  <p class="text-muted">Total {{ users.count|intcomma }} pengguna terdaftar</p>
+</div>
+
+<div class="card shadow">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th><th>Username</th><th>Nama Lengkap</th>
+            <th>Toko / Cabang</th><th>Role</th>
+            <th>Tgl Bergabung</th><th class="text-center">Status</th>
+            <th class="text-center" style="min-width:180px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <strong>{{ u.username }}</strong><br>
+              <small class="text-muted">{{ u.email|default:"-" }}</small>
+            </td>
+            <td>
+              {% if u.userprofile %}{{ u.userprofile.nama_lengkap|default:"-" }}
+              {% else %}<span class="text-muted fst-italic">-</span>{% endif %}
+            </td>
+            <td>
+              {% if u.userprofile %}
+                {{ u.userprofile.cabang.nama_toko }} / {{ u.userprofile.cabang.nama_cabang }}
+              {% else %}<span class="text-muted fst-italic">-</span>{% endif %}
+            </td>
+            <td>
+              {% if u.is_superuser %}<span class="badge bg-danger">Superuser</span>
+              {% elif u.is_staff %}<span class="badge bg-warning text-dark">Staff</span>
+              {% elif u.userprofile.is_admin %}<span class="badge bg-primary">Admin</span>
+              {% else %}<span class="badge bg-secondary">Kasir</span>{% endif %}
+            </td>
+            <td class="small">{{ u.date_joined|date:"d/m/Y" }}</td>
+            <td class="text-center">
+              {% if u.userprofile %}
+                {% if u.userprofile.is_active %}<span class="badge bg-success">Aktif</span>
+                {% else %}<span class="badge bg-danger">Nonaktif</span>{% endif %}
+              {% else %}<span class="badge bg-light text-dark border">-</span>{% endif %}
+            </td>
+            <td class="text-center">
+              {% if not u.is_superuser %}
+              {% if u.userprofile %}
+              <form method="post" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="aksi" value="toggle_active">
+                <input type="hidden" name="user_id" value="{{ u.pk }}">
+                <button type="submit" class="btn btn-sm {% if u.userprofile.is_active %}btn-secondary{% else %}btn-success{% endif %} me-1">
+                  {% if u.userprofile.is_active %}Off{% else %}On{% endif %}
+                </button>
+              </form>
+              {% endif %}
+              <button class="btn btn-sm btn-warning"
+                onclick="isiReset('{{ u.pk }}','{{ u.username }}')"
+                data-bs-toggle="modal" data-bs-target="#modalReset">Reset Sandi</button>
+              {% else %}
+              <span class="text-muted small">-</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="text-center py-5 text-muted">Tidak ada pengguna.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Reset Password -->
+<div class="modal fade" id="modalReset" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">{% csrf_token %}
+        <input type="hidden" name="aksi" value="reset_password">
+        <input type="hidden" name="user_id" id="rp_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Reset Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <p>Reset password untuk user: <strong id="rp_username"></strong></p>
+          <label class="form-label fw-bold">Password Baru</label>
+          <input type="password" name="new_password" class="form-control" required minlength="6" placeholder="Min. 6 karakter">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning fw-bold">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function isiReset(id, username) {
+  document.getElementById('rp_id').value = id;
+  document.getElementById('rp_username').textContent = username;
+}
+</script>
+{% endblock %}

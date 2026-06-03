@@ -71,24 +71,32 @@
                         Rp. {{total|intcomma}}
                     </div>
                 </div>
-                <div class="d-none d-xl-block d-lg-block  col-12 col-xl-3 col-lg-3 col-md-3  text-white border border-white rounded" style="height: 90px;padding-top: 3px;background-color: rgb(65,118,144)">
-                    <div class="text-white   align-items-center d-flex text-start justify-content-start mt-1" style="font-size:14px">
-                        <span>
-                            {% if user.userprofile.foto %}
-                                <img class="img-profile rounded-circle" src="{{user.userprofile.foto.url}}">
-                            {% else %}
-                                <img class="img-profile rounded-circle" src="{% static 'img/undraw_profile.svg'%}" >
-                            {% endif %}
-                        </span>
-                        <span>
-                            {{user.userprofile.nama_lengkap|upper|truncatechars:12}} [{{user.username}}]
-                            <br>
-                                <button class="btn btn-sm btn-danger px-2 rounded-pill " data-bs-toggle="modal" data-bs-target="#staticProfile" style="padding-top:0;padding-bottom: 0;padding-left: 20px !important;padding-right: 20px !important;">profile</button>
-                            <br>
-                            {{tanggal|date:"d M Y"}}
-                        </span>
-                    </div>
-                    
+                <div class="d-none d-xl-block d-lg-block col-12 col-xl-3 col-lg-3 col-md-3"
+                     style="height:90px;">
+                    <button data-bs-toggle="modal" data-bs-target="#staticProfile"
+                            style="width:100%;height:100%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);cursor:pointer;padding:0 16px;display:flex;align-items:center;gap:14px;transition:background .2s,border-color .2s;border-radius:10px;"
+                            onmouseover="this.style.background='rgba(255,255,255,.2)';this.style.borderColor='rgba(255,255,255,.6)'"
+                            onmouseout="this.style.background='rgba(255,255,255,.12)';this.style.borderColor='rgba(255,255,255,.3)'">
+                        <!-- Foto -->
+                        {% if user.userprofile.foto %}
+                            <img src="{{ user.userprofile.foto.url }}"
+                                 style="width:54px;height:54px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(255,255,255,.6);flex-shrink:0;">
+                        {% else %}
+                            <div style="width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.15);border:2.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fa fa-user" style="font-size:22px;color:rgba(255,255,255,.85);"></i>
+                            </div>
+                        {% endif %}
+                        <!-- Info -->
+                        <div style="text-align:left;flex:1;overflow:hidden;">
+                            <div style="color:#fff;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;">
+                                {{ user.userprofile.nama_lengkap|truncatechars:18 }}
+                            </div>
+                            <div style="color:rgba(255,255,255,.85);font-size:12px;margin-top:2px;">@{{ user.username }}</div>
+                            <div style="color:rgba(255,255,255,.75);font-size:11px;margin-top:2px;">{{ tanggal|date:"d M Y" }}</div>
+                        </div>
+                        <!-- Chevron -->
+                        <i class="fa fa-chevron-right" style="flex-shrink:0;color:rgba(255,255,255,.5);font-size:13px;"></i>
+                    </button>
                 </div>
             </div>
             <!-- <p class="text-center fw-bold pb-2 border-bottom border-white fs-4 fw-bold text-white">{{toko}}</p>
@@ -134,30 +142,82 @@
                     {% endblock %}
                 </div>
         </div>
-        {% if bisa_transaksi %}
-            {% if jumlah_grace < 8 %}
-            <div class="text-center text-danger p-3 bg-white fw-bold">
-                {% if jumlah_grace > 0 %}
-                    Lisensi Aplikasi Akan Berakhir dalam {{jumlah_grace}} Hari. Silakan Hubungi Admin untuk Melakukan Perpanjangan Lisensi.
+        {% if is_paket_gratis %}
+            {% if bisa_transaksi %}
+            <div class="container" style="background:rgb(38,75,93);border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                <i class="fa fa-gift me-1"></i>
+                <strong>Paket Gratis Selamanya</strong> — Sisa <strong>{{ jumlah_transaksi }}</strong> transaksi bulan ini.
+            </div>
+            {% else %}
+            <div class="container" style="background:#b45309;border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                <i class="fa fa-exclamation-circle me-1"></i>
+                <strong>Paket Gratis</strong> — Kuota 75 transaksi bulan ini sudah habis. Reset otomatis di awal bulan depan.
+                <a href="/#addon" target="_blank" style="color:#fde68a;margin-left:8px;">Tambah kuota &rarr;</a>
+            </div>
+            {% endif %}
+        {% elif is_paket_korporasi %}
+            {% if bisa_transaksi %}
+                {% if jumlah_grace < 8 and jumlah_grace > 0 %}
+                <div class="container" style="background:#92400e;border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                    <i class="fa fa-clock-o me-1"></i>
+                    <strong>Korporasi</strong> — Masa berlangganan berakhir dalam <strong>{{ jumlah_grace }} hari</strong>. Segera perpanjang.
+                </div>
                 {% else %}
-                    Lisensi Aplikasi Akan Berakhir Hari ini. Silakan Hubungi Admin untuk Melakukan Perpanjangan Lisensi.
+                <div class="container" style="background:rgb(30,44,90);border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                    <i class="fa fa-building me-1"></i>
+                    <strong>Paket Korporasi</strong> — Pool kuota tersisa <strong>{{ pool_kuota_korporasi|default:0 }}</strong> transaksi.
+                    {% if owner_session %}
+                        <a href="{% url 'owner_keluar_toko' %}" style="color:#a5b4fc;margin-left:12px;font-weight:700;"><i class="fa fa-arrow-left me-1"></i>Dashboard Owner</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="container" style="background:#b45309;border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                <i class="fa fa-exclamation-circle me-1"></i>
+                <strong>Korporasi</strong> —
+                {% if pool_kuota_korporasi == 0 %}Pool kuota habis. Reset otomatis awal bulan depan.
+                {% else %}Masa berlangganan tidak aktif. Hubungi admin untuk perpanjangan.{% endif %}
+                {% if owner_session %}
+                    <a href="{% url 'owner_keluar_toko' %}" style="color:#fde68a;margin-left:12px;"><i class="fa fa-arrow-left me-1"></i>Dashboard Owner</a>
                 {% endif %}
             </div>
             {% endif %}
         {% else %}
-            <div class="text-center text-danger p-3 bg-white fw-bold">
-                {% if jumlah_transaksi == 0 %}
+            {% if bisa_transaksi %}
+                {% if jumlah_grace < 8 %}
+                <div class="container" style="background:rgb(65,118,144);border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                    <i class="fa fa-clock-o me-1"></i>
                     {% if jumlah_grace > 0 %}
-                        Jumlah Kuota Transaksi Sudah Habis, tidak bisa melakukan pembayaran. Silakan Hubungi Admin untuk melakukan top up kuota.
+                        Masa berlangganan akan berakhir dalam <strong>{{ jumlah_grace }} hari</strong>. Segera hubungi admin untuk perpanjangan.
+                    {% else %}
+                        Masa berlangganan berakhir <strong>hari ini</strong>. Segera hubungi admin untuk perpanjangan.
                     {% endif %}
-                {% else %}
-                    Lisensi Aplikasi Sudah Berakhir, Tidak bisa Melakukan Pembayaran. Silakan Hubungi Admin untuk Melakukan Perpanjangan Lisensi.
+                </div>
                 {% endif %}
-            </div>
+            {% else %}
+                <div class="container" style="background:rgb(65,118,144);border-radius:8px;padding:10px 16px;text-align:center;font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;">
+                    <i class="fa fa-info-circle me-1"></i>
+                    {% if jumlah_transaksi == 0 and jumlah_grace > 0 %}
+                        Kuota transaksi habis. Hubungi admin untuk tambah kuota.
+                    {% else %}
+                        Masa berlangganan tidak aktif. Hubungi admin untuk perpanjangan.
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endif %}
-        <div class=" bg-white py-3 px-2 text-center border-top border-secondary">
-            <span class="fw-bold fs-5">POSMI APP versi 1.0</span> <br>
-            <span class="fw-bold">&COPY; 2025 - by: Leopard Inc.</span>
+
+        <!-- Footer -->
+        <div class="container" style="background:rgb(38,75,93);border-radius:0 0 10px 10px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{% static 'images/posmi-logo.png' %}" style="height:28px;border-radius:4px;" alt="POSMI">
+                <div>
+                    <div style="font-size:13px;font-weight:700;color:#fff;">POSMI — Aplikasi Penjualan</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,.7);">Point of Sale berbasis web</div>
+                </div>
+            </div>
+            <div style="font-size:12px;color:rgba(255,255,255,.8);text-align:right;font-weight:500;">
+                &copy; 2025–{{ tanggal|date:"Y" }} CV Leopard Oke Satu
+            </div>
         </div>
     {%  else %}
         {% include 'components/landing.html'%}

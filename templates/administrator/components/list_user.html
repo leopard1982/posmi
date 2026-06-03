@@ -1,59 +1,142 @@
 {% include 'administrator/components/ganti-password.html'%}
-<div class="h3 ms-4 fw-bold">
-    Daftar Pengguna
-</div>
-<div class="ms-4">
-    Kasir &rarr; Daftar Kasir
-</div>
+{% load humanize %}
+<div class="h3 ms-4 fw-bold">Daftar Pengguna</div>
+<div class="ms-4 text-muted mb-3">Kasir &rarr; Daftar Kasir</div>
+
+{% if messages %}
 <div class="container my-2">
-    {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-primary alert-dismissible fade show " role="alert">
-            <button type="button" class=" btn" data-bs-dismiss="alert" aria-label="Close">X</button>    
-            <span>{{message}}</span>
-                
-        </div>
-        
-        {% endfor %}
-    {% endif %}
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags|default:'primary' }} alert-dismissible fade show" role="alert">
+    <button type="button" class="btn" data-bs-dismiss="alert" aria-label="Close">X</button>
+    <span>{{ message }}</span>
+  </div>
+  {% endfor %}
 </div>
-<div class="bg-white p-3">
-    <table class="table bg-white">
-            <tr>
-                <th>No.</th>
-                <th>Username</th>
-                <th>Nama Lengkap</th>
-                <th>Ijin</th>
-                <th>Status</th>
-                <th style="min-width: 200px;"></th>
-            </tr>
-            
-            {% for usernya in list_user %}
-                <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td>{{usernya.username}}</td>
-                    <td>{{usernya.userprofile.nama_lengkap}}</td>
-                    <td>{% if usernya.is_superuser %}Pemilik Toko{%else%}Kasir{%endif%}</td>
-                    <td style="min-width: 200px;">
-                        {% if usernya.userprofile.is_active%}
-                            <span style="color: green;">Aktif</span>
-                        {% else %}
-                            <span style="color:red">Tidak Aktif</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-info mx-2 m-1 rounded" hx-get="{% url 'detail_pengguna'%}?id={{usernya.id}}" hx-trigger="click" hx-target="#mainpage"><i class="fa fa-pencil-square-o"  aria-hidden="true"></i> update pengguna</button>
-                        {% if usernya.is_superuser %} 
-                        {% else %}
-                            {% if usernya.userprofile.is_active %}
-                                <button class="btn btn-sm btn-danger mx-2 m-1 rounded" hx-get="{% url 'update_status_kasir'%}?id={{usernya.id}}&status=1" hx-trigger="click" hx-target="#mainpage"><i class="fa fa-window-close" aria-hidden="true"></i> non aktifkan</button>
-                            {% else %}
-                                <button class="btn btn-sm btn-success mx-2 m-1 rounded" hx-get="{% url 'update_status_kasir'%}?id={{usernya.id}}&status=0"  hx-trigger="click" hx-target="#mainpage"><i class="fa fa-thumbs-up" aria-hidden="true"></i> aktifkan lagi</button>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        
-    </table>
+{% endif %}
+
+<!-- Kasir Quota Banner -->
+<div class="container-fluid px-4 mb-3">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body py-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex align-items-center justify-content-center"
+             style="width:44px;height:44px;background:#e8f0fe;flex-shrink:0;">
+          <i class="fa fa-users" style="color:#4e73df;font-size:18px;"></i>
+        </div>
+        <div>
+          <div class="fw-bold" style="font-size:14px;">Kuota Kasir — {{ nama_paket }}</div>
+          {% if max_kasir == 0 %}
+          <div class="text-muted" style="font-size:12px;">
+            <i class="fa fa-check-circle text-success me-1"></i>Kasir <strong>unlimited</strong> &bull; {{ kasir_aktif }} aktif saat ini
+          </div>
+          {% else %}
+          <div class="text-muted" style="font-size:12px;">
+            <span class="fw-bold {% if at_limit %}text-danger{% else %}text-success{% endif %}">
+              {{ kasir_aktif }} / {{ max_kasir }}
+            </span>
+            kasir aktif
+            {% if at_limit %}
+            &nbsp;<span class="badge bg-danger" style="font-size:10px;">KUOTA PENUH</span>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if max_kasir > 0 %}
+      <div style="min-width:180px;flex:1;max-width:280px;">
+        <div class="d-flex justify-content-between mb-1" style="font-size:11px;color:#6c757d;">
+          <span>{{ kasir_aktif }} aktif</span><span>maks. {{ max_kasir }}</span>
+        </div>
+        <div class="progress" style="height:6px;">
+          <div class="progress-bar {% if at_limit %}bg-danger{% elif kasir_aktif >= max_kasir|add:"-1" %}bg-warning{% else %}bg-success{% endif %}"
+               role="progressbar"
+               style="width:{% widthratio kasir_aktif max_kasir 100 %}%"></div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if at_limit %}
+      <div class="alert alert-warning py-1 px-2 mb-0" style="font-size:11px;border-radius:6px;">
+        <i class="fa fa-exclamation-triangle me-1"></i>
+        Kuota penuh. Nonaktifkan kasir lain untuk mengaktifkan kasir baru,
+        atau <a href="/" class="fw-bold">upgrade paket</a>.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Tabel Kasir -->
+<div class="bg-white p-3 mx-3 rounded shadow-sm">
+  <table class="table bg-white align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>No.</th>
+        <th>Username</th>
+        <th>Nama Lengkap</th>
+        <th>Peran</th>
+        <th>Status</th>
+        <th style="min-width:200px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for usernya in list_user %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <span class="badge bg-secondary fw-normal" style="font-size:12px;">{{ usernya.username }}</span>
+        </td>
+        <td>{{ usernya.userprofile.nama_lengkap }}</td>
+        <td>
+          {% if usernya.is_superuser %}
+            <span class="badge bg-primary">Pemilik Toko</span>
+          {% else %}
+            <span class="badge bg-info text-dark">Kasir</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if usernya.userprofile.is_active %}
+            <span class="badge bg-success"><i class="fa fa-circle me-1" style="font-size:8px;"></i>Aktif</span>
+          {% else %}
+            <span class="badge bg-danger"><i class="fa fa-circle me-1" style="font-size:8px;"></i>Tidak Aktif</span>
+          {% endif %}
+        </td>
+        <td>
+          <button class="btn btn-sm btn-info mx-1 rounded"
+                  hx-get="{% url 'detail_pengguna' %}?id={{ usernya.id }}"
+                  hx-trigger="click" hx-target="#mainpage">
+            <i class="fa fa-pencil-square-o"></i> Update
+          </button>
+          {% if not usernya.is_superuser %}
+            {% if usernya.userprofile.is_active %}
+              <button class="btn btn-sm btn-danger mx-1 rounded"
+                      hx-get="{% url 'update_status_kasir' %}?id={{ usernya.id }}&status=1"
+                      hx-trigger="click" hx-target="#mainpage">
+                <i class="fa fa-window-close"></i> Nonaktifkan
+              </button>
+            {% else %}
+              {% if at_limit %}
+              <button class="btn btn-sm btn-secondary mx-1 rounded" disabled
+                      title="Kuota kasir penuh ({{ kasir_aktif }}/{{ max_kasir }}). Nonaktifkan kasir lain dulu.">
+                <i class="fa fa-ban"></i> Kuota Penuh
+              </button>
+              {% else %}
+              <button class="btn btn-sm btn-success mx-1 rounded"
+                      hx-get="{% url 'update_status_kasir' %}?id={{ usernya.id }}&status=0"
+                      hx-trigger="click" hx-target="#mainpage">
+                <i class="fa fa-thumbs-up"></i> Aktifkan
+              </button>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-muted py-4">Belum ada pengguna.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>

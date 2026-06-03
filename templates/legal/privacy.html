@@ -1,0 +1,579 @@
+{% extends "base-landing.html" %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>Kebijakan Privasi — POSMI</title>
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, #1e2c5a 0%, #2e4080 100%);
+    padding: 60px 0 50px;
+    color: #fff;
+  }
+  .legal-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .legal-hero p {
+    color: rgba(255,255,255,.75);
+    font-size: 15px;
+    margin-bottom: 0;
+  }
+  .legal-body {
+    padding: 56px 0 72px;
+  }
+  .legal-card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    padding: 40px 44px;
+    box-shadow: 0 2px 16px rgba(30,44,90,.07);
+  }
+  .legal-section {
+    margin-bottom: 40px;
+  }
+  .legal-section:last-child {
+    margin-bottom: 0;
+  }
+  .legal-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e2c5a;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1e2c5a;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .legal-section p {
+    color: #555;
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 10px;
+  }
+  .legal-section ul, .legal-section ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+  }
+  .legal-section ul li, .legal-section ol li {
+    color: #555;
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 6px;
+  }
+  .legal-section ul li strong, .legal-section ol li strong {
+    color: #1e2c5a;
+  }
+  /* Data categories grid */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .data-card {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 16px 18px;
+    border-top: 3px solid #1e2c5a;
+  }
+  .data-card .data-icon {
+    font-size: 22px;
+    color: #1e2c5a;
+    margin-bottom: 8px;
+  }
+  .data-card .data-title {
+    font-weight: 700;
+    color: #1e2c5a;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .data-card .data-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .data-card .data-list li {
+    color: #666;
+    font-size: 13.5px;
+    padding: 2px 0;
+    border-bottom: none;
+  }
+  .data-card .data-list li::before {
+    content: "•";
+    color: #1e2c5a;
+    margin-right: 6px;
+    font-weight: 700;
+  }
+  /* Rights grid */
+  .rights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .right-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .right-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e8eeff;
+    color: #1e2c5a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .right-title {
+    font-weight: 700;
+    color: #1e2c5a;
+    font-size: 13.5px;
+    margin-bottom: 4px;
+  }
+  .right-desc {
+    color: #666;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  /* Retention timeline */
+  .retention-timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-top: 14px;
+  }
+  .retention-timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #d0d8f0;
+  }
+  .retention-step {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .retention-step:last-child { margin-bottom: 0; }
+  .retention-step::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #1e2c5a;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #1e2c5a;
+  }
+  .retention-step .step-label {
+    font-weight: 700;
+    color: #1e2c5a;
+    font-size: 14px;
+  }
+  .retention-step .step-desc {
+    color: #666;
+    font-size: 13.5px;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+  /* Security badges */
+  .security-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0f4ff;
+    border: 1px solid #c7d4ff;
+    border-radius: 30px;
+    padding: 6px 14px;
+    font-size: 13.5px;
+    color: #2e4080;
+    font-weight: 500;
+  }
+  .security-badge i { color: #1e2c5a; }
+  /* Info box */
+  .info-box {
+    background: #f0f4ff;
+    border: 1px solid #c7d4ff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .info-box p {
+    margin-bottom: 0;
+    color: #2e4080;
+    font-size: 14px;
+  }
+  .warning-box {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .warning-box p {
+    margin-bottom: 0;
+    color: #7a5c00;
+    font-size: 14px;
+  }
+  /* DPO contact card */
+  .dpo-card {
+    background: linear-gradient(135deg, #f0f4ff 0%, #f8f9fc 100%);
+    border: 1px solid #c7d4ff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 14px;
+  }
+  .dpo-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e2c5a;
+    margin-bottom: 4px;
+  }
+  .dpo-role {
+    font-size: 13px;
+    color: #7a8ab0;
+    margin-bottom: 16px;
+  }
+  .dpo-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dpo-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #444;
+  }
+  .dpo-contact-item i {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+  .last-updated {
+    font-size: 13px;
+    color: #999;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    text-align: right;
+  }
+  @media (max-width: 768px) {
+    .legal-card { padding: 28px 20px; }
+    .data-grid, .rights-grid { grid-template-columns: 1fr; }
+    .legal-hero h1 { font-size: 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block contents %}
+<!-- Hero -->
+<section class="legal-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 text-center">
+        <div style="display:inline-block;background:rgba(255,255,255,.15);border-radius:30px;padding:4px 16px;font-size:12px;font-weight:600;letter-spacing:1px;color:#fff;text-transform:uppercase;margin-bottom:16px;">Dokumen Legal</div>
+        <h1>Kebijakan Privasi</h1>
+        <p>Kami peduli dengan privasi Anda. Dokumen ini menjelaskan bagaimana POSMI mengumpulkan, menggunakan, dan melindungi data pribadi Anda sesuai UU PDP No. 27 Tahun 2022.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Body -->
+<section class="legal-body">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-9">
+        <div class="legal-card">
+
+          <!-- Intro -->
+          <p style="color:#555;font-size:14.5px;line-height:1.75;margin-bottom:36px;padding-bottom:28px;border-bottom:1px solid #f0f0f0;">
+            Kebijakan Privasi ini berlaku untuk seluruh pengguna platform POSMI yang dioperasikan oleh <strong style="color:#1e2c5a;">CV. Leopard Oke Satu</strong>. Dengan menggunakan Layanan POSMI, Anda menyetujui praktik pengelolaan data sebagaimana diuraikan dalam dokumen ini. Kami berkomitmen untuk mematuhi <strong style="color:#1e2c5a;">Undang-Undang Perlindungan Data Pribadi (UU PDP) No. 27 Tahun 2022</strong> beserta peraturan pelaksanaannya.
+          </p>
+
+          <!-- 1. Data yang Dikumpulkan -->
+          <div class="legal-section">
+            <h2><span class="section-num">1</span> Data yang Dikumpulkan</h2>
+            <p>POSMI mengumpulkan data yang diperlukan untuk menyediakan dan meningkatkan Layanan. Berikut kategori data yang kami kumpulkan:</p>
+            <div class="data-grid">
+              <div class="data-card">
+                <div class="data-icon"><i class="fa fa-building"></i></div>
+                <div class="data-title">Data Identitas Toko</div>
+                <ul class="data-list">
+                  <li>Nama toko / usaha</li>
+                  <li>Nama pemilik / pengguna</li>
+                  <li>Alamat toko</li>
+                  <li>Nomor telepon</li>
+                  <li>Logo toko</li>
+                </ul>
+              </div>
+              <div class="data-card">
+                <div class="data-icon"><i class="fa fa-envelope"></i></div>
+                <div class="data-title">Data Akun</div>
+                <ul class="data-list">
+                  <li>Alamat email</li>
+                  <li>Username</li>
+                  <li>Kata sandi (terenkripsi)</li>
+                  <li>Informasi profil pengguna</li>
+                  <li>Paket berlangganan aktif</li>
+                </ul>
+              </div>
+              <div class="data-card">
+                <div class="data-icon"><i class="fa fa-shopping-cart"></i></div>
+                <div class="data-title">Data Transaksi</div>
+                <ul class="data-list">
+                  <li>Riwayat transaksi penjualan</li>
+                  <li>Data produk dan stok</li>
+                  <li>Metode pembayaran</li>
+                  <li>Nominal transaksi</li>
+                  <li>Diskon &amp; promo yang diterapkan</li>
+                </ul>
+              </div>
+              <div class="data-card">
+                <div class="data-icon"><i class="fa fa-bar-chart"></i></div>
+                <div class="data-title">Log Aktivitas</div>
+                <ul class="data-list">
+                  <li>Waktu dan tanggal akses</li>
+                  <li>Alamat IP</li>
+                  <li>Jenis perangkat &amp; browser</li>
+                  <li>Fitur yang digunakan</li>
+                  <li>Log kesalahan sistem</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Penggunaan Data -->
+          <div class="legal-section">
+            <h2><span class="section-num">2</span> Penggunaan Data</h2>
+            <p>Data yang kami kumpulkan digunakan untuk tujuan-tujuan berikut:</p>
+            <ul>
+              <li><strong>Operasional Layanan:</strong> Menyediakan, mengelola, dan memelihara seluruh fitur dan fungsi platform POSMI sesuai Paket yang dipilih Pengguna.</li>
+              <li><strong>Autentikasi &amp; Keamanan:</strong> Memverifikasi identitas Pengguna, mencegah akses tidak sah, dan mendeteksi aktivitas yang mencurigakan atau penipuan.</li>
+              <li><strong>Notifikasi &amp; Komunikasi:</strong> Mengirimkan pemberitahuan penting terkait akun, perubahan layanan, pembaruan sistem, konfirmasi pembayaran, dan informasi promosi yang relevan (hanya dengan persetujuan Pengguna).</li>
+              <li><strong>Dukungan Teknis:</strong> Merespons pertanyaan, keluhan, dan permintaan bantuan yang diajukan melalui saluran dukungan kami.</li>
+              <li><strong>Peningkatan Produk:</strong> Menganalisis pola penggunaan secara anonim untuk mengidentifikasi area peningkatan, mengembangkan fitur baru, dan meningkatkan performa Layanan.</li>
+              <li><strong>Kewajiban Hukum:</strong> Memenuhi kewajiban hukum, regulasi, atau perintah pengadilan yang berlaku di Indonesia.</li>
+            </ul>
+            <div class="info-box">
+              <p><i class="fa fa-shield me-2"></i> Kami tidak menggunakan data pribadi Anda untuk keperluan iklan pihak ketiga atau menjual profil Anda kepada siapapun.</p>
+            </div>
+          </div>
+
+          <!-- 3. Penyimpanan & Keamanan Data -->
+          <div class="legal-section">
+            <h2><span class="section-num">3</span> Penyimpanan &amp; Keamanan Data</h2>
+            <p>Kami menerapkan langkah-langkah keamanan teknis dan organisasional yang memadai untuk melindungi data Anda dari akses tidak sah, perubahan, pengungkapan, atau penghancuran:</p>
+            <div class="security-badges">
+              <span class="security-badge"><i class="fa fa-lock"></i> Enkripsi HTTPS/TLS</span>
+              <span class="security-badge"><i class="fa fa-database"></i> Database Terenkripsi</span>
+              <span class="security-badge"><i class="fa fa-server"></i> Server Berlokasi di Indonesia</span>
+              <span class="security-badge"><i class="fa fa-refresh"></i> Backup Berkala</span>
+              <span class="security-badge"><i class="fa fa-user-secret"></i> Akses Berbasis Peran</span>
+              <span class="security-badge"><i class="fa fa-eye-slash"></i> Kata Sandi Di-hash</span>
+            </div>
+            <ul style="margin-top:16px;">
+              <li>Seluruh data disimpan pada server yang berlokasi di wilayah <strong>Indonesia</strong> sesuai dengan ketentuan Pasal 16 UU PDP No. 27/2022 tentang kewajiban lokalisasi data.</li>
+              <li>Akses terhadap database produksi dibatasi secara ketat hanya kepada personel teknologi Perusahaan yang terotorisasi.</li>
+              <li>Pencadangan data dilakukan secara otomatis setiap 24 jam untuk meminimalkan risiko kehilangan data.</li>
+              <li>Pemindaian keamanan dilakukan secara berkala untuk mendeteksi kerentanan pada sistem.</li>
+            </ul>
+          </div>
+
+          <!-- 4. Hak Pengguna -->
+          <div class="legal-section">
+            <h2><span class="section-num">4</span> Hak Pengguna atas Data Pribadi</h2>
+            <p>Sesuai dengan <strong style="color:#1e2c5a;">UU PDP No. 27 Tahun 2022</strong>, Anda memiliki hak-hak berikut atas data pribadi yang kami kelola:</p>
+            <div class="rights-grid">
+              <div class="right-item">
+                <div class="right-icon"><i class="fa fa-eye"></i></div>
+                <div>
+                  <div class="right-title">Hak Akses</div>
+                  <div class="right-desc">Meminta informasi mengenai data pribadi apa saja yang kami simpan tentang Anda dan bagaimana data tersebut digunakan.</div>
+                </div>
+              </div>
+              <div class="right-item">
+                <div class="right-icon"><i class="fa fa-pencil"></i></div>
+                <div>
+                  <div class="right-title">Hak Koreksi</div>
+                  <div class="right-desc">Meminta perbaikan atau pembaruan data pribadi Anda yang tidak akurat atau tidak lengkap.</div>
+                </div>
+              </div>
+              <div class="right-item">
+                <div class="right-icon"><i class="fa fa-trash"></i></div>
+                <div>
+                  <div class="right-title">Hak Penghapusan</div>
+                  <div class="right-desc">Meminta penghapusan data pribadi Anda ("hak untuk dilupakan"), tunduk pada kewajiban hukum yang mungkin mengharuskan kami menyimpan data tertentu.</div>
+                </div>
+              </div>
+              <div class="right-item">
+                <div class="right-icon"><i class="fa fa-ban"></i></div>
+                <div>
+                  <div class="right-title">Hak Pembatasan Pemrosesan</div>
+                  <div class="right-desc">Meminta kami membatasi pemrosesan data Anda dalam situasi tertentu, misalnya saat Anda mempersengketakan akurasi data.</div>
+                </div>
+              </div>
+              <div class="right-item">
+                <div class="right-icon"><i class="fa fa-download"></i></div>
+                <div>
+                  <div class="right-title">Hak Portabilitas Data</div>
+                  <div class="right-desc">Mendapatkan salinan data pribadi Anda dalam format yang terstruktur dan dapat dibaca mesin.</div>
+                </div>
+              </div>
+              <div class="right-item">
+                <div class="right-icon"><i class="fa fa-times-circle"></i></div>
+                <div>
+                  <div class="right-title">Hak Keberatan</div>
+                  <div class="right-desc">Mengajukan keberatan terhadap pemrosesan data pribadi Anda untuk tujuan tertentu, termasuk pemasaran langsung.</div>
+                </div>
+              </div>
+            </div>
+            <p style="margin-top:16px;">Untuk menggunakan hak-hak di atas, silakan hubungi Data Protection Officer (DPO) kami melalui informasi kontak pada bagian akhir dokumen ini. Kami akan merespons permintaan Anda dalam <strong>14 (empat belas) hari kerja</strong>.</p>
+          </div>
+
+          <!-- 5. Berbagi Data -->
+          <div class="legal-section">
+            <h2><span class="section-num">5</span> Berbagi Data dengan Pihak Ketiga</h2>
+            <p>POSMI berkomitmen untuk <strong style="color:#1e2c5a;">tidak menjual data pribadi Pengguna</strong> kepada pihak ketiga manapun untuk tujuan komersial. Data dapat dibagikan hanya dalam situasi berikut:</p>
+            <ul>
+              <li><strong>Penyedia Layanan Teknis:</strong> Mitra infrastruktur (seperti penyedia hosting dan layanan email transaksional) yang terikat perjanjian kerahasiaan dan hanya dapat memproses data atas instruksi kami.</li>
+              <li><strong>Kewajiban Hukum:</strong> Apabila diwajibkan oleh hukum, peraturan, proses hukum, atau permintaan pemerintah yang sah di Indonesia.</li>
+              <li><strong>Perlindungan Hak:</strong> Apabila diperlukan untuk melindungi hak, properti, atau keselamatan Perusahaan, Pengguna, atau publik.</li>
+              <li><strong>Persetujuan Pengguna:</strong> Apabila Anda telah memberikan persetujuan eksplisit untuk pembagian data tertentu.</li>
+            </ul>
+            <p>Setiap pihak ketiga yang menerima data dari kami diwajibkan untuk mematuhi standar perlindungan data yang setara dengan komitmen kami.</p>
+          </div>
+
+          <!-- 6. Cookie & Log -->
+          <div class="legal-section">
+            <h2><span class="section-num">6</span> Cookie &amp; Log Aktivitas</h2>
+            <p>POSMI menggunakan cookie dan mekanisme serupa untuk meningkatkan pengalaman pengguna dan keamanan platform:</p>
+            <ul>
+              <li><strong>Cookie Esensial:</strong> Cookie yang diperlukan untuk fungsi dasar platform, seperti manajemen sesi login dan keamanan CSRF. Cookie ini tidak dapat dinonaktifkan.</li>
+              <li><strong>Cookie Fungsional:</strong> Cookie yang menyimpan preferensi Pengguna (misalnya pengaturan tampilan) untuk meningkatkan kenyamanan penggunaan.</li>
+              <li><strong>Log Server:</strong> Server kami secara otomatis mencatat informasi teknis seperti alamat IP, jenis browser, halaman yang diakses, dan waktu akses untuk keperluan keamanan dan pemecahan masalah teknis.</li>
+            </ul>
+            <p>Log aktivitas disimpan selama maksimal <strong>12 (dua belas) bulan</strong> dan kemudian dihapus atau dianonimkan secara permanen.</p>
+            <div class="warning-box">
+              <p><i class="fa fa-cookie me-2"></i> Anda dapat mengatur browser Anda untuk menolak cookie, namun hal ini dapat mempengaruhi fungsionalitas platform POSMI.</p>
+            </div>
+          </div>
+
+          <!-- 7. Retensi Data -->
+          <div class="legal-section">
+            <h2><span class="section-num">7</span> Retensi Data</h2>
+            <p>Kami menyimpan data Anda selama diperlukan untuk memberikan Layanan dan memenuhi kewajiban hukum. Kebijakan retensi kami adalah sebagai berikut:</p>
+            <div class="retention-timeline">
+              <div class="retention-step">
+                <div class="step-label">Akun Aktif</div>
+                <div class="step-desc">Seluruh data (profil, transaksi, produk, laporan) disimpan selama akun Anda aktif dan berlangganan. Data dapat diakses dan diunduh kapan saja.</div>
+              </div>
+              <div class="retention-step">
+                <div class="step-label">Setelah Penutupan Akun</div>
+                <div class="step-desc">Data Anda dinonaktifkan dan tidak dapat diakses publik, namun tetap tersimpan selama <strong>1 (satu) tahun</strong> sejak tanggal penutupan akun untuk keperluan pemulihan data jika dibutuhkan.</div>
+              </div>
+              <div class="retention-step">
+                <div class="step-label">12 Bulan Setelah Penutupan</div>
+                <div class="step-desc">Seluruh data pribadi dihapus secara permanen dari sistem kami, kecuali data yang diwajibkan disimpan berdasarkan ketentuan peraturan perundang-undangan (misalnya data keuangan yang diwajibkan oleh regulasi perpajakan).</div>
+              </div>
+              <div class="retention-step">
+                <div class="step-label">Data Anonimisasi</div>
+                <div class="step-desc">Setelah penghapusan, sebagian data dapat dianonimkan sepenuhnya dan digunakan untuk analisis statistik tanpa dapat dikaitkan kembali dengan identitas Anda.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Pelaporan Pelanggaran -->
+          <div class="legal-section">
+            <h2><span class="section-num">8</span> Pelaporan Insiden Pelanggaran Data</h2>
+            <p>Apabila terjadi insiden keamanan yang mengakibatkan kebocoran, pencurian, atau akses tidak sah terhadap data pribadi Pengguna, POSMI berkomitmen untuk:</p>
+            <ol>
+              <li>Mendeteksi dan mengisolasi insiden sesegera mungkin setelah ditemukan.</li>
+              <li>Melaporkan insiden kepada <strong>Badan Siber dan Sandi Negara (BSSN)</strong> dalam waktu <strong>72 jam</strong> sejak insiden diketahui, sesuai Pasal 46 UU PDP No. 27/2022.</li>
+              <li>Memberitahukan seluruh Pengguna yang terdampak dalam waktu <strong>72 jam</strong>, mencakup: jenis data yang terdampak, perkiraan waktu insiden, langkah yang telah kami ambil, dan saran perlindungan bagi Pengguna.</li>
+              <li>Melakukan investigasi menyeluruh dan menerapkan langkah perbaikan untuk mencegah insiden serupa.</li>
+              <li>Mendokumentasikan seluruh insiden dalam catatan internal sesuai kewajiban regulasi.</li>
+            </ol>
+            <div class="info-box">
+              <p><i class="fa fa-phone me-2"></i> Jika Anda mendeteksi aktivitas mencurigakan pada akun Anda, segera hubungi tim keamanan kami di <strong>adhy.chandra@live.co.uk</strong> atau WhatsApp <strong>+62 812-1327-0275</strong>.</p>
+            </div>
+          </div>
+
+          <!-- 9. Kontak DPO -->
+          <div class="legal-section">
+            <h2><span class="section-num">9</span> Kontak Data Protection Officer (DPO)</h2>
+            <p>Untuk pertanyaan, permintaan, atau keluhan terkait pengelolaan data pribadi Anda, silakan hubungi Data Protection Officer kami:</p>
+            <div class="dpo-card">
+              <div class="dpo-name">CV. Leopard Oke Satu — Data Protection Officer</div>
+              <div class="dpo-role">Bertanggung jawab atas kepatuhan perlindungan data sesuai UU PDP No. 27/2022</div>
+              <div class="dpo-contacts">
+                <div class="dpo-contact-item">
+                  <i class="fa fa-envelope" style="background:#e8eeff;color:#1e2c5a;"></i>
+                  <span>Email: <a href="mailto:adhy.chandra@live.co.uk" style="color:#1e2c5a;font-weight:600;text-decoration:none;">adhy.chandra@live.co.uk</a></span>
+                </div>
+                <div class="dpo-contact-item">
+                  <i class="fa fa-whatsapp" style="background:#e6f9ef;color:#25d366;"></i>
+                  <span>WhatsApp: <a href="https://wa.me/6281213270275" target="_blank" style="color:#1e2c5a;font-weight:600;text-decoration:none;">+62 812-1327-0275</a></span>
+                </div>
+                <div class="dpo-contact-item">
+                  <i class="fa fa-clock-o" style="background:#fff8e1;color:#f59e0b;"></i>
+                  <span>Waktu respons: Maksimal <strong>14 hari kerja</strong> sejak permintaan diterima</span>
+                </div>
+                <div class="dpo-contact-item">
+                  <i class="fa fa-globe" style="background:#e8f4ff;color:#0d6efd;"></i>
+                  <span>Website: <a href="https://leopardos.tech" target="_blank" style="color:#1e2c5a;font-weight:600;text-decoration:none;">leopardos.tech</a></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="last-updated">
+              <i class="fa fa-calendar me-1"></i> Terakhir diperbarui: <strong>1 Juni 2026</strong>
+            </div>
+          </div>
+
+        </div><!-- /.legal-card -->
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

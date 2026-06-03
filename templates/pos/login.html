@@ -1,27 +1,257 @@
-{% extends 'base-login.html'%}
 {% load static %}
-{% block contents %}
-<div class=" justify-content-center d-flex" style="margin-top:100px">
-    <div style="width: 300px;height: 350px; " class="p-2 border rounded border-secondary shadow" >
-        <div class="text-center fw-bold fs-4 text-primary py-4">
-            <img src="{% static 'images/posmi-logo.png'%}" class="shadow" style="width: 160px;height: 70px;border-radius: 5px;">
-        </div>
-        <form method="post">
-            {% csrf_token %}
-            <div class="my-2">
-                <input type="text" name="username" class="form-control" placeholder="Kode user/ email toko" id="">
-            </div>
-            <div class="my-2">
-                <input type="password" name="password" class="form-control" placeholder="Password" id="">
-            </div>
-            <div class="my-2 text-center">
-                <button type="submit" class="btn btn-primary">login</button><br>
-                <br>
-                <span><a href="/#bisniskecil" class="fw-bold" style="text-decoration: none;">register</a> sekarang!</span><br>
-                <span>sobat lupa <a href="/"  style="text-decoration: none;font-weight: bold;">password</a>?</span>
-            </div>    
-        </form>
-        
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk — POSMI</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .login-wrapper {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ── Panel kiri ── */
+    .panel-left {
+      width: 42%;
+      background: linear-gradient(145deg, #1e2c5a 0%, #2c3e6b 55%, #3a5298 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 32px 40px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel-left::before {
+      content: '';
+      position: absolute;
+      width: 320px; height: 320px;
+      background: rgba(255,255,255,.04);
+      border-radius: 50%;
+      top: -80px; right: -80px;
+    }
+    .panel-left::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,.04);
+      border-radius: 50%;
+      bottom: -50px; left: -50px;
+    }
+    .branding { text-align: center; position: relative; z-index: 1; margin-bottom: 20px; }
+    .branding img { height: 52px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+    .branding h2 { font-size: 1.1rem; font-weight: 700; margin-top: 14px; margin-bottom: 4px; }
+    .branding p { color: rgba(255,255,255,.6); font-size: 12px; line-height: 1.6; max-width: 240px; margin: 0 auto; }
+
+    .pos-preview {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 16px;
+      width: 100%;
+      max-width: 300px;
+      position: relative;
+      z-index: 1;
+    }
+    .pos-preview-label { font-size: 10px; color: rgba(255,255,255,.45); font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
+    .pos-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 10px;
+      background: rgba(255,255,255,.07);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .pos-row span:last-child { color: rgba(255,255,255,.55); }
+    .pos-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.14);
+      border-radius: 7px;
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .feat-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 16px; position: relative; z-index: 1; }
+    .feat-badge {
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: rgba(255,255,255,.8);
+    }
+
+    /* ── Panel kanan ── */
+    .panel-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 32px 40px;
+      background: #f7f9fc;
+      overflow: hidden;
+    }
+    .login-box { width: 100%; max-width: 380px; }
+
+    .login-box h1 { font-size: 1.4rem; font-weight: 800; color: #1e2c5a; margin-bottom: 4px; }
+    .login-box .sub { color: #8899bb; font-size: 13px; margin-bottom: 24px; }
+
+    .form-label-custom { font-size: 12px; font-weight: 600; color: #2c3e6b; margin-bottom: 5px; display: block; }
+    .form-control-custom {
+      width: 100%;
+      border: 1.5px solid #dce4f0;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .form-control-custom:focus { border-color: #3a5298; box-shadow: 0 0 0 3px rgba(58,82,152,.1); }
+
+    .pw-wrap { position: relative; }
+    .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8899bb; cursor: pointer; font-size: 14px; padding: 0; }
+
+    .btn-login {
+      width: 100%;
+      background: #2c3e6b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: opacity .2s;
+    }
+    .btn-login:hover { opacity: .85; }
+
+    .links-row { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 12px; }
+    .links-row a { color: #2c3e6b; font-weight: 600; text-decoration: none; }
+    .links-row a:hover { text-decoration: underline; }
+    .links-row span { color: #aab; }
+
+    .back-link { text-align: center; margin-top: 20px; }
+    .back-link a { font-size: 12px; color: #aab; text-decoration: none; }
+    .back-link a:hover { color: #8899bb; }
+
+    .alert-custom {
+      background: #e8f0fb;
+      color: #2c3e6b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .panel-left { display: none; }
+      .panel-right { padding: 32px 24px; overflow-y: auto; }
+      html, body { overflow: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="login-wrapper">
+
+  <!-- ── Panel Kiri ── -->
+  <div class="panel-left">
+    <div class="branding">
+      <img src="{% static 'images/posmi-logo.png' %}" alt="POSMI">
+      <h2>Sistem Kasir Berbasis Web</h2>
+      <p>Kelola penjualan toko dari browser, tanpa instalasi.</p>
     </div>
+
+    <div class="pos-preview">
+      <div class="pos-preview-label">Transaksi Aktif</div>
+      <div class="pos-row"><span>Mie Goreng Indomie</span><span>2× Rp 3.500</span></div>
+      <div class="pos-row"><span>Teh Botol Sosro</span><span>1× Rp 5.000</span></div>
+      <div class="pos-row"><span>Roti Tawar</span><span>1× Rp 12.000</span></div>
+      <div class="pos-total"><span>Total</span><span>Rp 24.000</span></div>
+    </div>
+
+    <div class="feat-badges">
+      <span class="feat-badge">✓ Multi Kasir</span>
+      <span class="feat-badge">✓ Laporan Real-time</span>
+      <span class="feat-badge">✓ Nota Digital</span>
+      <span class="feat-badge">✓ Gratis Selamanya</span>
+    </div>
+  </div>
+
+  <!-- ── Panel Kanan ── -->
+  <div class="panel-right">
+    <div class="login-box">
+
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert-custom">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <h1>Selamat Datang</h1>
+      <p class="sub">Masuk ke akun POSMI Anda.</p>
+
+      <form method="post" autocomplete="off">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label-custom">Username / Email Toko</label>
+          <input type="text" name="username" class="form-control-custom" placeholder="username atau email@toko.com" required autofocus>
+        </div>
+
+        <div class="mb-1">
+          <label class="form-label-custom">Password</label>
+          <div class="pw-wrap">
+            <input type="password" name="password" id="pwdInput" class="form-control-custom" placeholder="Masukkan password" required style="padding-right:40px;">
+            <button type="button" class="pw-toggle" onclick="togglePwd()" id="pwdBtn">👁</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login">Masuk ke POSMI</button>
+      </form>
+
+      <div class="links-row">
+        <span><a href="{% url 'lupa_password' %}">Lupa password?</a></span>
+        <span>Belum punya akun? <a href="/#harga">Daftar Gratis</a></span>
+      </div>
+
+      <div class="back-link">
+        <a href="/">&#8592; Kembali ke halaman utama</a>
+      </div>
+
+    </div>
+  </div>
+
 </div>
-{% endblock %}
+
+<script>
+function togglePwd() {
+  const i = document.getElementById('pwdInput');
+  const b = document.getElementById('pwdBtn');
+  if (i.type === 'password') { i.type = 'text'; b.textContent = '🙈'; }
+  else { i.type = 'password'; b.textContent = '👁'; }
+}
+</script>
+</body>
+</html>

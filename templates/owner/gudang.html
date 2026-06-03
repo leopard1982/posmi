@@ -1,0 +1,447 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Gudang Utama — POSMI Korporasi</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS -->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- SB Admin 2 -->
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f4f6fb; }
+
+    /* ── Sidebar ── */
+    #accordionSidebar { background: linear-gradient(180deg, #1e2c5a 0%, #2c3e6b 100%) !important; }
+    .sidebar-brand { padding: 20px 16px !important; }
+    .sidebar-brand-text { font-size: 15px !important; font-weight: 900 !important; letter-spacing: .5px; }
+    .sidebar .nav-item .nav-link {
+      color: rgba(255,255,255,.65) !important; font-size: 13px;
+      font-weight: 600; padding: 10px 20px;
+    }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color: #fff !important; background: rgba(255,255,255,.08) !important; }
+    .sidebar .nav-item .nav-link i { width: 18px; text-align: center; }
+    .sidebar hr { border-color: rgba(255,255,255,.12) !important; }
+    .sidebar-heading { color: rgba(255,255,255,.4) !important; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; padding: 10px 20px 4px !important; }
+
+    /* ── Topbar ── */
+    .topbar { background: #fff; border-bottom: 1px solid #e8eef8; }
+
+    /* ── KPI Cards ── */
+    .kpi-card {
+      border: none; border-radius: 14px; padding: 20px 22px;
+      height: 100%; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      position: relative; overflow: hidden;
+    }
+    .kpi-card .kpi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 1.55rem; font-weight: 900; line-height: 1.1; }
+    .kpi-card .kpi-sub   { font-size: 11px; margin-top: 5px; }
+    .kpi-card .kpi-icon  { font-size: 2.2rem; opacity: .12; position: absolute; right: 18px; top: 50%; transform: translateY(-50%); }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.05);
+      border: none; overflow: hidden; margin-bottom: 24px;
+    }
+    .section-card .card-header {
+      background: #fff; border-bottom: 1px solid #eef1f6;
+      padding: 16px 20px; font-size: 14px; font-weight: 800; color: #1e2c5a;
+    }
+    .section-card .card-header .sub { font-size: 12px; font-weight: 400; color: #8899bb; margin-top: 2px; }
+    .section-card-dark .card-header {
+      background: linear-gradient(135deg, #1e2c5a, #3a5298);
+      border-bottom: none; color: #fff;
+    }
+    .section-card-dark .card-header .sub { color: rgba(255,255,255,.65); }
+
+    /* ── Barang Table ── */
+    .barang-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .barang-table thead th {
+      background: #f8fafc; border-bottom: 1.5px solid #eef1f6;
+      padding: 10px 14px; font-size: 11px; font-weight: 700;
+      color: #8899bb; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .barang-table tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .1s; }
+    .barang-table tbody tr:last-child { border: none; }
+    .barang-table tbody tr:hover { background: #f8fafc; }
+    .barang-table td { padding: 10px 14px; vertical-align: middle; }
+
+    /* Stok coloring */
+    .stok-ok   { color: #059669; font-weight: 700; }
+    .stok-low  { color: #d97706; font-weight: 700; }
+    .stok-zero { color: #9ca3af; font-weight: 700; }
+
+    /* Action buttons */
+    .btn-edit  { background: #4e73df; color: #fff; border: none; border-radius: 6px; padding: 5px 11px; font-size: 11px; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-edit:hover { background: #3a5298; color: #fff; text-decoration: none; }
+    .btn-hapus { background: #fff; color: #dc3545; border: 1.5px solid #dc3545; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; }
+    .btn-hapus:hover { background: #dc3545; color: #fff; }
+
+    /* Riwayat table */
+    .riwayat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .riwayat-table thead th {
+      background: #f8fafc; border-bottom: 1.5px solid #eef1f6;
+      padding: 10px 16px; font-size: 11px; font-weight: 700;
+      color: #8899bb; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .riwayat-table tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .1s; }
+    .riwayat-table tbody tr:last-child { border: none; }
+    .riwayat-table tbody tr:hover { background: #f8fafc; }
+    .riwayat-table td { padding: 11px 16px; vertical-align: middle; }
+
+    /* Faktur monospace */
+    .faktur-code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px; font-weight: 700;
+      background: #dbeafe; color: #1e40af;
+      padding: 2px 8px; border-radius: 5px;
+      letter-spacing: .5px;
+    }
+
+    /* Form elements */
+    .form-label { font-size: 13px; font-weight: 700; color: #1e2c5a; margin-bottom: 5px; }
+    .form-control, .form-select {
+      border: 1.5px solid #d8e3f5; border-radius: 8px;
+      padding: 9px 13px; font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #4e73df;
+      box-shadow: 0 0 0 3px rgba(78,115,223,.12);
+    }
+
+    /* Stok pill */
+    .stok-pill {
+      display: none; align-items: center; gap: 6px;
+      margin-top: 8px; padding: 4px 11px;
+      background: #e8f4fd; border-radius: 50px;
+      font-size: 12px; font-weight: 700; color: #1e6f9f;
+      width: fit-content;
+    }
+    .stok-pill.visible { display: inline-flex; }
+  </style>
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  {% include 'owner/_sidebar.html' with active='gudang' %}
+
+  <!-- ══════════════ CONTENT WRAPPER ══════════════ -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Gudang Utama
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Page Heading -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap" style="gap:12px;">
+          <div>
+            <h4 style="font-weight:900;color:#1e2c5a;margin:0;">
+              <i class="fa fa-warehouse me-2"></i>Gudang Utama
+            </h4>
+            <div style="font-size:13px;color:#8899bb;margin-top:2px;">
+              Kelola stok gudang dan distribusi ke toko cabang.
+            </div>
+          </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% if messages %}
+          {% for msg in messages %}
+          <div class="alert alert-dismissible fade show"
+               role="alert"
+               style="border-radius:10px;font-size:13px;border:none;margin-bottom:14px;
+                      {% if 'berhasil' in msg.message|lower or msg.tags == 'success' %}
+                        background:#d1fae5;color:#065f46;
+                      {% elif msg.tags == 'error' or msg.tags == 'danger' %}
+                        background:#fee2e2;color:#991b1b;
+                      {% else %}
+                        background:#fef3c7;color:#92400e;
+                      {% endif %}">
+            <i class="fa fa-info-circle me-2"></i>{{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- ══ KPI CARDS ══ -->
+        <div class="row g-3 mb-4">
+
+          <!-- Total Item Gudang -->
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="kpi-card" style="background:linear-gradient(135deg,#1e2c5a,#3a5298);color:#fff;">
+              <div class="kpi-label" style="color:rgba(255,255,255,.6);">Total Item Gudang</div>
+              <div class="kpi-value">{{ jumlah_barang|intcomma }}</div>
+              <div class="kpi-sub" style="color:rgba(255,255,255,.5);">jenis barang terdaftar</div>
+              <i class="fa fa-cubes kpi-icon"></i>
+            </div>
+          </div>
+
+          <!-- Total Stok Keseluruhan -->
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="kpi-card" style="background:#fff;">
+              <div class="kpi-label" style="color:#8899bb;">Total Stok Keseluruhan</div>
+              <div class="kpi-value" style="color:#1e2c5a;" id="totalStokVal">
+                {{total_stok|default:"—"|intcomma}}
+              </div>
+              <div class="kpi-sub" style="color:#8899bb;">unit stok di gudang</div>
+              <i class="fa fa-database kpi-icon" style="color:#1e2c5a;"></i>
+            </div>
+          </div>
+
+          <!-- Jumlah Toko -->
+          <div class="col-12 col-sm-6 col-md-4">
+            <div class="kpi-card" style="background:#fff;">
+              <div class="kpi-label" style="color:#8899bb;">Jumlah Toko</div>
+              <div class="kpi-value" style="color:#1e2c5a;">{{ toko_list|length }}</div>
+              <div class="kpi-sub" style="color:#8899bb;">toko cabang terdaftar</div>
+              <i class="fa fa-store kpi-icon" style="color:#1e2c5a;"></i>
+            </div>
+          </div>
+
+        </div>
+        <!-- ══ END KPI CARDS ══ -->
+
+        <!-- ══ MAIN ROW: Daftar Barang Gudang ══ -->
+        <div class="row g-3 mb-4">
+
+          <!-- Daftar Barang — full width -->
+          <div class="col-12">
+            <div class="section-card">
+              <div class="card-header d-flex align-items-center justify-content-between flex-wrap" style="gap:10px;">
+                <div>
+                  <div><i class="fa fa-boxes me-2"></i>Daftar Barang Gudang Utama</div>
+                  <div class="sub">{{ jumlah_barang|intcomma }} item &bull; {{ gudang.nama_toko|default:"Gudang" }}</div>
+                </div>
+                <div class="d-flex flex-wrap" style="gap:8px;">
+                  <a href="{% url 'owner_gudang_download' %}" class="btn btn-outline-success btn-sm fw-bold" style="border-radius:7px;font-size:12px;">
+                    <i class="fa fa-download me-1"></i>Download
+                  </a>
+                  <a href="{% url 'owner_gudang_upload' %}" class="btn btn-outline-primary btn-sm fw-bold" style="border-radius:7px;font-size:12px;">
+                    <i class="fa fa-upload me-1"></i>Upload Excel
+                  </a>
+                  <a href="{% url 'owner_gudang_tambah' %}" class="btn btn-primary btn-sm fw-bold" style="border-radius:7px;font-size:12px;">
+                    <i class="fa fa-plus me-1"></i>Tambah Barang
+                  </a>
+                </div>
+              </div>
+
+              <!-- Search -->
+              <div class="p-3 border-bottom d-flex align-items-center gap-2" style="border-color:#eef1f6!important;">
+                <i class="fa fa-search" style="color:#8899bb;"></i>
+                <input type="text" id="searchBarang" class="form-control form-control-sm border-0"
+                       placeholder="Cari nama atau barcode barang..."
+                       style="font-family:'Poppins',sans-serif;">
+              </div>
+
+              {% if barangs %}
+              <div class="table-responsive">
+                <table class="barang-table" id="tableBarang">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Barcode</th>
+                      <th>Nama Barang</th>
+                      <th>Satuan</th>
+                      <th class="text-end">Stok</th>
+                      <th class="text-end">Harga Ecer</th>
+                      <th class="text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for b in barangs %}
+                    <tr>
+                      <td style="color:#8899bb;font-size:12px;">{{ forloop.counter }}</td>
+                      <td style="font-family:monospace;font-size:12px;color:#3a5298;font-weight:700;">
+                        {{ b.barcode|default:"-" }}
+                      </td>
+                      <td>
+                        <div style="font-weight:600;color:#1e2c5a;">{{ b.nama|title }}</div>
+                        {% if b.keterangan %}
+                        <div style="font-size:11px;color:#8899bb;">{{ b.keterangan|truncatechars:38 }}</div>
+                        {% endif %}
+                      </td>
+                      <td style="font-size:12px;">{{ b.satuan }}</td>
+                      <td class="text-end">
+                        <span class="{% if b.stok == 0 %}stok-zero{% elif b.stok < 10 %}stok-low{% else %}stok-ok{% endif %}">
+                          {{ b.stok|intcomma }}
+                        </span>
+                      </td>
+                      <td class="text-end" style="font-size:12px;">Rp {{ b.harga_ecer|intcomma }}</td>
+                      <td class="text-center">
+                        <div class="d-flex gap-1 justify-content-center">
+                          <a href="{% url 'owner_gudang_edit' b.id %}" class="btn-edit">
+                            <i class="fa fa-pencil me-1"></i>Edit
+                          </a>
+                          <form method="post" style="display:inline;"
+                                onsubmit="return confirm('Hapus barang {{ b.nama }}?')">
+                            {% csrf_token %}
+                            <input type="hidden" name="aksi" value="hapus">
+                            <input type="hidden" name="barang_id" value="{{ b.id }}">
+                            <button type="submit" class="btn-hapus">
+                              <i class="fa fa-trash-o"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <div class="text-center py-5" style="color:#8899bb;">
+                <i class="fa fa-inbox" style="font-size:36px;opacity:.2;display:block;margin-bottom:12px;"></i>
+                Belum ada barang di gudang.<br>
+                <a href="{% url 'owner_gudang_tambah' %}" class="btn btn-primary btn-sm fw-bold mt-3" style="border-radius:7px;">
+                  <i class="fa fa-plus me-1"></i>Tambah Barang Pertama
+                </a>
+              </div>
+              {% endif %}
+            </div><!-- /section-card -->
+          </div>
+
+        </div>
+        <!-- ══ END MAIN ROW ══ -->
+
+        <!-- Shortcut ke Distribusi -->
+        <div class="section-card" style="background:linear-gradient(135deg,#1e2c5a,#3a5298);border:none;">
+          <div class="p-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#fff;"><i class="fa fa-truck me-2"></i>Siap mendistribusikan barang?</div>
+              <div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:4px;">Buka halaman Distribusi untuk memilih toko dan barang yang akan dikirim.</div>
+            </div>
+            <a href="{% url 'owner_distribusi' %}" class="btn btn-warning fw-bold" style="border-radius:9px;color:#1e2c5a;">
+              <i class="fa fa-truck me-2"></i>Ke Halaman Distribusi
+            </a>
+          </div>
+        </div>
+
+        <!-- Placeholder untuk riwayat yang sudah dipindah -->
+        <div class="section-card" style="display:none;"><!-- riwayat distribusi dipindah ke /owner/distribusi/ -->
+
+          {% if riwayat_distribusi %}
+          <div class="table-responsive">
+            <table class="riwayat-table">
+              <thead>
+                <tr>
+                  <th>No. Faktur</th>
+                  <th>Barang</th>
+                  <th>Toko Tujuan</th>
+                  <th class="text-center">Jumlah</th>
+                  <th>Waktu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in riwayat_distribusi %}
+                <tr>
+                  <td>
+                    <span class="faktur-code">{{ r.no_faktur|default:r.id }}</span>
+                  </td>
+                  <td>
+                    <div style="font-weight:700;color:#1e2c5a;font-size:13px;">
+                      {{ r.barang.nama|default:r.barang_nama|truncatechars:30 }}
+                    </div>
+                    {% if r.catatan %}
+                    <div style="font-size:11px;color:#8899bb;">{{ r.catatan|truncatechars:32 }}</div>
+                    {% endif %}
+                  </td>
+                  <td style="font-size:12px;color:#3a4f7a;font-weight:600;">
+                    {{ r.toko.nama_toko|default:r.cabang_tujuan.nama_toko }}
+                  </td>
+                  <td class="text-center" style="font-weight:700;color:#1e2c5a;">
+                    {{ r.jumlah|intcomma }}
+                  </td>
+                  <td style="font-size:11px;color:#8899bb;">
+                    {{ r.created_at|date:"d/m/Y H:i" }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-5" style="color:#8899bb;">
+            <i class="fa fa-history" style="font-size:36px;opacity:.18;display:block;margin-bottom:12px;"></i>
+            Belum ada riwayat distribusi.
+          </div>
+          {% endif %}
+        </div>
+        <!-- ══ END RIWAYAT ══ -->
+
+      </div><!-- /container-fluid -->
+    </div><!-- /content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">
+        &copy; POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+
+  </div><!-- /content-wrapper -->
+</div><!-- /wrapper -->
+
+<!-- Scripts -->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script>
+// Auto-compute total stok from table if not provided by view
+(function() {
+  var el = document.getElementById('totalStokVal');
+  if (el && el.textContent.trim() === '—') {
+    var total = 0;
+    document.querySelectorAll('#tableBarang tbody tr').forEach(function(tr) {
+      var stokCell = tr.cells[4];
+      if (stokCell) {
+        var v = parseInt(stokCell.textContent.replace(/\D/g, '')) || 0;
+        total += v;
+      }
+    });
+    el.textContent = total.toLocaleString('id-ID');
+  }
+})();
+
+// Search filter for barang table
+document.getElementById('searchBarang').addEventListener('keyup', function() {
+  var q = this.value.toLowerCase();
+  document.querySelectorAll('#tableBarang tbody tr').forEach(function(tr) {
+    tr.style.display = tr.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+  });
+});
+
+</script>
+</body>
+</html>

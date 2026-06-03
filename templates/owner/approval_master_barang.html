@@ -1,0 +1,325 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Approval Request Master Barang — POSMI Korporasi</title>
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#f4f6fb; }
+    #accordionSidebar { background:linear-gradient(180deg,#1e2c5a 0%,#2c3e6b 100%)!important; }
+    .sidebar-brand { padding:20px 16px!important; }
+    .sidebar-brand-text { font-size:15px!important; font-weight:900!important; }
+    .sidebar .nav-item .nav-link { color:rgba(255,255,255,.65)!important; font-size:13px; font-weight:600; padding:10px 20px; }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color:#fff!important; background:rgba(255,255,255,.08)!important; }
+    .sidebar .nav-item .nav-link i { width:18px; text-align:center; }
+    .sidebar hr { border-color:rgba(255,255,255,.12)!important; }
+    .sidebar-heading { color:rgba(255,255,255,.4)!important; font-size:10px; font-weight:700; letter-spacing:1.2px; padding:10px 20px 4px!important; }
+
+    /* Section cards */
+    .section-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.06); border:none; overflow:hidden; margin-bottom:28px; }
+    .section-card .card-header { padding:16px 22px; border-bottom:1px solid #eef1f6; }
+    .section-card .card-header h5 { font-size:14px; font-weight:800; color:#1e2c5a; margin:0 0 2px; }
+    .section-card .card-header p  { font-size:12px; color:#8899bb; margin:0; }
+
+    /* Pending request cards */
+    .req-card { border:1.5px solid #fde68a; border-radius:12px; padding:20px; margin-bottom:14px; background:#fffbeb; }
+    .req-card .req-name { font-size:15px; font-weight:800; color:#1e2c5a; }
+    .req-card .req-meta { font-size:12px; color:#6b7280; margin-top:4px; }
+
+    /* Conflict cards */
+    .conflict-card { border:1.5px solid #fdba74; border-radius:12px; padding:20px; margin-bottom:14px; background:#fff7ed; }
+    .conflict-card .req-name { font-size:15px; font-weight:800; color:#1e2c5a; }
+    .conflict-card .req-meta { font-size:12px; color:#6b7280; margin-top:4px; }
+
+    /* Action buttons */
+    .btn-approve { background:#10b981; color:#fff; border:none; border-radius:8px; padding:9px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:opacity .2s; }
+    .btn-reject  { background:#fff; color:#dc3545; border:1.5px solid #dc3545; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s; }
+    .btn-approve:hover { opacity:.88; }
+    .btn-reject:hover  { background:#fee2e2; }
+    .btn-conflict-save { background:#f97316; color:#fff; border:none; border-radius:8px; padding:9px 20px; font-size:13px; font-weight:700; cursor:pointer; transition:opacity .2s; }
+    .btn-conflict-save:hover { opacity:.88; }
+
+    /* Status badges */
+    .badge-status { font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+    .status-pending  { background:#fef3c7; color:#92400e; }
+    .status-conflict { background:#ffedd5; color:#9a3412; }
+    .status-approved { background:#d1fae5; color:#065f46; }
+    .status-rejected { background:#fee2e2; color:#991b1b; }
+
+    /* Detail table inside cards */
+    .detail-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:14px; }
+    .detail-table td { padding:7px 10px; border-bottom:1px solid #f0f4f8; vertical-align:top; }
+    .detail-table td:first-child { font-weight:700; color:#374151; width:38%; white-space:nowrap; }
+    .detail-table td:last-child  { color:#4b5563; }
+    .detail-table tr:last-child td { border:none; }
+
+    /* Riwayat table */
+    .riwayat-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .riwayat-table thead th { background:#f8fafc; border-bottom:1.5px solid #eef1f6; padding:10px 16px; font-size:11px; font-weight:700; color:#8899bb; text-transform:uppercase; }
+    .riwayat-table tbody tr { border-bottom:1px solid #f0f4f8; }
+    .riwayat-table tbody tr:last-child { border:none; }
+    .riwayat-table td { padding:11px 16px; vertical-align:middle; }
+
+    .barcode-mono { font-family:monospace; font-size:12px; font-weight:700; background:#f0f4fb; border-radius:5px; padding:2px 8px; color:#3a5298; }
+    .barcode-strike { font-family:monospace; font-size:12px; color:#9ca3af; text-decoration:line-through; }
+
+    .rmb-input { border:1.5px solid #e4e8f0; border-radius:8px; padding:9px 13px; font-size:13px; font-family:'Poppins',sans-serif; color:#374151; background:#fff; width:100%; }
+    .rmb-input:focus { border-color:#f97316; outline:none; box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+  </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {% include 'owner/_sidebar.html' with active='request_barang' %}
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{% url 'owner_gudang' %}" style="color:#8899bb;text-decoration:none;">Gudang</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Request Barang
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Page title -->
+        <div class="mb-4">
+          <h4 style="font-weight:900;color:#1e2c5a;margin:0;">
+            <i class="fa fa-inbox me-2"></i>Approval Request Master Barang
+          </h4>
+          <div style="font-size:13px;color:#8899bb;margin-top:2px;">
+            Tinjau permintaan penambahan master barang baru dari admin toko ke Gudang Utama.
+          </div>
+        </div>
+
+        <!-- Flash messages -->
+        {% for msg in messages %}
+          <div class="alert {% if msg.tags == 'success' %}alert-success{% elif msg.tags == 'warning' %}alert-warning{% else %}alert-danger{% endif %} alert-dismissible fade show"
+               style="border-radius:10px;font-size:13px;" role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+
+        <!-- ══════════════════════════════════════════
+             SECTION 1 — Menunggu Persetujuan
+        ══════════════════════════════════════════ -->
+        <div class="section-card">
+          <div class="card-header">
+            <h5>
+              <i class="fa fa-clock-o me-2" style="color:#f59e0b;"></i>Menunggu Persetujuan
+              {% if pending %}
+                <span style="background:#f59e0b;color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:50px;margin-left:6px;">{{ pending|length }}</span>
+              {% endif %}
+            </h5>
+            <p>Barang belum ditambah ke gudang hingga Anda menyetujui request ini.</p>
+          </div>
+          <div class="p-4">
+            {% if pending %}
+              {% for req in pending %}
+              <div class="req-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                  <div>
+                    <div class="req-name">{{ req.nama_barang }}</div>
+                    <div class="req-meta">
+                      <span class="barcode-mono">{{ req.barcode }}</span>
+                      &nbsp;&bull;&nbsp;
+                      Toko: <strong>{{ req.cabang.nama_toko }}</strong>
+                      &nbsp;&bull;&nbsp;
+                      {{ req.created_at|date:"d/m/Y H:i" }}
+                    </div>
+                  </div>
+                  <span class="badge-status status-pending">Menunggu</span>
+                </div>
+
+                <table class="detail-table">
+                  <tr><td>Barcode</td>        <td><span class="barcode-mono">{{ req.barcode }}</span></td></tr>
+                  <tr><td>Nama Barang</td>    <td>{{ req.nama_barang }}</td></tr>
+                  <tr><td>Satuan</td>         <td>{{ req.satuan }}</td></tr>
+                  <tr><td>Harga Beli</td>     <td>Rp {{ req.harga_beli|default:0|intcomma }}</td></tr>
+                  <tr><td>Harga Ecer</td>     <td>Rp {{ req.harga_ecer|default:0|intcomma }}</td></tr>
+                  <tr><td>Harga Grosir</td>   <td>Rp {{ req.harga_grosir|default:0|intcomma }}</td></tr>
+                  <tr><td>Keterangan</td>     <td>{{ req.keterangan|default:"-" }}</td></tr>
+                  <tr><td>Catatan Toko</td>   <td style="font-style:italic;">{{ req.catatan_toko|default:"-" }}</td></tr>
+                </table>
+
+                <form method="post" class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+                  {% csrf_token %}
+                  <input type="hidden" name="req_id" value="{{ req.id }}">
+                  <input type="text" name="catatan_owner" class="rmb-input"
+                    placeholder="Catatan untuk admin toko (opsional)"
+                    style="max-width:300px;">
+                  <button type="submit" name="aksi" value="approve" class="btn-approve">
+                    <i class="fa fa-check me-1"></i>Setujui
+                  </button>
+                  <button type="submit" name="aksi" value="reject" class="btn-reject"
+                    onclick="return confirm('Yakin menolak request master barang ini?')">
+                    <i class="fa fa-times me-1"></i>Tolak
+                  </button>
+                </form>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4" style="color:#8899bb;">
+                <i class="fa fa-check-circle" style="font-size:32px;opacity:.2;display:block;margin-bottom:10px;"></i>
+                Tidak ada request yang menunggu persetujuan.
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 2 — Barcode Konflik
+        ══════════════════════════════════════════ -->
+        <div class="section-card" style="border-top:3px solid #f97316;">
+          <div class="card-header" style="background:#fff7ed;">
+            <h5 style="color:#9a3412;">
+              <i class="fa fa-exclamation-triangle me-2" style="color:#f97316;"></i>Barcode Konflik
+              {% if conflict %}
+                <span style="background:#f97316;color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:50px;margin-left:6px;">{{ conflict|length }}</span>
+              {% endif %}
+            </h5>
+            <p style="color:#9a3412;">Barcode sudah ada di gudang. Ganti barcode baru untuk barang ini agar bisa disimpan.</p>
+          </div>
+          <div class="p-4">
+            {% if conflict %}
+              {% for req in conflict %}
+              <div class="conflict-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                  <div>
+                    <div class="req-name">{{ req.nama_barang }}</div>
+                    <div class="req-meta">
+                      Barcode lama:&nbsp;
+                      <span class="barcode-strike">{{ req.barcode }}</span>
+                      &nbsp;&bull;&nbsp;
+                      Toko: <strong>{{ req.cabang.nama_toko }}</strong>
+                    </div>
+                  </div>
+                  <span class="badge-status status-conflict">Konflik Barcode</span>
+                </div>
+
+                {% if req.catatan_owner %}
+                <div style="font-size:12px;color:#9a3412;background:#ffedd5;border-radius:6px;padding:8px 12px;margin-bottom:10px;">
+                  <i class="fa fa-info-circle me-1"></i>{{ req.catatan_owner }}
+                </div>
+                {% endif %}
+
+                <form method="post" class="mt-2 d-flex flex-wrap gap-2 align-items-end">
+                  {% csrf_token %}
+                  <input type="hidden" name="req_id" value="{{ req.id }}">
+                  <input type="hidden" name="aksi" value="set_barcode">
+                  <div style="flex:1;min-width:200px;">
+                    <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:4px;">Barcode Baru <span style="color:#dc3545;">*</span></label>
+                    <input type="text" name="barcode_baru" class="rmb-input"
+                      placeholder="Masukkan barcode baru yang belum digunakan" required>
+                  </div>
+                  <button type="submit" class="btn-conflict-save" style="align-self:flex-end;">
+                    <i class="fa fa-save me-1"></i>Konfirmasi Simpan dengan Barcode Baru
+                  </button>
+                </form>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4" style="color:#8899bb;">
+                <i class="fa fa-check" style="font-size:32px;opacity:.2;display:block;margin-bottom:10px;"></i>
+                Tidak ada konflik barcode.
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 3 — Riwayat (last 20)
+        ══════════════════════════════════════════ -->
+        <div class="section-card">
+          <div class="card-header">
+            <h5><i class="fa fa-history me-2"></i>Riwayat Request</h5>
+            <p>20 request terakhir dari semua toko.</p>
+          </div>
+          {% if history %}
+          <div class="table-responsive">
+            <table class="riwayat-table">
+              <thead>
+                <tr>
+                  <th>Toko</th>
+                  <th>Nama Barang</th>
+                  <th>Barcode Asal</th>
+                  <th>Barcode Final</th>
+                  <th class="text-center">Status</th>
+                  <th>Catatan Owner</th>
+                  <th>Tanggal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in history %}
+                <tr>
+                  <td style="font-weight:600;color:#1e2c5a;font-size:12px;">{{ r.cabang.nama_toko }}</td>
+                  <td style="font-weight:600;color:#2f3446;">{{ r.nama_barang|truncatechars:30 }}</td>
+                  <td><span class="barcode-mono">{{ r.barcode }}</span></td>
+                  <td>
+                    {% if r.barcode_final and r.barcode_final != r.barcode %}
+                      <span class="barcode-mono" style="background:#d1fae5;color:#065f46;">{{ r.barcode_final }}</span>
+                    {% else %}
+                      <span style="color:#9ca3af;font-size:12px;">—</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge-status status-{{ r.status }}">
+                      {% if r.status == 'pending' %}Menunggu
+                      {% elif r.status == 'conflict' %}Konflik
+                      {% elif r.status == 'approved' %}Disetujui
+                      {% elif r.status == 'rejected' %}Ditolak
+                      {% else %}{{ r.status }}{% endif %}
+                    </span>
+                  </td>
+                  <td style="font-size:12px;color:#6b7280;font-style:italic;">{{ r.catatan_owner|default:"-" }}</td>
+                  <td style="font-size:11px;color:#8899bb;white-space:nowrap;">{{ r.updated_at|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4" style="color:#8899bb;font-size:13px;">
+            Belum ada riwayat request.
+          </div>
+          {% endif %}
+        </div>
+
+      </div><!-- /container-fluid -->
+    </div><!-- /content -->
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">&copy; POSMI — Paket Korporasi</div>
+    </footer>
+  </div><!-- /content-wrapper -->
+</div><!-- /wrapper -->
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+</body>
+</html>

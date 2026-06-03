@@ -1,311 +1,772 @@
 {% extends 'base-pos.html' %}
 {% load humanize %}
+
+{% block head %}
+<style>
+:root {
+  --pos-dark:   #2d4a5c;
+  --pos-mid:    #3d6275;
+  --pos-light:  #5a8a9f;
+  --pos-border: #d4e3eb;
+  --pos-soft:   #f2f7fa;
+  --pos-text:   #1e3a47;
+  --pos-sub:    #6a8fa0;
+}
+
+body { background: #eef3f6; overflow-x: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Toolbar ── */
+.pos-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #3d6e85;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.toolbar-nota {
+  color: rgba(255,255,255,.6);
+  font-size: 11px;
+}
+.toolbar-nota strong { color: #fff; font-size: 12px; }
+.toolbar-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.btn-pos {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity .15s;
+  white-space: nowrap;
+}
+.btn-pos:hover { opacity: .85; }
+.btn-pos-white  {
+  background: rgba(255,255,255,.24);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,.52);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 3px 10px rgba(20,55,72,.18);
+}
+.btn-pos-white:hover {
+  background: #fff;
+  color: var(--pos-dark);
+  border-color: #fff;
+  opacity: 1;
+}
+.btn-pos-teal   { background: var(--pos-mid); color: #fff; }
+.btn-pos-new    { background: var(--pos-dark); color: #fff; }
+.btn-pos-new:hover { background: var(--pos-mid); color: #fff; }
+.btn-pos-danger { background: #dc3545; color: #fff; }
+.btn-pos-logout {
+  background: #fff;
+  color: #dc3545;
+  border: 1.5px solid rgba(220,53,69,.28);
+  box-shadow: 0 3px 10px rgba(30,58,71,.08);
+}
+.btn-pos-logout:hover {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+  opacity: 1;
+}
+.btn-pos-pay    { background: #1a6b3a; color: #fff; }
+.btn-pos-pay:disabled { background: #6b9e82; cursor: not-allowed; }
+.btn-pos-cek    { background: #0d6efd; color: #fff; }
+.btn-pos-cek:hover { background: #0b5ed7; color: #fff; opacity: 1; }
+
+/* ── Search bar ── */
+.pos-searchbar {
+  display: flex; align-items: center; gap: 8px;
+  background: #fff;
+  border: 1.5px solid var(--pos-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 10px;
+}
+.pos-searchbar i { color: var(--pos-sub); font-size: 15px; }
+.pos-searchbar input {
+  border: none; outline: none; flex: 1;
+  font-size: 14px; font-family: 'Poppins', sans-serif;
+  color: var(--pos-text);
+  background: transparent;
+}
+.pos-searchbar input::placeholder { color: #aab; }
+.pos-item-count {
+  background: var(--pos-soft);
+  border: 1px solid var(--pos-border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pos-text);
+  white-space: nowrap;
+}
+.btn-add-item {
+  background: var(--pos-dark);
+  color: #fff; border: none;
+  border-radius: 7px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s;
+}
+.btn-add-item:hover { opacity: .85; }
+
+/* ── Item table ── */
+.pos-table-wrap {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--pos-border);
+  overflow: hidden;
+}
+.pos-table { width: 100%; border-collapse: collapse; }
+.pos-table thead th {
+  background: var(--pos-soft);
+  border-bottom: 1.5px solid var(--pos-border);
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pos-sub);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.pos-table tbody tr { border-bottom: 1px solid #f0f4f6; }
+.pos-table tbody tr:last-child { border-bottom: none; }
+.pos-table tbody tr:hover { background: var(--pos-soft); }
+.pos-table td { padding: 10px 14px; vertical-align: middle; }
+.item-name { font-weight: 600; font-size: 14px; color: var(--pos-text); }
+.item-sub  { font-size: 11px; color: var(--pos-sub); margin-top: 1px; }
+.item-price-input {
+  width: 110px;
+  border: 1px solid var(--pos-border);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  text-align: right;
+}
+.qty-input {
+  width: 70px;
+  border: 1px solid var(--pos-border);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+.qty-form { display: flex; align-items: center; gap: 4px; justify-content: center; }
+.btn-qty { background: var(--pos-soft); border: 1px solid var(--pos-border); border-radius: 5px; padding: 4px 8px; font-size: 13px; cursor: pointer; color: var(--pos-text); }
+
+.subtotal-row td { background: var(--pos-soft); font-size: 13px; color: var(--pos-sub); padding: 4px 14px 8px; }
+
+/* ── Footer total ── */
+.pos-footer {
+  background: #3d6e85;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.pos-footer-label { color: rgba(255,255,255,.7); font-size: 13px; }
+.pos-footer-total { color: #fff; font-size: 1.6rem; font-weight: 800; }
+.pos-footer-actions { display: flex; gap: 10px; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--pos-sub);
+}
+.empty-state .icon { font-size: 48px; opacity: .25; margin-bottom: 16px; }
+.empty-state h3 { font-size: 15px; font-weight: 700; color: var(--pos-text); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; line-height: 1.7; max-width: 400px; margin: 0 auto; }
+</style>
+{% endblock %}
+
 {% block contents %}
-<!-- Modal Memilih Barang-->
-<div class="modal fade" id="daftarTransaksi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticDaftarTransaksi" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        {% if jumlah_penjualan_pending > 0 %}<h5 class="modal-title fw-bold" id="staticDaftarTransaksi">Pending Transaksi [{{jumlah_penjualan_pending|intcomma}}]</h5>{%endif%}
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+<!-- ══ MODAL: Pending Transaksi ══ -->
+<div class="modal fade" id="daftarTransaksi" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+
+      <!-- Header -->
+      <div style="background:#3d6e85;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#fff;">Pending Transaksi</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:1px;">Transaksi yang belum diselesaikan</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          {% if jumlah_penjualan_pending > 0 %}
+            <span style="background:#f6ad3a;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:50px;">{{ jumlah_penjualan_pending }}</span>
+          {% endif %}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
       </div>
-      <div class="modal-body">
+
+      <!-- Search -->
+      {% if jumlah_penjualan_pending > 0 %}
+      <div style="padding:12px 16px 6px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+        <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d4e3eb;border-radius:8px;padding:7px 12px;">
+          <i class="fa fa-search" style="color:#8899aa;font-size:13px;"></i>
+          <input type="text" class="search-pending"
+                 placeholder="Cari ID transaksi..."
+                 style="border:none;outline:none;flex:1;font-size:13px;font-family:'Poppins',sans-serif;background:transparent;">
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- List -->
+      <div style="max-height:340px;overflow-y:auto;" id="tablePendingTransaksi">
         {% if jumlah_penjualan_pending > 0 %}
-            <p><input type="text" placeholder="nomor transaksi...." style="z-index: -4;" autofocus class="border border-secondary form-control search-pending"></p>
+          {% for p in penjualan_pending %}
+          <div style="padding:14px 16px;border-bottom:1px solid #f0f4f6;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:700;color:#3d6e85;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                {{ p.nota }}
+              </div>
+              <div style="font-size:11px;color:#8899aa;margin-top:2px;">
+                {{ p.created_at|date:"d M Y, H:i" }}
+              </div>
+              <div style="font-size:12px;color:#4a5568;margin-top:3px;">
+                {{ p.items }} barang &bull; <strong>Rp {{ p.total|intcomma }}</strong>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+              <a href="{% url 'index_pos' %}?nota={{ p.nota }}"
+                 style="padding:6px 14px;background:#1a6b3a;color:#fff;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;">
+                Proses
+              </a>
+              <a href="{% url 'hapus_transaksi' %}?nota={{ p.nota }}"
+                 style="padding:6px 14px;background:#fff;color:#dc3545;border:1.5px solid #dc3545;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;">
+                Hapus
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;padding:48px 20px;color:#94a3b8;">
+            <i class="fa fa-check-circle" style="font-size:32px;opacity:.3;display:block;margin-bottom:10px;"></i>
+            Tidak ada transaksi pending.
+          </div>
         {% endif %}
-        <div style="min-height: 300px;max-height: 300px;" class="overflow-auto p-2 border rounded shadow">
-            {% if jumlah_penjualan_pending > 0 %}
-                <table class="table" id="tablePendingTransaksi">
-                    <tbody>
-                        {% for penjualan in penjualan_pending %}
-                            <tr>
-                                <td class="fw-bold">
-                                    <div>
-                                        <span>ID: {{penjualan.nota}}</span><br>
-                                        <span style="font-size: 12px;">dibuat: <i>{{penjualan.created_at|date:"d M Y"}}</i></span><br>
-                                        <span style="font-size: 12px;">{{penjualan.items|intcomma}} barang, Total Rp.{{penjualan.total|intcomma}}</span>
-                                    </div>
-                                    <div>
-                                        <a href="{% url 'index_pos'%}?nota={{penjualan.nota}}" class="btn btn-sm m-1 btn-success">proses</a>
-                                        <a href="{% url 'hapus_transaksi'%}?nota={{penjualan.nota}}" class="btn btn-sm btn-danger m-1">hapus</a>
-                                    </div>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="text-center fst-italic">
-                    Belum Ada Pending Transaksi...
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:12px 16px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:right;">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" style="border-radius:7px;font-size:13px;">Tutup</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Tambah Barang ══ -->
+<div class="modal fade" id="modalBarang" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#264b5d,#3a7a96);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#fff;">Pilih Barang</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:1px;">{{ jml_barang|intcomma }} item tersedia</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Search -->
+      <div style="padding:14px 16px 8px;background:#f4f8fa;border-bottom:1px solid #d0dde3;">
+        <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #d0dde3;border-radius:8px;padding:8px 12px;">
+          <i class="fa fa-search" style="color:#8899aa;font-size:13px;"></i>
+          <input type="text" class="search-barang"
+                 placeholder="Cari nama barang..."
+                 style="border:none;outline:none;flex:1;font-size:13px;font-family:'Poppins',sans-serif;background:transparent;">
+        </div>
+      </div>
+
+      <!-- List -->
+      <div style="max-height:360px;overflow-y:auto;overflow-x:hidden;">
+        <table style="width:100%;border-collapse:collapse;" id="tableMasterBarang">
+          <tbody>
+            {% for bar in barang %}
+            <tr style="border-bottom:1px solid #f0f4f6;">
+              <td style="padding:10px 16px;">
+                <div style="font-weight:600;font-size:13px;color:#1e3a47;">{{ bar.nama|title }}</div>
+                <div style="font-size:11px;color:#8899aa;margin-top:1px;">
+                  {{ bar.satuan }}
+                  {% if bar.stok > 0 %}
+                    &bull; Stok {{ bar.stok|intcomma }}
+                  {% endif %}
+                  &bull; Rp {{ bar.harga_ecer|intcomma }}
                 </div>
-            {% endif %}
-        </div>
+              </td>
+              <td style="padding:10px 16px;text-align:right;white-space:nowrap;">
+                <a href="{% url 'tambah_barang_pos' %}?nota={{ nota }}&id={{ bar.id }}"
+                   style="background:#264b5d;color:#fff;padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none;">
+                  + Tambah
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2" style="text-align:center;padding:40px;color:#8899aa;font-size:13px;">
+                <i class="fa fa-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:10px;"></i>
+                Belum ada barang terdaftar.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
 
+      <!-- Footer -->
+      <div style="padding:12px 16px;background:#f4f8fa;border-top:1px solid #d0dde3;text-align:right;">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
       </div>
+
     </div>
   </div>
 </div>
 
-<!-- Modal Memilih Barang-->
-<div class="modal fade" id="modalBarang" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<!-- ══ MODAL: Pembayaran ══ -->
+<div class="modal fade" id="modalPayment" data-bs-backdrop="static" tabindex="-1">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="staticBackdropLabel">Tambah Barang [{{jml_barang|intcomma}}]</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header" style="background:var(--pos-dark);">
+        <h5 class="modal-title fw-bold text-white">Pembayaran</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <p><input type="text" placeholder="cari barang..." style="z-index: -4;" autofocus class="border border-secondary form-control search-barang"></p>
-        <div style="min-height: 300px;max-height: 300px;" class="overflow-auto p-2 border rounded shadow">
-            <table class="table" id="tableMasterBarang">
-                <tbody>
-                    {% for bar in barang %}
-                        <tr>
-                            <td>{{bar.nama|title}} ({{bar.satuan}})</td>
-                            <td><a href="{% url 'tambah_barang_pos'%}?nota={{nota}}&id={{bar.id}}" class="btn btn-success">+Tambah</a></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Payment-->
-<div class="modal fade" id="modalPayment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropPayment" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="staticBackdropPayment">Pembayaran</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form action="{% url 'bayar_transaksi'%}?nota={{nota}}" method="post">
+      <form id="formBayar" action="{% url 'bayar_transaksi' %}?nota={{ nota }}" method="post">
         {% csrf_token %}
+        <input type="hidden" name="jatuh_tempo" id="inputJatuhTempo">
         <div class="modal-body">
-            <div>
-                <label style="min-width: 130px;">Total Belanja:</label> <strong>Rp.{{total|intcomma}}</strong>
-            </div>
-            <div class="mt-3">
-                <span >
-                    <label for="metode" style="min-width: 130px;">Pembayaran:</label>
-                </span>
-                <select name="metode" id="metode" required>
-                    <option value="">--------</option>
-                    <option value="0">Cash</option>
-                    <option value="1">Transfer</option>
-                </select>
-            </div>
-            <div class="mt-3">
-                <span >
-                    <label for="pembeli" style="min-width: 130px;" >Pembeli:</label>
-                </span>
-                <input type="text" name="pembeli" id="pembeli" required>
-            </div>
+          <div class="d-flex justify-content-between align-items-center p-3 rounded mb-3" style="background:var(--pos-soft);">
+            <span class="text-muted" style="font-size:13px;">Total Belanja</span>
+            <span class="fw-bold" style="font-size:1.3rem;color:var(--pos-dark);">Rp {{ total|intcomma }}</span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size:13px;">Metode Pembayaran</label>
+            <select name="metode" id="selectMetodeBayar" class="form-control" required>
+              <option value="">-- Pilih metode --</option>
+              <option value="0">Cash</option>
+              <option value="1">Transfer</option>
+              {% if not is_paket_gratis %}
+              <option value="2">Tempo</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="mb-1">
+            <label class="form-label fw-bold" style="font-size:13px;">Nama Pembeli</label>
+            <input type="text" name="pembeli" class="form-control" placeholder="Nama pembeli (opsional)">
+          </div>
+          <div id="infoJatuhTempo" style="display:none;margin-top:10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:13px;color:#1e40af;">
+            <i class="fa fa-calendar me-1"></i>
+            Jatuh tempo: <strong id="labelJatuhTempo"></strong>
+          </div>
         </div>
-        <div class="modal-footer d-flex justify-content-end">
-            <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Tutup</button>
-            <button type="submit" class="btn btn-success mx-2" >Bayar</button>
-
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" id="btnProsesBayar" class="btn btn-success btn-sm px-4 fw-bold">Proses Pembayaran</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-{% if user.is_authenticated %}
-    <div>
-        {% if nota %}
-        <div class="p-2  my-2 border rounded rounded-3">
-            <div class="p-2">
-                <span class="fw-bold fs-6">ID Transaksi: <span class="fs-">{{nota}}</span></span>
-            </div>
-            <div class="d-flex justify-content-end">
-                <div class="dropdown">
-                    <button class="btn btn-success dropdown-toggle btn-sm mt-2 mx-2" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      5 Trx
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1"  style="max-height: 200px;overflow-y: scroll;">
-                        {% for trans in limapenjualan %}
-                        <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">No. Nota: {{trans.no_nota}}<br>Cust: {{trans.customer}}<br>Total: Rp.{{trans.total|intcomma}}</a></li>
-                        <hr>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <a href="{% url 'index_pos'%}" class="btn-sm btn-info btn mx-1 mt-2">+Baru</a>
-                {% if jumlah_penjualan_pending > 0 %}
-                    <a href="#" class="btn-sm btn-warning btn mt-2 mx-1"  data-bs-toggle="modal" data-bs-target="#daftarTransaksi">Pending&rarr;</a>
-                {% endif %}
-                {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">Admin&rarr;</a>{% endif%}
-                <a href="/logout/" class="btn-sm btn-info btn mx-1 mt-2">logout&rarr;</a>
-            </div>
+<!-- ══ MODAL: Jatuh Tempo ══ -->
+<div class="modal fade" id="modalJatuhTempo" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+      <div class="modal-header" style="background:#1d4ed8;padding:16px 20px;">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#fff;"><i class="fa fa-calendar me-2"></i>Pembayaran Tempo</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px;">Tentukan tanggal jatuh tempo pembayaran</div>
         </div>
-        {% else %}
-        <div class="text-end my-2 d-flex justify-content-end">
-            <div class="dropdown">
-                <button class="btn btn-success dropdown-toggle btn-sm mt-2" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                  5 Trx
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="max-height: 200px;overflow-y: scroll;">
-                    {% for trans in limapenjualan %}
-                    <li><a class="dropdown-item" target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trans.nota}}">No. Nota: {{trans.no_nota}}<br>Cust: {{trans.customer}}<br>Total: Rp.{{trans.total|intcomma}}</a></li>
-                    <hr>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% if jumlah_penjualan_pending > 0 %}
-                <a href="#" class="btn-sm btn-warning btn mt-2 mx-1" data-bs-toggle="modal" data-bs-target="#daftarTransaksi">Pending&rarr;</a>
-            {% endif%}
-            {% if user.is_superuser %}<a href="/cms/" class="btn-sm btn-primary btn mt-2 mx-1">Admin&rarr;</a>{% endif%}
-            <a href="/logout/" class="btn-sm btn-info btn mx-1 mt-2">logout&rarr;</a>
+        <button type="button" class="btn-close btn-close-white" id="btnTutupModalTempo"></button>
+      </div>
+      <div class="modal-body" style="padding:20px;">
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#1e40af;">
+          <i class="fa fa-info-circle me-1"></i>
+          Stok barang akan <strong>berkurang</strong> sekarang. Nilai penjualan akan masuk ke laporan setelah pembayaran dikonfirmasi di menu Admin.
         </div>
-        {% endif %}
-        <table class="table">
-            <thead  class="border-bottom border-secondary">
-                    <td colspan="3" class=" border rounded border-dark">
-                        <input type="text" name="" class="search form-control border-secondary" placeholder="cari nama barang" id="">
-                    </td>
-                    <td class="border border-dark fw-bold text-center">
-                        {{jumlah_item|intcomma}} Item
-                    </td>
-                    <td class="text-center border rounded-end border-dark">
-                        <a href="" class="btn btn-sm text-white" style="background-color: purple;" data-bs-toggle="modal" data-bs-target="#modalBarang">+Tambah Barang</a>
-                    </td>
-                    
-            </head>
-        </table>
-
-        {% if nota %}
-        <table class="table" id="tableBarang">
-            <thead>
-                <th>No.</th>
-                <th>Nama Barang</th>
-                <th class="text-center">Jumlah</th>
-                <th class="text-end" style="width: 300px;">Harga</th>
-                <!-- <th class="text-end">Total</th> -->
-            </thead>
-            <tbody>
-                
-                {% for jual in penjualandetail %}
-                    <tr class="">
-                        <td class="text-start ps-2 fw-bold" style="font-size: 15px;">{{forloop.counter}}</td>
-                        <td class="fw-bold" style="font-size: 15px;">{{jual.barang.nama|title}} ({{jual.barang.satuan}})</td>
-                        <td >
-                            <div class="d-flex justify-content-center align-items-center">
-                                
-                                <form class="justify-content-center d-flex" action="{% url 'ubah_items'%}?nota={{nota}}&id={{jual.barang.id}}" method="post">
-                                    {% csrf_token %}
-                                    <input type="number" name="jumlah" id="" class="rounded text-center border-secondary form-control" value="{{jual.jumlah}}" min="0" >
-                                    <button type="submit"class="btn btn-sm btn-secondary d-block d-lg-none d-xl-none d-md-none"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
-                                </form>
-                                <!-- <a class="btn btn-success m-2" href="{% url 'tambah_items'%}?nota={{nota}}&id={{jual.barang.id}}">+</a> -->
-                            </div>
-
-                        </td>
-                        <td class="fw-bold text-end" style="font-size: 15px;">
-                            <div class="d-flex justify-content-end">
-                                <div class="w-100 py-1 justify-content-end">
-                                    {% if jual.is_open %}
-                                        Rp. <input type="number" hx-get="{% url 'update_barang_satuan'%}?nota={{nota}}&id={{jual.id}}" hx-trigger="keyup delay:5s" hx-target="body" name="harga_baru" required value="{{jual.harga}}" min="0" style="width: 150px;" id="">.00
-                                    {% else %}
-                                        Rp. {{jual.harga|intcomma}}.00
-                                    {% endif %}
-                                </div>
-                                {% if user.is_superuser %}
-                                    <div style="font-size: 20px;width: 30px;text-align: center;">
-                                        {% if jual.is_open %}
-                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=0" style="text-decoration: none;color: green;padding-left: 5px;"><i class="fa fa-refresh" aria-hidden="true"></i></a>
-                                        {% else %}
-                                            <a href="{% url 'ganti_status_open'%}?nota={{nota}}&id={{jual.id}}&status=1" style="text-decoration: none;color:blue;padding-left: 5px;"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                                        {% endif %}
-                                    </div>
-                                {% endif%}
-                                <a style="text-decoration: none;color: red;padding-left: 5px; font-size: 18px;" href="{% url 'hapus_items'%}?nota={{nota}}&id={{jual.barang.id}}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                            </div>
-                            
-                        </td>
-                        <!-- <td class="fw-bold text-end" style="font-size: 15px;">Rp. {{jual.total|intcomma}}.00</td> -->
-                    </tr>
-                    <tr class="border-bottom border-secondary">
-                        <td style="background-color: lightgrey;"></td>
-                        <td class="fs-6 fw-bold text-start" style="background-color: lightgrey;">
-                            {{jual.jumlah|intcomma}} x @Rp.{{jual.harga|intcomma}}.00
-                        </td>
-                        <td class="fs-6 fw-bold text-end" colspan="2" style="background-color: lightgrey;">
-                            Rp. {{jual.total|intcomma}}.00           
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4">
-                        <div class="d-flex justify-content-center pt-3">
-                            <a href="{% url 'hapus_transaksi'%}?nota={{nota}}" class="btn btn-sm btn-danger rounded-pill px-4 mx-4">Hapus Transaksi</a>
-                            {% if bisa_transaksi %}
-                                <a href="#" class="btn btn-sm btn-success px-4 mx-4 rounded-pill" data-bs-toggle="modal" data-bs-target="#modalPayment">Pembayaran</a>
-                            {% else %}
-                                <button class="btn btn-sm btn-secondary px-4 mx-4 rounded-pill" disabled>Pembayaran</button>
-                            {% endif %}
-                        </div>
-                        
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    {% else %}
-        <div class="fst-italic mt-5 text-center" style="font-size: 15px;">
-            Belum ada barang dalam penjualan, silakan <b>{{user.userprofile.nama_lengkap|upper}}</b> tekan tombol <b>pending</b> untuk melihat transaksi yang belum dilakukan pembayaran, atau tekan tombol <b>tambah barang</b> untuk menambah barang secara manual, atau arahkan barcode scanner untuk mulai penjualan. 
-            <br><br>
-            {% if user.is_superuser %}
-            Silakan tekan tombol <b>Admin</b> untuk melakukan administrasi data.
-            {% endif %}
+        <div class="mb-2">
+          <label class="form-label fw-bold" style="font-size:13px;">Tanggal Jatuh Tempo</label>
+          <input type="date" id="inputTanggalTempo" class="form-control"
+                 style="font-size:14px;border-radius:7px;">
+          <div style="font-size:11px;color:#6b7280;margin-top:4px;">Tanggal sebelum hari ini tidak dapat dipilih.</div>
         </div>
-    {% endif %}
+      </div>
+      <div class="modal-footer border-0" style="padding:14px 20px;gap:10px;">
+        <button type="button" id="btnBatalTempo" class="btn btn-secondary btn-sm" style="border-radius:7px;">Batalkan</button>
+        <button type="button" id="btnKonfirmasiTempo" class="btn btn-primary btn-sm px-4 fw-bold" style="border-radius:7px;">
+          <i class="fa fa-check me-1"></i>Konfirmasi Tempo
+        </button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Logout ══ -->
+<div class="modal fade" id="modalLogoutPOS" tabindex="-1" aria-labelledby="modalLogoutPOSLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+      <div class="modal-header" style="background:#fff;border-bottom:1px solid #eef1f6;padding:18px 20px;">
+        <div>
+          <h5 class="modal-title" id="modalLogoutPOSLabel" style="font-size:18px;font-weight:800;color:var(--pos-text);margin:0;">
+            Apakah akan logout?
+          </h5>
+          <div style="font-size:12px;color:var(--pos-sub);margin-top:3px;">Konfirmasi keluar dari halaman kasir POS</div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body" style="padding:20px;color:#5f7480;font-size:14px;line-height:1.6;">
+        Saat logout, semua transaksi pending milik kasir ini akan dibatalkan otomatis dan stok barang dikembalikan.
+      </div>
+      <div class="modal-footer" style="border-top:1px solid #eef1f6;background:#f8fafc;padding:16px 20px;gap:10px;">
+        <button type="button" class="btn" data-bs-dismiss="modal"
+                style="min-width:92px;border-radius:8px;background:#fff;border:1.5px solid #d4e3eb;color:var(--pos-text);font-size:13px;font-weight:800;padding:9px 16px;">
+          Batal
+        </button>
+        <a href="{% url 'logoutkan' %}" class="btn"
+           style="min-width:104px;border-radius:8px;background:#dc3545;border:1.5px solid #dc3545;color:#fff;font-size:13px;font-weight:800;padding:9px 16px;">
+          <i class="fa fa-sign-out me-1"></i>Logout
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Konfirmasi Cek Barang ══ -->
+{% if nota %}
+<div class="modal fade" id="modalCekKonfirmasi" data-bs-backdrop="static" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+      <div class="modal-header" style="background:#0d6efd;padding:18px 20px;">
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#fff;"><i class="fa fa-check-square-o me-2"></i>Cek Barang</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px;">Cetak nota pengecekan barang</div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:20px;">
+        <div style="background:#e8f4fd;border:1px solid #bce0fa;border-radius:8px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-weight:700;font-size:13px;color:#0a58ca;margin-bottom:6px;">
+            <i class="fa fa-info-circle me-1"></i>Apa itu Cek Barang?
+          </div>
+          <div style="font-size:13px;color:#374151;line-height:1.6;">
+            Mencetak nota dengan <strong>kotak centang (&#9744;)</strong> untuk setiap item,
+            sehingga kasir atau pengepak dapat memverifikasi satu per satu barang sebelum pembayaran dilakukan.
+          </div>
+        </div>
+        <div style="font-size:13px;color:#6a7585;line-height:1.6;">
+          <i class="fa fa-print me-1" style="color:#0d6efd;"></i>
+          Setelah dicetak, status transaksi ini akan ditandai sebagai <strong>sudah dicek</strong>.
+        </div>
+      </div>
+      <div class="modal-footer border-0" style="padding:14px 20px;gap:10px;">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="border-radius:7px;">Batal</button>
+        <a href="{% url 'print_cek_transaksi' nota %}" target="_blank"
+           class="btn btn-primary btn-sm px-4 fw-bold" style="border-radius:7px;"
+           data-bs-dismiss="modal">
+          <i class="fa fa-print me-1"></i>Cetak Nota Cek
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endif %}
+
+<!-- ══ MAIN CONTENT ══ -->
+{% if user.is_authenticated %}
+<div class="container" style="padding-bottom:30px;">
+
+  <!-- Toolbar -->
+  <div class="pos-toolbar">
+    <div>
+      {% if nota %}
+        <span style="font-size:13px;font-weight:700;color:#fff;">Transaksi Aktif</span>
+      {% else %}
+        <span style="font-size:13px;font-weight:700;color:#fff;">Siap untuk transaksi baru</span>
+      {% endif %}
+    </div>
+    <div class="toolbar-actions">
+      <!-- Pending -->
+      <button class="btn-pos btn-pos-white {% if jumlah_penjualan_pending == 0 %}d-none{% endif %}"
+              data-bs-toggle="modal" data-bs-target="#daftarTransaksi">
+        <i class="fa fa-clock-o"></i> Pending
+        {% if jumlah_penjualan_pending > 0 %}
+          <span style="background:#f6ad3a;color:#fff;border-radius:50px;padding:1px 7px;font-size:11px;">{{ jumlah_penjualan_pending }}</span>
+        {% endif %}
+      </button>
+      <!-- Baru -->
+      {% if nota %}
+        <a href="{% url 'index_pos' %}" class="btn-pos btn-pos-white"><i class="fa fa-plus"></i> Baru</a>
+      {% endif %}
+      <!-- Riwayat singkat -->
+      <div class="dropdown">
+        <button class="btn-pos btn-pos-white dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="fa fa-history"></i> Riwayat
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width:260px;max-height:220px;overflow-y:auto;">
+          {% for t in limapenjualan %}
+          <li>
+            <a class="dropdown-item" style="font-size:12px;" target="_blank"
+               href="{% url 'detail_penjualan_histori' %}?id={{ t.nota }}">
+              <span class="fw-bold">No. {{ t.no_nota }}</span><br>
+              <span class="text-muted">{{ t.customer }} &bull; Rp {{ t.total|intcomma }}</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-0"></li>
+          {% empty %}
+          <li><span class="dropdown-item text-muted" style="font-size:12px;">Belum ada riwayat.</span></li>
+          {% endfor %}
+          <li>
+            <a class="dropdown-item text-center fw-bold" style="font-size:12px;color:#264b5d;"
+               href="{% url 'riwayat_saya' %}" target="_blank">
+              <i class="fa fa-list me-1"></i>Lihat Semua Riwayat
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- Admin -->
+      {% if user.is_superuser %}
+        <a href="/cms/" class="btn-pos btn-pos-new"><i class="fa fa-cog"></i> Admin</a>
+      {% endif %}
+      <!-- Logout -->
+      <button type="button" class="btn-pos btn-pos-logout" data-bs-toggle="modal" data-bs-target="#modalLogoutPOS" title="Keluar">
+        <i class="fa fa-sign-out"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Search + Tambah -->
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <div class="pos-searchbar flex-grow-1">
+      <i class="fa fa-search"></i>
+      <input type="text" class="search" placeholder="Cari nama barang dalam transaksi ini...">
+    </div>
+    <div class="pos-item-count">{{ jumlah_item|intcomma }} Item</div>
+    <button class="btn-add-item" data-bs-toggle="modal" data-bs-target="#modalBarang">
+      <i class="fa fa-plus me-1"></i>Tambah
+    </button>
+  </div>
+
+  <!-- Item List -->
+  {% if nota %}
+    <div class="pos-table-wrap">
+      <table class="pos-table" id="tableBarang">
+        <thead>
+          <tr>
+            <th style="width:32px;">#</th>
+            <th>Barang</th>
+            <th class="text-center" style="width:120px;">Jumlah</th>
+            <th class="text-end" style="width:160px;">Harga Satuan</th>
+            <th class="text-end" style="width:130px;">Subtotal</th>
+            <th style="width:50px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for jual in penjualandetail %}
+          <tr>
+            <td class="text-muted" style="font-size:13px;">{{ forloop.counter }}</td>
+            <td>
+              <div class="item-name">{{ jual.barang.nama|title }}</div>
+              <div class="item-sub">{{ jual.barang.satuan }}</div>
+            </td>
+            <td class="text-center">
+              <form class="qty-form" action="{% url 'ubah_items' %}?nota={{ nota }}&id={{ jual.barang.id }}" method="post">
+                {% csrf_token %}
+                <input type="number" name="jumlah" class="qty-input" value="{{ jual.jumlah }}" min="0">
+                <button type="submit" class="btn-qty d-block d-lg-none"><i class="fa fa-check"></i></button>
+              </form>
+            </td>
+            <td class="text-end">
+              {% if jual.is_open %}
+                <input type="number"
+                  hx-get="{% url 'update_barang_satuan' %}?nota={{ nota }}&id={{ jual.id }}"
+                  hx-trigger="keyup delay:3s" hx-target="body"
+                  name="harga_baru" value="{{ jual.harga }}" min="0"
+                  class="item-price-input">
+                {% if user.is_superuser %}
+                  <a href="{% url 'ganti_status_open' %}?nota={{ nota }}&id={{ jual.id }}&status=0"
+                     style="color:var(--pos-sub);font-size:14px;margin-left:4px;text-decoration:none;">
+                     <i class="fa fa-lock-open"></i>
+                  </a>
+                {% endif %}
+              {% else %}
+                <span style="font-size:14px;font-weight:600;color:var(--pos-text);">Rp {{ jual.harga|intcomma }}</span>
+                {% if user.is_superuser %}
+                  <a href="{% url 'ganti_status_open' %}?nota={{ nota }}&id={{ jual.id }}&status=1"
+                     style="color:#9ba8af;font-size:13px;margin-left:4px;text-decoration:none;">
+                     <i class="fa fa-pencil"></i>
+                  </a>
+                {% endif %}
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <span style="font-size:13px;font-weight:700;color:var(--pos-dark);">Rp {{ jual.total|intcomma }}</span>
+            </td>
+            <td class="text-center">
+              <a href="{% url 'hapus_items' %}?nota={{ nota }}&id={{ jual.barang.id }}"
+                 style="color:#e53e3e;font-size:16px;text-decoration:none;">
+                <i class="fa fa-trash-o"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer total + bayar -->
+    <div class="pos-footer">
+      <div class="pos-footer-actions">
+        <a href="{% url 'hapus_transaksi' %}?nota={{ nota }}" class="btn-pos btn-pos-danger">
+          <i class="fa fa-times"></i> Hapus
+        </a>
+        {% if bisa_transaksi %}
+          {% if not is_paket_gratis %}
+          <button class="btn-pos btn-pos-cek" data-bs-toggle="modal" data-bs-target="#modalCekKonfirmasi">
+            <i class="fa fa-check-square-o"></i> Cek
+            {% if is_checked %}<i class="fa fa-circle" style="font-size:8px;color:#86efac;margin-left:2px;" title="Sudah dicek"></i>{% endif %}
+          </button>
+          {% endif %}
+          <button class="btn-pos btn-pos-pay" data-bs-toggle="modal" data-bs-target="#modalPayment">
+            <i class="fa fa-check"></i> Bayar
+          </button>
+        {% else %}
+          <button class="btn-pos btn-pos-pay" disabled>
+            <i class="fa fa-lock"></i> Bayar
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Empty state -->
+    <div class="pos-table-wrap">
+      <div class="empty-state">
+        <div class="icon"><i class="fa fa-shopping-cart"></i></div>
+        <h3>Belum Ada Transaksi</h3>
+        <p>
+          Arahkan barcode scanner, atau klik <strong>Tambah</strong> untuk pilih barang.<br>
+          Lihat transaksi yang belum selesai di tombol <strong>Pending</strong>.
+          {% if user.is_superuser %}
+            <br>Klik <strong>Admin</strong> untuk pengelolaan data toko.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endif %}
+
 <script>
 $(document).ready(function(){
-    $('.search').on('keyup',function(){
-        var searchTerm = $(this).val().toLowerCase();
-        $('#tableBarang tbody tr').each(function(){
-            var lineStr = $(this).text().toLowerCase();
-            if(lineStr.indexOf(searchTerm) === -1){
-                $(this).hide();
-            }else{
-                $(this).show();
-            }
-        });
+  // Filter tabel transaksi aktif
+  $('.search').on('keyup', function(){
+    var q = $(this).val().toLowerCase();
+    $('#tableBarang tbody tr').each(function(){
+      $(this).toggle($(this).text().toLowerCase().indexOf(q) !== -1);
     });
-    $('.search-barang').on('keyup',function(){
-        var searchTerm = $(this).val().toLowerCase();
-        $('#tableMasterBarang tbody tr').each(function(){
-            var lineStr = $(this).text().toLowerCase();
-            if(lineStr.indexOf(searchTerm) === -1){
-                $(this).hide();
-            }else{
-                $(this).show();
-            }
-        });
+  });
+  // Filter modal barang
+  $('.search-barang').on('keyup', function(){
+    var q = $(this).val().toLowerCase();
+    $('#tableMasterBarang tbody tr').each(function(){
+      $(this).toggle($(this).text().toLowerCase().indexOf(q) !== -1);
     });
-    $('.search-pending').on('keyup',function(){
-        var searchTerm = $(this).val().toLowerCase();
-        $('#tablePendingTransaksi tbody tr').each(function(){
-            var lineStr = $(this).text().toLowerCase();
-            if(lineStr.indexOf(searchTerm) === -1){
-                $(this).hide();
-            }else{
-                $(this).show();
-            }
-        });
+  });
+  // Filter modal pending
+  $('.search-pending').on('keyup', function(){
+    var q = $(this).val().toLowerCase();
+    $('#tablePendingTransaksi tbody tr').each(function(){
+      $(this).toggle($(this).text().toLowerCase().indexOf(q) !== -1);
     });
+  });
+  // Submit qty saat Enter / focus out
+  $('.qty-input').on('change', function(){
+    $(this).closest('form').submit();
+  });
+
+  // ── Tempo payment logic ──
+  var tempoKonfirmasi = false;
+
+  // Set min date to today for tempo datepicker
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('inputTanggalTempo').setAttribute('min', today);
+
+  $('#selectMetodeBayar').on('change', function(){
+    var val = $(this).val();
+    if (val === '2') {
+      // Reset tempo state
+      tempoKonfirmasi = false;
+      $('#inputJatuhTempo').val('');
+      $('#infoJatuhTempo').hide();
+      $('#inputTanggalTempo').val('');
+      // Show tempo date modal
+      var tempoModal = new bootstrap.Modal(document.getElementById('modalJatuhTempo'));
+      tempoModal.show();
+    } else {
+      tempoKonfirmasi = false;
+      $('#inputJatuhTempo').val('');
+      $('#infoJatuhTempo').hide();
+    }
+  });
+
+  // Konfirmasi tempo
+  $('#btnKonfirmasiTempo').on('click', function(){
+    var tgl = $('#inputTanggalTempo').val();
+    if (!tgl) {
+      alert('Pilih tanggal jatuh tempo terlebih dahulu.');
+      return;
+    }
+    $('#inputJatuhTempo').val(tgl);
+    // Format display
+    var parts = tgl.split('-');
+    var label = parts[2] + '/' + parts[1] + '/' + parts[0];
+    $('#labelJatuhTempo').text(label);
+    $('#infoJatuhTempo').show();
+    tempoKonfirmasi = true;
+    bootstrap.Modal.getInstance(document.getElementById('modalJatuhTempo')).hide();
+  });
+
+  // Batalkan tempo → kembali ke pilih metode
+  function resetTempo() {
+    tempoKonfirmasi = false;
+    $('#selectMetodeBayar').val('');
+    $('#inputJatuhTempo').val('');
+    $('#infoJatuhTempo').hide();
+    bootstrap.Modal.getInstance(document.getElementById('modalJatuhTempo')).hide();
+  }
+  $('#btnBatalTempo').on('click', resetTempo);
+  $('#btnTutupModalTempo').on('click', resetTempo);
+
+  // Intercept form submit: jika tempo dipilih tapi belum konfirmasi, tahan
+  $('#formBayar').on('submit', function(e){
+    if ($('#selectMetodeBayar').val() === '2' && !tempoKonfirmasi) {
+      e.preventDefault();
+      alert('Silakan konfirmasi tanggal jatuh tempo terlebih dahulu.');
+      var tempoModal = new bootstrap.Modal(document.getElementById('modalJatuhTempo'));
+      tempoModal.show();
+    }
+  });
 });
 </script>
 {% endblock %}

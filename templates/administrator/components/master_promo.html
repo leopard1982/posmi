@@ -1,0 +1,230 @@
+{% load humanize %}
+<div>
+  <div class="mt-3 h2 fw-bold">Manajemen Promo</div>
+  <div class="mb-3 fs-6 text-muted">Super Admin &rarr; Master Data &rarr; Promo</div>
+
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+      <button type="button" class="btn" data-bs-dismiss="alert">X</button>
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="mb-3 text-end">
+    <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalTambahPromo">
+      + Tambah Promo
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Nama</th>
+          <th>Kode</th>
+          <th class="text-center">Disc (%)</th>
+          <th class="text-center">Kuota</th>
+          <th>Berlaku Hingga</th>
+          <th class="text-center">Registrasi</th>
+          <th class="text-center">Perpanjangan</th>
+          <th class="text-center">Upgrade</th>
+          <th class="text-center">Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for promo in promos %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td><strong>{{ promo.nama }}</strong></td>
+          <td><span class="badge bg-secondary fs-6">{{ promo.kode }}</span></td>
+          <td class="text-center">{{ promo.disc }}%</td>
+          <td class="text-center">{{ promo.kuota|intcomma }}</td>
+          <td>{% if promo.end_period %}{{ promo.end_period|date:"d/m/Y" }}{% else %}-{% endif %}</td>
+          <td class="text-center">{% if promo.is_registrasi %}<span class="badge bg-success">Ya</span>{% else %}<span class="badge bg-light text-dark">-</span>{% endif %}</td>
+          <td class="text-center">{% if promo.is_perpanjangan %}<span class="badge bg-success">Ya</span>{% else %}<span class="badge bg-light text-dark">-</span>{% endif %}</td>
+          <td class="text-center">{% if promo.is_upgrade_lisensi %}<span class="badge bg-success">Ya</span>{% else %}<span class="badge bg-light text-dark">-</span>{% endif %}</td>
+          <td class="text-center">
+            {% if promo.is_active %}
+              <span class="badge bg-success">Aktif</span>
+            {% else %}
+              <span class="badge bg-danger">Nonaktif</span>
+            {% endif %}
+          </td>
+          <td class="text-center" style="min-width:160px">
+            <button class="btn btn-sm btn-warning me-1"
+              onclick="isiFormEditPromo('{{ promo.pk }}','{{ promo.nama }}','{{ promo.kode }}',{{ promo.disc }},{{ promo.kuota }},'{% if promo.end_period %}{{ promo.end_period|date:"Y-m-d" }}{% endif %}',{{ promo.is_registrasi|yesno:'true,false' }},{{ promo.is_perpanjangan|yesno:'true,false' }},{{ promo.is_upgrade_lisensi|yesno:'true,false' }})"
+              data-bs-toggle="modal" data-bs-target="#modalEditPromo">Edit</button>
+            <form method="post" action="{% url 'master_promo' %}" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="aksi" value="toggle">
+              <input type="hidden" name="promo_id" value="{{ promo.pk }}">
+              <button type="submit" class="btn btn-sm {% if promo.is_active %}btn-secondary{% else %}btn-success{% endif %} me-1">
+                {% if promo.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+              </button>
+            </form>
+            <button class="btn btn-sm btn-danger"
+              onclick="isiFormHapusPromo('{{ promo.pk }}','{{ promo.nama }}')"
+              data-bs-toggle="modal" data-bs-target="#modalHapusPromo">Hapus</button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11" class="text-center text-muted py-4">Belum ada data promo.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Tambah Promo -->
+<div class="modal fade" id="modalTambahPromo" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_promo' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="tambah">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Tambah Promo Baru</h5></div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-bold">Nama Promo</label>
+              <input type="text" name="nama" class="form-control" required placeholder="cth: Promo Lebaran 2025">
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label fw-bold">Kode Promo</label>
+              <input type="text" name="kode" class="form-control" required placeholder="cth: LEBARAN25" style="text-transform:uppercase">
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label fw-bold">Diskon (%)</label>
+              <input type="number" name="disc" class="form-control" min="0" max="100" value="0" required>
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold">Kuota Penggunaan</label>
+              <input type="number" name="kuota" class="form-control" min="0" value="0">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold">Berlaku Hingga</label>
+              <input type="date" name="end_period" class="form-control">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold d-block">Berlaku Untuk</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="is_registrasi" id="reg_tambah">
+                <label class="form-check-label" for="reg_tambah">Registrasi</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="is_perpanjangan" id="perp_tambah">
+                <label class="form-check-label" for="perp_tambah">Perpanjangan</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="is_upgrade_lisensi" id="upg_tambah">
+                <label class="form-check-label" for="upg_tambah">Upgrade</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success fw-bold">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Promo -->
+<div class="modal fade" id="modalEditPromo" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_promo' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="edit">
+        <input type="hidden" name="promo_id" id="edit_promo_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Edit Promo</h5></div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-bold">Nama Promo</label>
+              <input type="text" name="nama" id="ep_nama" class="form-control" required>
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label fw-bold">Kode Promo</label>
+              <input type="text" name="kode" id="ep_kode" class="form-control" required style="text-transform:uppercase">
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label fw-bold">Diskon (%)</label>
+              <input type="number" name="disc" id="ep_disc" class="form-control" min="0" max="100">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold">Kuota Penggunaan</label>
+              <input type="number" name="kuota" id="ep_kuota" class="form-control" min="0">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold">Berlaku Hingga</label>
+              <input type="date" name="end_period" id="ep_end" class="form-control">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold d-block">Berlaku Untuk</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="is_registrasi" id="ep_reg">
+                <label class="form-check-label" for="ep_reg">Registrasi</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="is_perpanjangan" id="ep_perp">
+                <label class="form-check-label" for="ep_perp">Perpanjangan</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="is_upgrade_lisensi" id="ep_upg">
+                <label class="form-check-label" for="ep_upg">Upgrade</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning fw-bold">Perbarui</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Hapus Promo -->
+<div class="modal fade" id="modalHapusPromo" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_promo' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="hapus">
+        <input type="hidden" name="promo_id" id="hapus_promo_id">
+        <div class="modal-header bg-danger text-white"><h5 class="modal-title fw-bold">Hapus Promo</h5></div>
+        <div class="modal-body">Yakin ingin menghapus promo "<strong id="hapus_promo_nama"></strong>"?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger fw-bold">Ya, Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function isiFormEditPromo(id, nama, kode, disc, kuota, end, reg, perp, upg) {
+  document.getElementById('edit_promo_id').value = id;
+  document.getElementById('ep_nama').value = nama;
+  document.getElementById('ep_kode').value = kode;
+  document.getElementById('ep_disc').value = disc;
+  document.getElementById('ep_kuota').value = kuota;
+  document.getElementById('ep_end').value = end;
+  document.getElementById('ep_reg').checked = reg;
+  document.getElementById('ep_perp').checked = perp;
+  document.getElementById('ep_upg').checked = upg;
+}
+function isiFormHapusPromo(id, nama) {
+  document.getElementById('hapus_promo_id').value = id;
+  document.getElementById('hapus_promo_nama').textContent = nama;
+}
+</script>

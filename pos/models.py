@@ -8,7 +8,8 @@ import datetime
 
 METODE_BAYAR = [
     (0,'cash'),
-    (1,'transfer')
+    (1,'transfer'),
+    (2,'tempo'),
 ]
 
 class TotalPenjualan(models.Model):
@@ -42,6 +43,9 @@ class Penjualan(models.Model):
     cetak_kuitansi = models.IntegerField(default=0)
     is_void = models.BooleanField(default=False,blank=True,null=True)
     alasan_void = models.CharField(max_length=200,null=True,blank=True)
+    is_checked = models.BooleanField(default=False)
+    jatuh_tempo = models.DateField(null=True, blank=True)
+    is_tempo_lunas = models.BooleanField(default=False)
 
     def __str__(self):
         if self.is_paid:

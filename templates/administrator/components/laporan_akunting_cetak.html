@@ -1,0 +1,113 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan Akunting — {{ cabang.nama_toko }}</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:Arial,sans-serif; font-size:12px; color:#111; background:#fff; padding:16mm; }
+  h1 { font-size:18px; font-weight:900; text-align:center; margin-bottom:4px; }
+  .sub { text-align:center; font-size:12px; color:#555; margin-bottom:16px; }
+  .divider { border:none; border-top:2px solid #111; margin:10px 0; }
+  .section-title { font-size:13px; font-weight:800; text-transform:uppercase;
+    letter-spacing:.5px; margin:14px 0 6px; border-bottom:1px solid #ddd; padding-bottom:4px; }
+  table { width:100%; border-collapse:collapse; margin-bottom:12px; }
+  th { background:#1e2c5a; color:#fff; font-size:11px; padding:7px 10px; text-align:left; }
+  td { padding:7px 10px; border-bottom:1px solid #eee; }
+  tr:last-child td { border-bottom:none; }
+  .right { text-align:right; }
+  .bold  { font-weight:800; }
+  .green { color:#059669; }
+  .red   { color:#dc2626; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+  .kpi { border:1px solid #ddd; border-radius:6px; padding:10px; }
+  .kpi-label { font-size:10px; font-weight:700; text-transform:uppercase; color:#555; margin-bottom:4px; }
+  .kpi-value { font-size:16px; font-weight:900; }
+  .no-print { display:none; }
+
+  @media print {
+    body { padding:10mm; }
+    .no-print { display:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print" style="display:block;padding:12px;background:#1e2c5a;color:#fff;display:flex;gap:12px;align-items:center;margin:-16mm -16mm 16mm;">
+  <button onclick="window.print()" style="padding:8px 18px;background:#059669;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">
+    <i>&#128438;</i> Cetak / Simpan PDF
+  </button>
+  <button onclick="window.close()" style="padding:8px 14px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:7px;font-size:13px;cursor:pointer;">
+    Tutup
+  </button>
+  <span style="font-size:13px;margin-left:8px;">Untuk simpan PDF: Cetak → pilih "Save as PDF"</span>
+</div>
+
+<h1>LAPORAN AKUNTING BULANAN</h1>
+<div class="sub">
+  {{ cabang.nama_toko }} &bull;
+  {% if bulan == 1 %}Januari{% elif bulan == 2 %}Februari{% elif bulan == 3 %}Maret
+  {% elif bulan == 4 %}April{% elif bulan == 5 %}Mei{% elif bulan == 6 %}Juni
+  {% elif bulan == 7 %}Juli{% elif bulan == 8 %}Agustus{% elif bulan == 9 %}September
+  {% elif bulan == 10 %}Oktober{% elif bulan == 11 %}November{% else %}Desember{% endif %}
+  {{ tahun }}
+</div>
+<hr class="divider">
+
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">Total Pendapatan</div>
+    <div class="kpi-value green">Rp {{ total_pendapatan|intcomma }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">HPP</div>
+    <div class="kpi-value red">Rp {{ hpp|intcomma }}</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Laba Kotor</div>
+    <div class="kpi-value">Rp {{ laba_kotor|intcomma }}</div>
+  </div>
+</div>
+
+<div class="section-title">Ringkasan Keuangan</div>
+<table>
+  <tr><td class="bold">Total Pendapatan</td><td class="right green bold">Rp {{ total_pendapatan|intcomma }}</td></tr>
+  <tr><td class="bold">HPP (Harga Pokok Penjualan)</td><td class="right red">Rp {{ hpp|intcomma }}</td></tr>
+  <tr style="background:#f0fdf4;"><td class="bold">Laba Kotor</td><td class="right bold">Rp {{ laba_kotor|intcomma }}</td></tr>
+  <tr><td>Jumlah Transaksi</td><td class="right">{{ jumlah_transaksi }} transaksi</td></tr>
+</table>
+
+<div class="section-title">Metode Pembayaran</div>
+<table>
+  <thead><tr><th>Metode</th><th class="right">Total</th></tr></thead>
+  <tbody>
+    <tr><td>Tunai (Cash)</td><td class="right green bold">Rp {{ cash|intcomma }}</td></tr>
+    <tr><td>Transfer</td><td class="right bold">Rp {{ transfer|intcomma }}</td></tr>
+  </tbody>
+</table>
+
+{% if top_produk %}
+<div class="section-title">Top Produk Terjual</div>
+<table>
+  <thead><tr><th>#</th><th>Nama Produk</th><th class="right">Qty</th><th class="right">Total Nilai</th></tr></thead>
+  <tbody>
+    {% for p in top_produk %}
+    <tr>
+      <td style="color:#999;">{{ forloop.counter }}</td>
+      <td class="bold">{{ p.barang__nama }}</td>
+      <td class="right">{{ p.qty|intcomma }}</td>
+      <td class="right green bold">Rp {{ p.nilai|intcomma }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<hr class="divider" style="margin-top:20px;">
+<div style="text-align:center;font-size:10px;color:#999;margin-top:8px;">
+  Dicetak dari POSMI &bull; {{ cabang.nama_toko }}
+</div>
+
+</body>
+</html>

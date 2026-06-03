@@ -1,82 +1,249 @@
 {% load humanize %}
-<!-- Modal -->
-<div class="modal fade" id="staticDetailTransaksi" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticDetailTransaksiLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticDetailTransaksiLabel">Detail Transaksi</h5>
-          
-        </div>
-        <div class="modal-body">
-          <div id="detailTransaksi">
 
-          </div>
+<style>
+  .history-result { color: #4b5563; }
+  .history-result-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .history-result-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 78px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+  }
+  .history-result-icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #4e73df;
+    background: #f3f6ff;
+    border-radius: 8px;
+  }
+  .history-result-label {
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .history-result-value {
+    margin-top: 2px;
+    color: #2f3446;
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .history-result-panel {
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+    overflow: hidden;
+  }
+  .history-result-panel-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid #eef1f6;
+  }
+  .history-result-panel-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 16px;
+    font-weight: 900;
+  }
+  .history-result-panel-subtitle {
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 12px;
+  }
+  .history-result-table-wrap {
+    padding: 14px 18px 18px;
+    overflow-x: auto;
+  }
+  .history-result-table { width: 100% !important; border-collapse: collapse; }
+  .history-result-table thead th {
+    color: #687086;
+    border-bottom: 1px solid #dfe4ee;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .history-result-table tbody td {
+    color: #4b5563;
+    border-bottom: 1px solid #eef1f6;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .history-result-table tbody tr:hover { background: #f8fafc; }
+  .history-result-id {
+    max-width: 300px;
+    color: #2f3446;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .history-result-money { color: #2f3446; font-weight: 900; white-space: nowrap; }
+  .history-result-date { white-space: nowrap; }
+  .history-result-date small {
+    display: block;
+    margin-top: 3px;
+    color: #8a92a6;
+    font-weight: 800;
+  }
+  .history-result-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 68px;
+    min-height: 24px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+  .history-result-status.success { color: #008f66; background: #e8f8f2; }
+  .history-result-status.danger { color: #c83228; background: #fdeceb; }
+  .history-result-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .history-result-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    color: #fff !important;
+  }
+  .history-result-empty {
+    padding: 28px 18px;
+    color: #8a92a6;
+    background: #fff;
+    border: 1px dashed #cfd6e6;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 800;
+  }
+  .history-result .dataTables_wrapper .dataTables_length,
+  .history-result .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 14px;
+    color: #687086;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .history-result .dataTables_wrapper .dataTables_filter input,
+  .history-result .dataTables_wrapper .dataTables_length select {
+    min-height: 34px;
+    border: 1px solid #cfd6e6;
+    border-radius: 7px;
+    color: #374151;
+  }
+  .history-result .dataTables_wrapper .dataTables_info,
+  .history-result .dataTables_wrapper .dataTables_paginate {
+    margin-top: 14px;
+    color: #687086;
+    font-size: 13px;
+  }
+  @media (max-width: 767.98px) {
+    .history-result-summary { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="history-result">
+    <div id="konfirmasiVoid"></div>
+
+    {% if transaksi %}
+    <div class="history-result-summary">
+        <div class="history-result-card">
+            <div class="history-result-icon"><i class="fas fa-receipt"></i></div>
+            <div>
+                <div class="history-result-label">Total Transaksi</div>
+                <div class="history-result-value">{{transaksi.count|intcomma}}</div>
+            </div>
         </div>
-        <!-- <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
-        </div> -->
-      </div>
+        <div class="history-result-card">
+            <div class="history-result-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div>
+                <div class="history-result-label">Periode</div>
+                <div class="history-result-value">{{bulannya}} {{tahunnya}}</div>
+            </div>
+        </div>
     </div>
-</div>
 
-
-{% if transaksi %}
-
-<div id="konfirmasiVoid">
-
-</div>
-
-<div>
-    <table id="datasetTrxBulanLain"  >
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>ID Transaksi</th>
-                <th>Items</th>
-                <th>Jumlah</th>
-                <th>Customer</th>
-                <th>Kasir</th>
-                <th>Tanggal</th>
-                <th class="text-center">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for trx in transaksi %}
-            <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
-                <td>{{forloop.counter}} </td>
-                <td  style="font-size: 14px;">
-                    {{trx.nota}}<br>
-                    <a target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" class="btn btn-sm btn-info rounded-pill  px-3" style="padding:0">Lihat Detail</a>
-                </td>
-                <td>{{trx.items}}</td>
-                <td>Rp.{{trx.total|intcomma}}</td>
-                <td>{{trx.customer}}</td>
-                <td>{{trx.user.username}}</td>
-                <td >{{trx.tgl_bayar|date:"d/m/Y"}}<br><span style="font-size: 12px;font-weight: bold;">{{trx.tgl_bayar|date:"h:m:s"}}</span></td>
-                <td class="text-center">
-                    {% if trx.is_void %}
-                        <span class="text-danger fw-bold fst-italic">Batal</span>
-                    {% else %}
-                        <span class="text-success fw-bold">Sukses</span><br>
-                        <a target="_blank" href="{% url 'konfirmasi_void'%}?id={{trx.nota}}"  class="btn btn-sm btn-danger rounded-pill p-0 px-2">Batalkan</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor%}
-        </tbody>
-        <!-- <tfoot>
-            <tr>
-                {% for headers in df_headers %}
-                <th>{{headers}}</th>
-                {% endfor %}
-            </tr>
-        </tfoot> -->
-    </table>
+    <div class="history-result-panel">
+        <div class="history-result-panel-header">
+            <h3 class="history-result-panel-title">Hasil Pencarian Transaksi</h3>
+            <div class="history-result-panel-subtitle">Periode {{bulannya}} {{tahunnya}}</div>
+        </div>
+        <div class="history-result-table-wrap">
+            <table id="datasetTrxBulanLain" class="history-result-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>ID Transaksi</th>
+                        <th class="text-center">Items</th>
+                        <th>Jumlah</th>
+                        <th>Customer</th>
+                        <th>Kasir</th>
+                        <th>Tanggal</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trx in transaksi %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td><div class="history-result-id">{{trx.nota}}</div></td>
+                        <td class="text-center">{{trx.items}}</td>
+                        <td class="history-result-money">Rp.{{trx.total|intcomma}}</td>
+                        <td>{{trx.customer|default:"-"}}</td>
+                        <td>{{trx.user.username}}</td>
+                        <td class="history-result-date">
+                            {{trx.tgl_bayar|date:"d/m/Y"}}
+                            <small>{{trx.tgl_bayar|date:"H:i:s"}}</small>
+                        </td>
+                        <td class="text-center">
+                            {% if trx.is_void %}
+                                <span class="history-result-status danger">Batal</span>
+                            {% else %}
+                                <span class="history-result-status success">Sukses</span>
+                            {% endif %}
+                        </td>
+                        <td class="history-result-actions">
+                            <a target="_blank" href="{% url 'detail_penjualan_histori' %}?id={{trx.nota}}" class="btn btn-info btn-sm history-result-icon-btn" title="Lihat detail">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
     <script>
-        new DataTable('#datasetTrxBulanLain',{
+        new DataTable('#datasetTrxBulanLain', {
             language: {
-                search: "Pencarian Data: ",
+                search: "Cari transaksi:",
+                lengthMenu: "Tampilkan _MENU_ transaksi",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ transaksi",
+                infoEmpty: "Belum ada transaksi",
+                zeroRecords: "Transaksi tidak ditemukan",
             },
             pageLength: 10
         });
@@ -86,9 +253,9 @@
         window.onblur = function() { blurred = true; };
         window.onfocus = function() { blurred && (location.reload()); };
     </script>
+    {% else %}
+    <div class="history-result-empty">
+        Tidak ada penjualan di bulan {{bulannya}} {{tahunnya}}.
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div class=" fst-italic mt-3">
-        Tidak ada penjualan di bulan yang Anda cari.
-</div>
-{% endif %}

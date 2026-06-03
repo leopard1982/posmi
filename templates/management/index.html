@@ -1,0 +1,392 @@
+{% extends 'management/base.html' %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block menu_dashboard %}active{% endblock %}
+{% block breadcrumb %}<li class="breadcrumb-item active">Dashboard</li>{% endblock %}
+
+{% block contents %}
+<div class="page-header">
+  <h4 class="fw-bold mb-0">Dashboard</h4>
+  <p class="text-muted mb-0" style="font-size:13px;">{{ bulan }} {{ tahun }} — Ringkasan data sistem</p>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 shadow-sm h-100" style="border-left:4px solid #4e73df !important;border-left-width:4px;">
+      <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="text-uppercase fw-bold text-muted mb-1" style="font-size:11px;letter-spacing:.5px;">Total Cabang</div>
+            <div class="h2 fw-bold text-dark mb-0">{{ total_cabang }}</div>
+            <div class="small text-success mt-1"><i class="fas fa-check-circle me-1"></i>{{ cabang_aktif }} aktif</div>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;background:#eef2ff;">
+            <i class="fas fa-store" style="color:#4e73df;font-size:20px;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 shadow-sm h-100" style="border-left:4px solid #1cc88a !important;">
+      <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="text-uppercase fw-bold text-muted mb-1" style="font-size:11px;letter-spacing:.5px;">Transaksi {{ bulan }}</div>
+            <div class="h2 fw-bold text-dark mb-0">{{ transaksi_bulan|intcomma }}</div>
+            <div class="small text-muted mt-1">transaksi selesai</div>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;background:#e8f8f1;">
+            <i class="fas fa-receipt" style="color:#1cc88a;font-size:20px;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 shadow-sm h-100" style="border-left:4px solid #f6c23e !important;">
+      <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="text-uppercase fw-bold text-muted mb-1" style="font-size:11px;letter-spacing:.5px;">Testimoni</div>
+            <div class="h2 fw-bold text-dark mb-0">{{ testimoni_pending }}</div>
+            <div class="small {% if testimoni_pending > 0 %}text-warning{% else %}text-muted{% endif %} mt-1">
+              {% if testimoni_pending > 0 %}<i class="fas fa-exclamation-circle me-1"></i>menunggu persetujuan
+              {% else %}semua sudah diproses{% endif %}
+            </div>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;background:#fef9e7;">
+            <i class="fas fa-star" style="color:#f6c23e;font-size:20px;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 shadow-sm h-100" style="border-left:4px solid #36b9cc !important;">
+      <div class="card-body py-3">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="text-uppercase fw-bold text-muted mb-1" style="font-size:11px;letter-spacing:.5px;">Promo Aktif</div>
+            <div class="h2 fw-bold text-dark mb-0">{{ total_promo }}</div>
+            <div class="small text-muted mt-1">dari {{ total_paket }} paket tersedia</div>
+          </div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;background:#e8f8fb;">
+            <i class="fas fa-tags" style="color:#36b9cc;font-size:20px;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Access -->
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3">
+        <i class="fas fa-bolt me-2 text-warning"></i>Akses Cepat
+      </div>
+      <div class="list-group list-group-flush">
+        <a href="/management/paket/" class="list-group-item list-group-item-action border-0 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:#eef2ff;flex-shrink:0;">
+                <i class="fas fa-box" style="color:#4e73df;"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size:14px;">Kelola Daftar Paket</div>
+                <div class="text-muted" style="font-size:12px;">{{ total_paket }} paket berlangganan</div>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-muted"></i>
+          </div>
+        </a>
+        <a href="/management/promo/" class="list-group-item list-group-item-action border-0 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:#e8f8f1;flex-shrink:0;">
+                <i class="fas fa-tags" style="color:#1cc88a;"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size:14px;">Promo &amp; Voucher</div>
+                <div class="text-muted" style="font-size:12px;">{{ total_promo }} promo aktif</div>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-muted"></i>
+          </div>
+        </a>
+        <a href="/management/testimoni/" class="list-group-item list-group-item-action border-0 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:#fef9e7;flex-shrink:0;">
+                <i class="fas fa-star" style="color:#f6c23e;"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size:14px;">Moderasi Testimoni</div>
+                <div class="text-muted" style="font-size:12px;">{{ testimoni_pending }} menunggu persetujuan</div>
+              </div>
+            </div>
+            {% if testimoni_pending > 0 %}
+            <span class="badge rounded-pill" style="background:#f6c23e;color:#333;">{{ testimoni_pending }}</span>
+            {% else %}
+            <i class="fas fa-chevron-right text-muted"></i>
+            {% endif %}
+          </div>
+        </a>
+        <a href="/management/cabang/" class="list-group-item list-group-item-action border-0 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:#e8f8fb;flex-shrink:0;">
+                <i class="fas fa-store" style="color:#36b9cc;"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size:14px;">Data Cabang</div>
+                <div class="text-muted" style="font-size:12px;">{{ total_cabang }} cabang — {{ cabang_aktif }} aktif</div>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right text-muted"></i>
+          </div>
+        </a>
+        <a href="/management/users/" class="list-group-item list-group-item-action border-0 py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:38px;height:38px;background:#f3e8ff;flex-shrink:0;">
+                <i class="fas fa-users" style="color:#9b59b6;"></i>
+              </div>
+              <div>
+                <div class="fw-semibold" style="font-size:14px;">Manajemen Pengguna</div>
+                <div class="text-muted" style="font-size:12px;">{{ total_user }} pengguna terdaftar</div>
+              </div>
+            </div>
+            <span class="badge bg-secondary rounded-pill">{{ total_user }}</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body py-3">
+        <div class="text-uppercase fw-bold text-muted mb-2" style="font-size:11px;letter-spacing:.5px;">Info Sistem</div>
+        <div class="d-flex justify-content-between py-1 border-bottom" style="font-size:13px;">
+          <span class="text-muted">Total Pengguna</span><strong>{{ total_user }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom" style="font-size:13px;">
+          <span class="text-muted">Cabang Terdaftar</span><strong>{{ total_cabang }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom" style="font-size:13px;">
+          <span class="text-muted">Cabang Aktif</span><strong class="text-success">{{ cabang_aktif }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom" style="font-size:13px;">
+          <span class="text-muted">Paket Tersedia</span><strong>{{ total_paket }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1 border-bottom" style="font-size:13px;">
+          <span class="text-muted">Pendapatan Hari Ini</span><strong class="text-success">Rp {{ pendapatan_hari|intcomma }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-1" style="font-size:13px;">
+          <span class="text-muted">Pendapatan {{ bulan }}</span><strong class="text-success">Rp {{ pendapatan_bulan|intcomma }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grafik Pembelian Harian & Bulanan -->
+<div class="row g-3 mt-2">
+  <div class="col-12 col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3" style="font-size:13px;">
+        <i class="fas fa-chart-line me-2 text-primary"></i>Total Pembelian Per Hari (30 hari terakhir)
+      </div>
+      <div class="card-body"><canvas id="chartHarian" height="120"></canvas></div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3" style="font-size:13px;">
+        <i class="fas fa-chart-bar me-2 text-success"></i>Total Pembelian Per Bulan
+      </div>
+      <div class="card-body"><canvas id="chartBulanan" height="170"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- Ranking Pelanggan -->
+<div class="row g-3 mt-2">
+  <!-- Top 5 Individual Pembelian -->
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3" style="font-size:13px;">
+        <i class="fas fa-trophy me-2 text-warning"></i>Top 5 Individual — Pembelian {{ bulan }}
+      </div>
+      <div class="card-body p-0">
+        <canvas id="chartTop5Individual" height="180" style="padding:12px;"></canvas>
+      </div>
+    </div>
+  </div>
+  <!-- Top 5 Korporasi Pembelian -->
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3" style="font-size:13px;">
+        <i class="fas fa-trophy me-2 text-info"></i>Top 5 Korporasi — Pembelian {{ bulan }}
+      </div>
+      <div class="card-body p-0">
+        <canvas id="chartTop5Korporasi" height="180" style="padding:12px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ranking Transaksi POS -->
+<div class="row g-3 mt-2">
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3" style="font-size:13px;">
+        <i class="fas fa-store me-2 text-primary"></i>Top 5 Individual — Transaksi POS {{ bulan }}
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light"><tr><th>#</th><th>Toko</th><th class="text-end">Transaksi</th></tr></thead>
+          <tbody>
+            {% for r in top5_trx_individual_bulan %}
+            <tr><td>{{ forloop.counter }}</td><td>{{ r.cabang__nama_toko }}</td><td class="text-end fw-bold">{{ r.jml|intcomma }}</td></tr>
+            {% empty %}<tr><td colspan="3" class="text-center text-muted py-3">Belum ada data.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3" style="font-size:13px;">
+        <i class="fas fa-building me-2 text-info"></i>Top 5 Korporasi — Transaksi POS {{ bulan }}
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light"><tr><th>#</th><th>Owner</th><th class="text-end">Transaksi</th></tr></thead>
+          <tbody>
+            {% for r in top5_trx_korporasi_bulan %}
+            <tr><td>{{ forloop.counter }}</td><td>{{ r.cabang__owner__nama }}</td><td class="text-end fw-bold">{{ r.jml|intcomma }}</td></tr>
+            {% empty %}<tr><td colspan="3" class="text-center text-muted py-3">Belum ada data.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Daftar Pelanggan -->
+<div class="row g-3 mt-2 mb-4">
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3 d-flex justify-content-between" style="font-size:13px;">
+        <span><i class="fas fa-users me-2 text-primary"></i>Pelanggan Individual</span>
+        <a href="/management/pembelian/?tipe=registrasi" class="btn btn-sm btn-outline-primary" style="font-size:11px;">Lihat Semua</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light"><tr><th>#</th><th>Toko</th><th>Paket</th><th class="text-end">Total Beli</th></tr></thead>
+          <tbody>
+            {% for c in pelanggan_individual %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><strong>{{ c.nama_toko }}</strong><br><small class="text-muted">{{ c.prefix }}</small></td>
+              <td><small>{{ c.paket.nama|default:"Gratis" }}</small></td>
+              <td class="text-end fw-bold text-success">Rp {{ c.total_pembelian|default:0|intcomma }}</td>
+            </tr>
+            {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">Belum ada data.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom fw-bold py-3 d-flex justify-content-between" style="font-size:13px;">
+        <span><i class="fas fa-building me-2 text-info"></i>Pelanggan Korporasi</span>
+        <a href="/management/pembelian/?tipe=owner_upgrade" class="btn btn-sm btn-outline-info" style="font-size:11px;">Lihat Semua</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light"><tr><th>#</th><th>Nama</th><th class="text-end">Total Beli</th></tr></thead>
+          <tbody>
+            {% for o in pelanggan_korporasi %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td><strong>{{ o.nama }}</strong></td>
+              <td class="text-end fw-bold text-success">Rp {{ o.total_pembelian|default:0|intcomma }}</td>
+            </tr>
+            {% empty %}<tr><td colspan="3" class="text-center text-muted py-3">Belum ada data.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const COLORS = ['#4e73df','#1cc88a','#36b9cc','#f6c23e','#e74a3b','#858796','#6f42c1','#20c9a6'];
+
+// Grafik harian
+new Chart(document.getElementById('chartHarian'), {
+  type: 'line',
+  data: {
+    labels: {{ chart_hari_labels|safe }},
+    datasets: [{ label: 'Pendapatan (Rp)', data: {{ chart_hari_data|safe }},
+      borderColor: '#4e73df', backgroundColor: 'rgba(78,115,223,.08)',
+      fill: true, tension: .3, pointRadius: 3 }]
+  },
+  options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true,
+    ticks: { callback: v => 'Rp' + (v/1000).toFixed(0) + 'k' } } } }
+});
+
+// Grafik bulanan
+new Chart(document.getElementById('chartBulanan'), {
+  type: 'bar',
+  data: {
+    labels: {{ chart_bulan_labels|safe }},
+    datasets: [{ label: 'Pendapatan (Rp)', data: {{ chart_bulan_data|safe }},
+      backgroundColor: COLORS[0] }]
+  },
+  options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true,
+    ticks: { callback: v => 'Rp' + (v/1000).toFixed(0) + 'k' } } } }
+});
+
+// Pie top 5 individual pembelian
+{% if top5_individual_bulan %}
+new Chart(document.getElementById('chartTop5Individual'), {
+  type: 'doughnut',
+  data: {
+    labels: [{% for r in top5_individual_bulan %}'{{ r.cabang__nama_toko }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+    datasets: [{ data: [{% for r in top5_individual_bulan %}{{ r.total }}{% if not forloop.last %},{% endif %}{% endfor %}],
+      backgroundColor: COLORS }]
+  },
+  options: { plugins: { legend: { position: 'right' } } }
+});
+{% else %}
+document.getElementById('chartTop5Individual').closest('.card-body').innerHTML = '<div class="text-center text-muted py-4">Belum ada data bulan ini.</div>';
+{% endif %}
+
+// Pie top 5 korporasi pembelian
+{% if top5_korporasi_bulan %}
+new Chart(document.getElementById('chartTop5Korporasi'), {
+  type: 'doughnut',
+  data: {
+    labels: [{% for r in top5_korporasi_bulan %}'{{ r.owner__nama }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+    datasets: [{ data: [{% for r in top5_korporasi_bulan %}{{ r.total }}{% if not forloop.last %},{% endif %}{% endfor %}],
+      backgroundColor: COLORS }]
+  },
+  options: { plugins: { legend: { position: 'right' } } }
+});
+{% else %}
+document.getElementById('chartTop5Korporasi').closest('.card-body').innerHTML = '<div class="text-center text-muted py-4">Belum ada data bulan ini.</div>';
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% load humanize %}
+
+<style>
+.lp-page { color:#4b5563; max-width:860px; margin:0 auto; }
+.lp-back { display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+  color:#6b7280;cursor:pointer;background:none;border:none;padding:0;margin-bottom:20px; }
+.lp-back:hover { color:#059669; }
+.lp-title { font-size:20px;font-weight:900;color:#1e2c5a;margin-bottom:4px; }
+.lp-sub   { font-size:13px;color:#8a92a6;margin-bottom:24px; }
+
+/* Modal */
+.lp-modal-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:9000;align-items:center;justify-content:center; }
+.lp-modal-overlay.active { display:flex; }
+.lp-modal { background:#fff;border-radius:16px;padding:32px 28px;
+  max-width:440px;width:95%;box-shadow:0 8px 40px rgba(0,0,0,.2); }
+.lp-modal-title { font-size:17px;font-weight:900;color:#1e2c5a;margin-bottom:6px; }
+.lp-modal-sub   { font-size:12px;color:#8a92a6;margin-bottom:20px; }
+
+/* Year dropdown */
+.lp-year-select {
+  width:100%;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;
+  font-size:13px;font-weight:700;color:#374151;background:#fafafa;
+  margin-bottom:14px;cursor:pointer;
+}
+.lp-year-select:focus { border-color:#059669;outline:none;background:#fff; }
+
+.lp-month-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;min-height:60px; }
+.lp-month-card {
+  padding:14px 16px;border:1.5px solid #e4e8f0;border-radius:10px;
+  cursor:pointer;transition:all .15s;text-align:left;background:#fff;
+  display:flex;align-items:center;gap:10px;
+}
+.lp-month-card:hover { border-color:#059669;background:#f0fdf4; }
+.lp-month-card.active { border-color:#059669;background:#d1fae5; }
+.lp-month-card.hidden { display:none; }
+.lp-month-icon { width:36px;height:36px;border-radius:8px;background:#d1fae5;
+  display:flex;align-items:center;justify-content:center;color:#059669;font-size:14px;flex-shrink:0; }
+.lp-month-label { font-size:13px;font-weight:700;color:#1e2c5a; }
+.lp-month-year  { font-size:11px;color:#8a92a6; }
+
+.btn-lp-primary {
+  width:100%;padding:12px;background:#059669;color:#fff;
+  border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-lp-primary:disabled { background:#9ca3af;cursor:not-allowed; }
+.btn-lp-primary:hover:not(:disabled) { background:#047857; }
+
+/* Tombol buat laporan di halaman -->*/
+.btn-buat-laporan {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 24px;background:#059669;color:#fff;
+  border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;
+}
+.btn-buat-laporan:hover { background:#047857; }
+</style>
+
+<div class="lp-page">
+  <button class="lp-back" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+    <i class="fa fa-arrow-left"></i> Kembali ke Add-ons
+  </button>
+
+  <div class="lp-title"><i class="fa fa-bar-chart me-2" style="color:#059669;"></i>Laporan Akunting</div>
+  <div class="lp-sub">{{ cabang.nama_toko }} — pilih periode untuk melihat laporan keuangan.</div>
+
+  {% if bulan_list %}
+  <button class="btn-buat-laporan" onclick="document.getElementById('lpModal').classList.add('active')">
+    <i class="fa fa-calendar"></i> Pilih Periode Laporan
+  </button>
+  {% else %}
+  <div style="background:#f8fafc;border:1px solid #e4e8f0;border-radius:12px;padding:40px;text-align:center;color:#9ca3af;">
+    <i class="fa fa-inbox" style="font-size:32px;margin-bottom:12px;display:block;"></i>
+    Belum ada data transaksi yang tersedia.
+  </div>
+  {% endif %}
+
+  <!-- Area preview (diisi via HTMX) -->
+  <div id="lp-preview-area" style="margin-top:24px;"></div>
+</div>
+
+<!-- Modal pilih periode -->
+<div class="lp-modal-overlay" id="lpModal">
+  <div class="lp-modal">
+    <div class="lp-modal-title"><i class="fa fa-calendar me-2" style="color:#059669;"></i>Pilih Periode Laporan</div>
+    <div class="lp-modal-sub">Pilih tahun lalu pilih bulan yang ingin ditampilkan.</div>
+
+    <!-- Filter tahun -->
+    <select class="lp-year-select" id="lpYearSelect" onchange="filterTahun(parseInt(this.value))">
+      {% for year in available_years %}
+      <option value="{{ year }}" {% if year == default_year %}selected{% endif %}>{{ year }}</option>
+      {% endfor %}
+    </select>
+
+    <!-- Grid bulan -->
+    <div class="lp-month-grid" id="lpMonthGrid">
+      {% for item in bulan_list %}
+      <button class="lp-month-card {% if item.tahun != default_year %}hidden{% endif %}"
+        type="button"
+        data-tahun="{{ item.tahun }}"
+        onclick="pilihPeriode({{ item.bulan }}, {{ item.tahun }}, this)">
+        <div class="lp-month-icon"><i class="fa fa-calendar-o"></i></div>
+        <div>
+          <div class="lp-month-label">
+            {% if item.bulan == 1 %}Januari{% elif item.bulan == 2 %}Februari
+            {% elif item.bulan == 3 %}Maret{% elif item.bulan == 4 %}April
+            {% elif item.bulan == 5 %}Mei{% elif item.bulan == 6 %}Juni
+            {% elif item.bulan == 7 %}Juli{% elif item.bulan == 8 %}Agustus
+            {% elif item.bulan == 9 %}September{% elif item.bulan == 10 %}Oktober
+            {% elif item.bulan == 11 %}November{% else %}Desember{% endif %}
+          </div>
+          <div class="lp-month-year">{{ item.tahun }}</div>
+        </div>
+      </button>
+      {% endfor %}
+    </div>
+
+    <button id="btnTampilkan" class="btn-lp-primary" disabled onclick="tampilkanLaporan()">
+      <i class="fa fa-bar-chart"></i> Tampilkan Laporan
+    </button>
+  </div>
+</div>
+
+<script>
+var _selectedBulan = 0, _selectedTahun = 0;
+
+function filterTahun(tahun) {
+  // Show/hide month cards
+  document.querySelectorAll('.lp-month-card').forEach(function(c) {
+    if (parseInt(c.dataset.tahun) === tahun) {
+      c.classList.remove('hidden');
+    } else {
+      c.classList.add('hidden');
+      c.classList.remove('active');
+    }
+  });
+  // Reset selection if selected bulan is from a different year
+  if (_selectedTahun !== tahun) {
+    _selectedBulan = 0; _selectedTahun = 0;
+    document.getElementById('btnTampilkan').disabled = true;
+  }
+}
+
+function pilihPeriode(bulan, tahun, el) {
+  document.querySelectorAll('.lp-month-card').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  _selectedBulan = bulan; _selectedTahun = tahun;
+  document.getElementById('btnTampilkan').disabled = false;
+}
+
+function tampilkanLaporan() {
+  document.getElementById('lpModal').classList.remove('active');
+  var url = '{% url "cms_laporan_akunting_preview" %}?bulan=' + _selectedBulan + '&tahun=' + _selectedTahun;
+  htmx.ajax('GET', url, { target: '#lp-preview-area', swap: 'innerHTML' });
+}
+
+document.getElementById('lpModal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('active');
+});
+</script>

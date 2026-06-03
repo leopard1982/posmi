@@ -1,45 +1,255 @@
 {% load humanize %}
-<div>
-    <div class="mt-3 h2 fw-bold">
-        Histori Transaksi
+
+<style>
+.fh-page { color:#4b5563; }
+.fh-title { font-size:26px; font-weight:900; color:#2f3446; margin:0 0 4px; }
+.fh-sub   { font-size:13px; color:#8a92a6; font-weight:600; }
+
+.fh-panel { background:#fff; border:1px solid #e4e8f0; border-radius:10px; box-shadow:0 4px 16px rgba(31,41,55,.06); overflow:hidden; margin-bottom:20px; }
+.fh-panel-hd { padding:16px 20px; background:#f8fafc; border-bottom:1px solid #e4e8f0; }
+.fh-panel-hd h3 { font-size:14px; font-weight:800; color:#2f3446; margin:0 0 2px; }
+.fh-panel-hd p  { font-size:12px; color:#8a92a6; margin:0; }
+.fh-panel-body  { padding:20px; }
+
+.periode-grid { display:flex; flex-wrap:wrap; gap:10px; }
+.periode-btn {
+  padding:10px 18px;
+  border-radius:8px;
+  border:1.5px solid #d8e3f5;
+  background:#f0f4fb;
+  color:#2f3446;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .15s;
+  text-align:center;
+}
+.periode-btn:hover { border-color:#4e73df; color:#4e73df; background:#e8edf8; }
+.periode-btn.active { background:#2f3446; color:#fff; border-color:#2f3446; }
+
+.fh-empty { text-align:center; padding:40px 20px; color:#8a92a6; }
+.fh-empty i { font-size:32px; opacity:.2; display:block; margin-bottom:10px; }
+</style>
+
+<div class="fh-page">
+
+  <div style="margin-bottom:22px;">
+    <h2 class="fh-title"><i class="fa fa-clock-o me-2" style="font-size:22px;color:#8a92a6;"></i>Transaksi Bulan Sebelumnya</h2>
+    <div class="fh-sub">Pilih periode untuk melihat transaksi — hanya bulan yang memiliki data ditampilkan</div>
+  </div>
+
+  {% if periode_list %}
+  <div class="fh-panel">
+    <div class="fh-panel-hd" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div>
+        <h3>Pilih Periode</h3>
+        <p>Klik bulan &amp; tahun yang ingin ditampilkan</p>
+      </div>
+      <button type="button"
+              data-bs-toggle="modal" data-bs-target="#modalSemuaPeriode"
+              style="background:#f0f4fb;border:1.5px solid #d8e3f5;color:#1e2c5a;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;"
+              onmouseover="this.style.background='#1e2c5a';this.style.color='#fff';"
+              onmouseout="this.style.background='#f0f4fb';this.style.color='#1e2c5a';">
+        <i class="fa fa-calendar"></i>Semua Periode
+      </button>
     </div>
-    <div class="mb-5 fs-6">
-        Histori &rarr; Histori Transaksi
+    <div class="fh-panel-body">
+
+      <!-- 5 terbaru -->
+      <div class="periode-grid" id="periodeRecent">
+        {% for p in periode_list %}
+          {% if forloop.counter <= 5 %}
+          <button type="button" class="periode-btn"
+                  onclick="pilihPeriode({{ p.month }}, {{ p.year }}, this)"
+                  data-bulan="{{ p.month }}" data-tahun="{{ p.year }}">
+            {{ p|date:"F Y" }}
+          </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+
     </div>
-    <div class="mt-3 fw-bold mb-3">
-        <form style="font-size: 20px;" action="" hx-post="{% url 'transaksi_bulan_lain' %}" hx_triger="submit" hx-target="#hasil_history">
-            {% csrf_token %}
-            Pilihan History <select name="bulan" id="">
-                <option value="1">Januari</option>
-                <option value="2">Februari</option>
-                <option value="3">Maret</option>
-                <option value="4">April</option>
-                <option value="5">Mei</option>
-                <option value="6">Juni</option>
-                <option value="7">Juli</option>
-                <option value="8">Agustus</option>
-                <option value="9">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-            </select>
-            <select name="tahun" id="">
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-                <option value="2029">2029</option>
-                <option value="2030">2030</option>
-                <option value="2031">2031</option>
-                <option value="2032">2032</option>
-                <option value="2033">2033</option>
-                <option value="2034">2035</option>
-            </select>
-            <button type="submit" class="btn btn-info btn-sm" style="margin-top: -5px;">Cari</button>
-        </form>
-        <div id="hasil_history" class="mt-3">
-            silakan tekan pilih bulan dan tahun, kemudian tekan tombol cari untuk melihat history transaksi bulan tertentu.
+  </div>
+
+  <!-- Modal Semua Periode -->
+  <div class="modal fade" id="modalSemuaPeriode" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+      <div class="modal-content border-0 shadow" style="border-radius:14px;overflow:hidden;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#1e2c5a,#3a5298);border:none;padding:16px 20px;">
+          <h5 class="modal-title fw-bold text-white" style="font-size:14px;">
+            <i class="fa fa-calendar me-2"></i>Semua Periode
+          </h5>
+          <button type="button" data-bs-dismiss="modal"
+                  style="background:none;border:none;color:#fff;font-size:20px;font-weight:700;cursor:pointer;line-height:1;padding:0;">
+            &times;
+          </button>
         </div>
+        <div class="modal-body p-4"
+             style="max-height:60vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#d8e3f5 #f8fafc;">
+          <style>
+            #modalSemuaPeriode .modal-body::-webkit-scrollbar { width:5px; }
+            #modalSemuaPeriode .modal-body::-webkit-scrollbar-track { background:#f8fafc; border-radius:3px; }
+            #modalSemuaPeriode .modal-body::-webkit-scrollbar-thumb { background:#d8e3f5; border-radius:3px; }
+            #modalSemuaPeriode .modal-body::-webkit-scrollbar-thumb:hover { background:#8899bb; }
+          </style>
+          {% regroup periode_list by year as by_tahun %}
+          {% for tahun_group in by_tahun %}
+          <div style="margin-bottom:16px;">
+            <div style="font-size:11px;font-weight:800;color:#8899bb;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid #eef1f6;">
+              {{ tahun_group.grouper }}
+            </div>
+            <div class="periode-grid">
+              {% for p in tahun_group.list %}
+              <button type="button" class="periode-btn"
+                      data-bs-dismiss="modal"
+                      data-modal-periode="1"
+                      data-bulan="{{ p.month }}" data-tahun="{{ p.year }}">
+                {{ p|date:"F" }}
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
-    
+  </div>
+
+  <!-- Hasil transaksi di-load via HTMX -->
+  <div id="hasil_history"></div>
+
+  {% else %}
+  <div class="fh-panel">
+    <div class="fh-empty">
+      <i class="fa fa-inbox"></i>
+      Belum ada riwayat transaksi yang tersedia.
+    </div>
+  </div>
+  {% endif %}
+
 </div>
+
+<script>
+var _htmxAvailable = (typeof htmx !== 'undefined');
+
+function pilihPeriode(bulan, tahun, btn) {
+  // Hapus active dari SEMUA tombol periode di seluruh halaman
+  document.querySelectorAll('.periode-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+
+  // POST via HTMX atau fetch
+  var formData = new FormData();
+  formData.append('bulan', bulan);
+  formData.append('tahun', tahun);
+  formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]') ?
+    document.querySelector('[name=csrfmiddlewaretoken]').value :
+    getCookie('csrftoken'));
+
+  fetch("{% url 'transaksi_bulan_lain' %}", {
+    method: 'POST',
+    body: formData,
+    headers: {'X-Requested-With': 'XMLHttpRequest', 'HX-Request': 'true'}
+  })
+  .then(function(r) { return r.text(); })
+  .then(function(html) {
+    document.getElementById('hasil_history').innerHTML = html;
+  });
+}
+
+function pilihPeriodeModal(bulan, tahun, btn) {
+  var modalEl = document.getElementById('modalSemuaPeriode');
+
+  var existing = document.querySelector(
+    '#periodeRecent .periode-btn[data-bulan="' + bulan + '"][data-tahun="' + tahun + '"]'
+  );
+
+  document.querySelectorAll('.periode-btn').forEach(function(b) { b.classList.remove('active'); });
+
+  if (existing) {
+    existing.classList.add('active');
+  } else {
+    var label = btn ? btn.textContent.trim() : bulan + '/' + tahun;
+    var newBtn = document.createElement('button');
+    newBtn.type = 'button';
+    newBtn.className = 'periode-btn active';
+    newBtn.dataset.bulan = bulan;
+    newBtn.dataset.tahun = tahun;
+    newBtn.textContent = label + ' ' + tahun;
+    newBtn.onclick = function() { pilihPeriode(bulan, tahun, newBtn); };
+
+    var extra = document.getElementById('periodeExtra');
+    if (!extra) {
+      extra = document.createElement('div');
+      extra.id = 'periodeExtra';
+      extra.className = 'periode-grid';
+      extra.style.marginTop = '8px';
+      document.getElementById('periodeRecent').parentNode
+        .insertBefore(extra, document.getElementById('periodeRecent').nextSibling);
+    }
+
+    extra.querySelectorAll('.periode-btn').forEach(function(b) {
+      if (b.dataset.bulan == bulan && b.dataset.tahun == tahun) b.remove();
+    });
+    extra.appendChild(newBtn);
+  }
+
+  _doLoad(bulan, tahun);
+  tutupModalSemuaPeriode();
+}
+
+function _doLoad(bulan, tahun) {
+  var formData = new FormData();
+  formData.append('bulan', bulan);
+  formData.append('tahun', tahun);
+  formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+  fetch("{% url 'transaksi_bulan_lain' %}", {
+    method: 'POST', body: formData,
+    headers: {'X-Requested-With': 'XMLHttpRequest', 'HX-Request': 'true'}
+  })
+  .then(function(r) { return r.text(); })
+  .then(function(html) { document.getElementById('hasil_history').innerHTML = html; });
+}
+
+function getCookie(name) {
+  var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+  return v ? v[2] : null;
+}
+
+function tutupModalSemuaPeriode() {
+  var modalEl = document.getElementById('modalSemuaPeriode');
+  if (!modalEl) return;
+
+  if (window.bootstrap && bootstrap.Modal) {
+    try {
+      (bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl)).hide();
+    } catch (err) {}
+  }
+
+  if (window.jQuery && typeof jQuery(modalEl).modal === 'function') {
+    try {
+      jQuery(modalEl).modal('hide');
+    } catch (err) {}
+  }
+
+  window.setTimeout(function() {
+    modalEl.classList.remove('show');
+    modalEl.setAttribute('aria-hidden', 'true');
+    modalEl.removeAttribute('aria-modal');
+    modalEl.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+    document.querySelectorAll('.modal-backdrop').forEach(function(el) { el.remove(); });
+  }, 80);
+}
+
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-modal-periode="1"]');
+  if (!btn) return;
+  e.preventDefault();
+  pilihPeriodeModal(parseInt(btn.dataset.bulan, 10), parseInt(btn.dataset.tahun, 10), btn);
+});
+</script>
+{% csrf_token %}

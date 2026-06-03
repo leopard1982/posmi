@@ -1,0 +1,362 @@
+{% extends 'owner/base.html' %}
+{% load humanize %}
+
+{% block title %}Downgrade Paket{% endblock %}
+
+{% block extra_css %}
+.downgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.downgrade-kpi {
+  min-height: 108px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e8eef8;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.05);
+}
+.downgrade-kpi-label {
+  color: #8899bb;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+.downgrade-kpi-value {
+  margin-top: 8px;
+  color: #1e2c5a;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.downgrade-kpi-note {
+  margin-top: 7px;
+  color: #8899bb;
+  font-size: 12px;
+}
+.downgrade-panel {
+  margin-bottom: 18px;
+  background: #fff;
+  border: 1px solid #e8eef8;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+.downgrade-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #eef1f6;
+}
+.downgrade-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.downgrade-panel-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  border-radius: 11px;
+}
+.downgrade-panel-title {
+  margin: 0;
+  color: #1e2c5a;
+  font-size: 15px;
+  font-weight: 900;
+}
+.downgrade-panel-subtitle {
+  margin-top: 3px;
+  color: #8899bb;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.downgrade-panel-body {
+  padding: 20px 22px;
+}
+.downgrade-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.downgrade-alert.warning {
+  color: #856404;
+  background: #fff8e1;
+  border: 1px solid #ffe08a;
+}
+.downgrade-alert.danger {
+  color: #842029;
+  background: #fff5f5;
+  border: 1px solid #f5c2c7;
+}
+.toko-list {
+  display: grid;
+  gap: 10px;
+}
+.toko-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  background: #f8fafc;
+  border: 1px solid #edf2fa;
+  border-radius: 10px;
+}
+.toko-name {
+  color: #1e2c5a;
+  font-size: 13px;
+  font-weight: 900;
+}
+.toko-meta {
+  margin-top: 3px;
+  color: #8899bb;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.downgrade-form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, .8fr) auto;
+  gap: 14px;
+  align-items: end;
+}
+.downgrade-preview {
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.downgrade-empty {
+  padding: 28px;
+  color: #8899bb;
+  text-align: center;
+  font-size: 13px;
+}
+@media (max-width: 1199.98px) {
+  .downgrade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767.98px) {
+  .downgrade-grid { grid-template-columns: 1fr; }
+  .toko-row,
+  .downgrade-panel-header { align-items: stretch; flex-direction: column; }
+  .downgrade-form-row { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+    <li class="breadcrumb-item">
+      <a href="{% url 'owner_dashboard' %}" style="color:#8899bb;text-decoration:none;">
+        <i class="fa fa-building me-1"></i>Korporasi
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+      Downgrade Paket
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block heading %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <h4 style="font-weight:900;color:#1e2c5a;margin:0;">
+      <i class="fa fa-arrow-down me-2"></i>Downgrade Paket
+    </h4>
+    <div style="font-size:13px;color:#8899bb;margin-top:2px;">
+      Kurangi slot, lepas toko dari korporasi, atau kembalikan semua toko ke paket gratis.
+    </div>
+  </div>
+  <a href="{% url 'owner_dashboard' %}" class="btn btn-outline-primary btn-sm fw-bold" style="border-radius:8px;">
+    <i class="fa fa-arrow-left me-1"></i>Dashboard
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="downgrade-grid">
+  <div class="downgrade-kpi">
+    <div class="downgrade-kpi-label">Total Slot</div>
+    <div class="downgrade-kpi-value">{{ owner.jumlah_slot|intcomma }}</div>
+    <div class="downgrade-kpi-note">Slot korporasi aktif</div>
+  </div>
+  <div class="downgrade-kpi">
+    <div class="downgrade-kpi-label">Slot Terpakai</div>
+    <div class="downgrade-kpi-value" style="color:#4e73df;">{{ owner.slot_terpakai|intcomma }}</div>
+    <div class="downgrade-kpi-note">Toko yang masih terhubung</div>
+  </div>
+  <div class="downgrade-kpi">
+    <div class="downgrade-kpi-label">Slot Kosong</div>
+    <div class="downgrade-kpi-value" style="color:#059669;">{{ owner.slot_tersedia|intcomma }}</div>
+    <div class="downgrade-kpi-note">Dapat dikurangi</div>
+  </div>
+  <div class="downgrade-kpi">
+    <div class="downgrade-kpi-label">Aktif Sampai</div>
+    <div class="downgrade-kpi-value" style="font-size:17px;">
+      {% if owner.lisensi_expired %}{{ owner.lisensi_expired|date:"d M Y" }}{% else %}-{% endif %}
+    </div>
+    <div class="downgrade-kpi-note">Masa aktif paket</div>
+  </div>
+</section>
+
+<section class="downgrade-panel">
+  <div class="downgrade-panel-header">
+    <div class="downgrade-panel-heading">
+      <div class="downgrade-panel-icon" style="background:#fee2e2;color:#dc3545;"><i class="fa fa-unlink"></i></div>
+      <div>
+        <h2 class="downgrade-panel-title">Lepas Toko dari Korporasi</h2>
+        <div class="downgrade-panel-subtitle">Toko kembali ke Paket Gratis dan tidak memakai pool kuota korporasi.</div>
+      </div>
+    </div>
+  </div>
+  <div class="downgrade-panel-body">
+    <div class="downgrade-alert warning">
+      <i class="fa fa-exclamation-triangle mt-1"></i>
+      <span>Tidak ada cashback saat melepas toko sebelum masa berlangganan habis. Slot otomatis berkurang 1 selama jumlah slot tetap cukup untuk toko aktif.</span>
+    </div>
+
+    {% if toko_list %}
+    <div class="toko-list">
+      {% for t in toko_list %}
+      <div class="toko-row">
+        <div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="toko-name">{{ t.nama_toko }}</span>
+            <span class="code-badge">{{ t.prefix }}</span>
+          </div>
+          <div class="toko-meta">{{ t.nama_cabang }} &bull; {{ t.alamat_toko|default:"Alamat belum diisi" }}</div>
+        </div>
+        <button type="button" class="btn-owner btn-owner-danger" onclick="konfirmasiLepas('{{ t.id }}','{{ t.nama_toko|escapejs }}')">
+          <i class="fa fa-unlink"></i>Lepas
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <form method="post" id="formLepasToko" class="d-none">
+      {% csrf_token %}
+      <input type="hidden" name="aksi" value="lepas_toko">
+      <input type="hidden" name="cabang_id" id="lepasCabangId">
+    </form>
+    {% else %}
+    <div class="downgrade-empty">
+      <i class="fa fa-store d-block mb-2" style="font-size:28px;opacity:.22;"></i>
+      Tidak ada toko yang bisa dilepas.
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="downgrade-panel">
+  <div class="downgrade-panel-header">
+    <div class="downgrade-panel-heading">
+      <div class="downgrade-panel-icon" style="background:#fff3cd;color:#d97706;"><i class="fa fa-minus-circle"></i></div>
+      <div>
+        <h2 class="downgrade-panel-title">Kurangi Jumlah Slot</h2>
+        <div class="downgrade-panel-subtitle">Mengurangi kapasitas slot tanpa melepas toko yang sudah aktif.</div>
+      </div>
+    </div>
+  </div>
+  <div class="downgrade-panel-body">
+    <div class="downgrade-alert warning">
+      <i class="fa fa-exclamation-triangle mt-1"></i>
+      <span>Slot hanya bisa dikurangi sampai batas toko aktif saat ini, yaitu {{ owner.slot_terpakai|intcomma }} toko. Tidak ada cashback pengembalian sisa masa berlangganan.</span>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="aksi" value="kurangi_slot">
+      <div class="downgrade-form-row">
+        <div>
+          <label class="form-label">Kurangi Sebanyak</label>
+          <input type="number" name="jumlah_kurangi" class="form-control" min="1" max="{{ owner.slot_tersedia }}" value="1" required {% if owner.slot_tersedia == 0 %}disabled{% endif %}>
+          <div class="form-hint">Slot kosong yang dapat dikurangi: {{ owner.slot_tersedia|intcomma }}</div>
+        </div>
+        <div class="downgrade-preview">
+          Dari <strong>{{ owner.jumlah_slot|intcomma }}</strong> slot menjadi <strong id="previewNewSlot">{{ owner.jumlah_slot|add:-1 }}</strong> slot.
+        </div>
+        <button type="submit" class="btn btn-warning fw-bold" style="border-radius:8px;color:#1e2c5a;min-height:42px;" {% if owner.slot_tersedia == 0 %}disabled{% endif %}>
+          <i class="fa fa-minus me-1"></i>Kurangi Slot
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="downgrade-panel">
+  <div class="downgrade-panel-header">
+    <div class="downgrade-panel-heading">
+      <div class="downgrade-panel-icon" style="background:#fee2e2;color:#dc3545;"><i class="fa fa-trash"></i></div>
+      <div>
+        <h2 class="downgrade-panel-title">Downgrade Penuh ke Paket Gratis</h2>
+        <div class="downgrade-panel-subtitle">Semua toko dilepas dan akun owner korporasi dihapus permanen.</div>
+      </div>
+    </div>
+  </div>
+  <div class="downgrade-panel-body">
+    <div class="downgrade-alert danger">
+      <i class="fa fa-exclamation-circle mt-1"></i>
+      <div>
+        <strong>Peringatan:</strong> semua {{ toko_list|length|intcomma }} toko akan kembali ke Paket Gratis 75 transaksi/bulan, pool kuota korporasi hilang, data transfer/order korporasi dihapus, dan akun owner tidak dapat dipulihkan. Tidak ada cashback.
+      </div>
+    </div>
+
+    <form method="post" onsubmit="return confirm('Yakin downgrade penuh? Semua toko kembali ke paket gratis dan akun Owner dihapus.')">
+      {% csrf_token %}
+      <input type="hidden" name="aksi" value="downgrade_individual">
+      <div class="downgrade-form-row">
+        <div>
+          <label class="form-label">Ketik DOWNGRADE untuk Konfirmasi</label>
+          <input type="text" name="konfirmasi" class="form-control" placeholder="DOWNGRADE" style="letter-spacing:2px;font-weight:800;" required>
+          <div class="form-hint">Gunakan huruf kapital sesuai instruksi.</div>
+        </div>
+        <div class="downgrade-preview">
+          Aksi ini akan menghapus akses korporasi dan mengembalikan toko ke paket gratis.
+        </div>
+        <button type="submit" class="btn btn-danger fw-bold" style="border-radius:8px;min-height:42px;">
+          <i class="fa fa-arrow-down me-1"></i>Downgrade Penuh
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function konfirmasiLepas(cabangId, namaToko) {
+  if (!confirm('Lepas toko "' + namaToko + '" dari Korporasi?\n\nToko akan kembali ke Paket Gratis (75 transaksi/bulan).\nTidak ada cashback pengembalian.')) return;
+  document.getElementById('lepasCabangId').value = cabangId;
+  document.getElementById('formLepasToko').submit();
+}
+
+(function(){
+  var cur = {{ owner.jumlah_slot }};
+  var minSlot = {{ owner.slot_terpakai }};
+  var input = document.querySelector('[name="jumlah_kurangi"]');
+  var preview = document.getElementById('previewNewSlot');
+  if (input && preview) {
+    function updatePreview() {
+      var val = Math.max(1, parseInt(input.value) || 1);
+      preview.textContent = Math.max(minSlot, cur - val);
+    }
+    input.addEventListener('input', updatePreview);
+    updatePreview();
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,429 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Riwayat Penjualan — POSMI</title>
+  <link rel="icon" href="{% static 'images/posmi.ico' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+  <style>
+    :root { --teal: rgb(38,75,93); --teal-mid: rgb(65,118,144); }
+    body { font-family: 'Poppins', sans-serif; background: #f4f8fa; font-size: 13px; }
+    .page-header { background: linear-gradient(135deg, var(--teal), var(--teal-mid)); padding: 18px 0; }
+    .card-plain { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .form-select-sm, .form-control-sm { font-size: 13px; border-radius: 7px; border-color: #d0dde3; }
+    .btn-teal { background: var(--teal); color: #fff; border: none; border-radius: 7px; font-weight: 600; transition: opacity .15s; }
+    .btn-teal:hover { opacity: .85; color: #fff; }
+    .badge-paid     { background: #e8f5e9; color: #2e7d32; }
+    .badge-void     { background: #fce4ec; color: #c62828; }
+    .badge-cash     { background: #e3f2fd; color: #1565c0; }
+    .badge-transfer { background: #f3e5f5; color: #6a1b9a; }
+    .badge-pending  { background: #fff8e1; color: #e65100; }
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 50px; font-size: 11px; font-weight: 600; }
+    .tbl thead th { background: var(--teal); color: #fff; padding: 11px 14px; font-weight: 600; border: none; }
+    .tbl tbody td { padding: 10px 14px; vertical-align: middle; border-bottom: 1px solid #f0f4f6; }
+    .tbl tbody tr:hover { background: #f8fafc; }
+    .page-link { color: var(--teal); font-size: 13px; }
+    .page-item.active .page-link { background: var(--teal); border-color: var(--teal); }
+    .summary-card { background: var(--teal); color: #fff; border-radius: 10px; padding: 18px 20px; }
+    .summary-val  { font-size: 1.4rem; font-weight: 800; }
+    .summary-lbl  { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
+
+    /* Print styles */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff; }
+      .card-plain { border: none; box-shadow: none; }
+      .page-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .tbl thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="page-header no-print">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-3">
+      <img src="{% static 'images/posmi-logo.png' %}" style="height:38px;border-radius:6px;" alt="">
+      <div>
+        <div style="color:#fff;font-weight:700;font-size:15px;">
+          {% if is_owner_view %}Riwayat Penjualan Seluruh Kasir{% else %}Riwayat Penjualan Saya{% endif %}
+        </div>
+        <div style="color:rgba(255,255,255,.7);font-size:12px;">
+          {{ request.user.userprofile.nama_lengkap }} &bull; {{ request.user.userprofile.cabang.nama_toko }}
+          {% if is_owner_view %}&bull; <span style="color:#fcd34d;font-weight:600;">Mode Pemilik Toko</span>{% endif %}
+        </div>
+      </div>
+    </div>
+    <a href="/" style="color:rgba(255,255,255,.8);font-size:13px;text-decoration:none;background:rgba(255,255,255,.15);padding:7px 16px;border-radius:7px;">
+      <i class="fa fa-arrow-left me-1"></i>Kembali ke Kasir
+    </a>
+  </div>
+</div>
+
+<div class="container py-4">
+
+  <!-- ── Filter bar ── -->
+  <form method="get" class="no-print">
+    <div class="card-plain mb-3 p-3 d-flex flex-wrap align-items-end gap-3">
+
+      <!-- Pilih bulan/tahun -->
+      <div>
+        <label class="d-block mb-1 fw-semibold" style="color:#4a5568;">Periode</label>
+        <select name="bulan" class="form-select form-select-sm" style="min-width:160px;" onchange="updateTahun(this)">
+          {% for d in periode_list %}
+            <option value="{{ d.month }}" data-tahun="{{ d.year }}"
+              {% if d.month == bulan_param and d.year == tahun_param %}selected{% endif %}>
+              {{ d|date:"F Y" }}
+            </option>
+          {% empty %}
+            <option value="{{ bulan_param }}" data-tahun="{{ tahun_param }}" selected>{{ nama_bulan }} {{ tahun_param }}</option>
+          {% endfor %}
+        </select>
+        <input type="hidden" name="tahun" id="inputTahun" value="{{ tahun_param }}">
+      </div>
+
+      <!-- Data per halaman -->
+      <div>
+        <label class="d-block mb-1 fw-semibold" style="color:#4a5568;">Tampilkan</label>
+        <select name="per_page" class="form-select form-select-sm">
+          <option value="25" {% if per_page == 25 %}selected{% endif %}>25 data</option>
+          <option value="50" {% if per_page == 50 %}selected{% endif %}>50 data</option>
+          <option value="75" {% if per_page == 75 %}selected{% endif %}>75 data</option>
+          <option value="100" {% if per_page == 100 %}selected{% endif %}>100 data</option>
+        </select>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-teal btn-sm px-4" style="padding-top:7px;padding-bottom:7px;">
+          <i class="fa fa-filter me-1"></i>Terapkan
+        </button>
+      </div>
+
+      <!-- Cetak rekap -->
+      <div class="ms-auto d-flex gap-2">
+        <a href="{% url 'cetak_rekap' %}?mode=bulanan&bulan={{ bulan_param }}&tahun={{ tahun_param }}"
+           class="btn btn-sm btn-outline-primary"
+           style="border-radius:7px;font-size:13px;">
+          <i class="fa fa-download me-1"></i>Rekap Bulanan
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+                onclick="bukaModalCetakHarian()"
+                style="border-radius:7px;font-size:13px;">
+          <i class="fa fa-calendar me-1"></i>Rekap Harian
+        </button>
+      </div>
+
+    </div>
+  </form>
+
+  <!-- ── Judul cetak (hanya saat print) ── -->
+  <div class="print-only d-none mb-3">
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:18px;font-weight:800;">REKAP PENJUALAN</div>
+      <div style="font-size:13px;color:#555;">{{ request.user.userprofile.nama_lengkap }} — {{ request.user.userprofile.cabang.nama_toko }}</div>
+      <div style="font-size:13px;color:#555;">Periode: {{ nama_bulan }} {{ tahun_param }}</div>
+    </div>
+  </div>
+
+  <!-- ── Ringkasan (sekarang di atas tabel) ── -->
+  <div class="row g-3 mb-3" id="bagianRingkasan">
+    <div class="col-12 col-sm-4">
+      <div style="background:#eef5f8;border:1px solid #c8dde6;border-radius:10px;padding:16px 18px;">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--teal);">Rp {{ total_penjualan|intcomma }}</div>
+        <div style="font-size:11px;color:#5a8090;margin-top:3px;">Total Penjualan {{ nama_bulan }} {{ tahun_param }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4">
+      <div style="background:#eef5f8;border:1px solid #c8dde6;border-radius:10px;padding:16px 18px;">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--teal);">{{ jumlah_transaksi|intcomma }}</div>
+        <div style="font-size:11px;color:#5a8090;margin-top:3px;">Transaksi Selesai</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4">
+      <div style="background:#eef5f8;border:1px solid #c8dde6;border-radius:10px;padding:16px 18px;">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--teal);">{{ jumlah_pembeli|intcomma }}</div>
+        <div style="font-size:11px;color:#5a8090;margin-top:3px;">Pembeli dengan Nama Tercatat</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Judul cetak ── -->
+  <div class="print-only d-none mb-3" style="text-align:center;padding-bottom:12px;border-bottom:2px solid #ccc;">
+    <div style="font-size:18px;font-weight:800;">REKAP PENJUALAN</div>
+    <div style="font-size:13px;color:#555;">{{ request.user.userprofile.nama_lengkap }} — {{ request.user.userprofile.cabang.nama_toko }}</div>
+    <div style="font-size:13px;color:#555;">Periode: {{ nama_bulan }} {{ tahun_param }}</div>
+  </div>
+
+  <!-- ── Tabel Transaksi SELESAI ── -->
+  <div class="card-plain mb-3">
+    <div style="padding:12px 16px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-weight:700;color:#1e3a47;font-size:13px;">
+        <i class="fa fa-check-circle me-2" style="color:var(--teal);"></i>Transaksi Selesai
+      </div>
+      <div style="font-size:12px;color:#94a3b8;">{{ page_obj.paginator.count|intcomma }} transaksi</div>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0" style="font-size:13px;">
+        <thead style="background:var(--teal);color:#fff;">
+          <tr>
+            <th style="padding:10px 14px;">No. Nota</th>
+            <th style="padding:10px 14px;">Tanggal &amp; Waktu</th>
+            {% if is_owner_view %}<th style="padding:10px 14px;">Kasir</th>{% endif %}
+            <th style="padding:10px 14px;">Pembeli</th>
+            <th style="padding:10px 14px;text-align:center;">Item</th>
+            <th style="padding:10px 14px;text-align:right;">Total</th>
+            <th style="padding:10px 14px;text-align:center;" class="no-print">Metode</th>
+            <th style="padding:10px 14px;text-align:center;" class="no-print">Status</th>
+            <th class="no-print" style="padding:10px 14px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in page_obj %}
+          <tr style="border-bottom:1px solid #f0f4f6;">
+            <td style="padding:10px 14px;font-weight:700;color:#1e3a47;">{{ t.no_nota }}</td>
+            <td style="padding:10px 14px;color:#5a8090;">
+              {{ t.tgl_bayar|date:"d M Y" }}<br>
+              <span style="font-size:11px;color:#94a3b8;">{{ t.tgl_bayar|date:"H:i" }}</span>
+            </td>
+            {% if is_owner_view %}
+            <td style="padding:10px 14px;font-size:12px;">
+              {{ t.user.userprofile.nama_lengkap|default:t.user.username|truncatechars:16 }}<br>
+              <span style="color:#94a3b8;font-size:11px;">{{ t.user.username }}</span>
+            </td>
+            {% endif %}
+            <td style="padding:10px 14px;">{{ t.customer|default:"—" }}</td>
+            <td style="padding:10px 14px;text-align:center;">{{ t.items }}</td>
+            <td style="padding:10px 14px;text-align:right;font-weight:700;color:#1e3a47;">Rp {{ t.total|intcomma }}</td>
+            <td style="padding:10px 14px;text-align:center;" class="no-print">
+              {% if t.metode == 0 %}<span class="pill badge-cash">Cash</span>
+              {% else %}<span class="pill badge-transfer">Transfer</span>{% endif %}
+            </td>
+            <td style="padding:10px 14px;text-align:center;" class="no-print">
+              {% if t.is_void %}<span class="pill badge-void">Void</span>
+              {% else %}<span class="pill badge-paid">Selesai</span>{% endif %}
+            </td>
+            <td style="padding:10px 14px;" class="no-print">
+              <a href="{% url 'detail_penjualan_histori' %}?id={{ t.nota }}"
+                 style="font-size:12px;color:var(--teal);font-weight:600;text-decoration:none;">Detail</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if is_owner_view %}9{% else %}8{% endif %}" style="text-align:center;padding:48px;color:#94a3b8;">
+              <i class="fa fa-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:10px;"></i>
+              Tidak ada transaksi pada periode ini.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Pagination ── -->
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav class="no-print d-flex justify-content-center mb-4">
+    <ul class="pagination pagination-sm mb-0">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?bulan={{ bulan_param }}&tahun={{ tahun_param }}&per_page={{ per_page }}&page=1"><i class="fa fa-angle-double-left"></i></a></li>
+        <li class="page-item"><a class="page-link" href="?bulan={{ bulan_param }}&tahun={{ tahun_param }}&per_page={{ per_page }}&page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a></li>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+          <li class="page-item"><a class="page-link" href="?bulan={{ bulan_param }}&tahun={{ tahun_param }}&per_page={{ per_page }}&page={{ num }}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?bulan={{ bulan_param }}&tahun={{ tahun_param }}&per_page={{ per_page }}&page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a></li>
+        <li class="page-item"><a class="page-link" href="?bulan={{ bulan_param }}&tahun={{ tahun_param }}&per_page={{ per_page }}&page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-double-right"></i></a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <!-- ── Transaksi Pending ── -->
+  {% if qs_pending %}
+  <div class="card-plain no-print" style="border-color:#f6d860!important;">
+    <div style="padding:12px 16px;border-bottom:1px solid #fcedb8;font-weight:700;color:#7a5800;background:#fffbea;display:flex;align-items:center;justify-content:space-between;">
+      <span><i class="fa fa-clock-o me-2" style="color:#d4a000;"></i>Transaksi Belum Selesai</span>
+      <span style="background:#fcedb8;color:#7a5800;padding:2px 10px;border-radius:50px;font-size:12px;">{{ qs_pending.count }}</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0" style="font-size:13px;">
+        <thead style="background:#fef3c7;color:#7a5800;">
+          <tr>
+            <th style="padding:10px 14px;">No. Nota</th>
+            <th style="padding:10px 14px;">Dibuat</th>
+            <th style="padding:10px 14px;text-align:center;">Item</th>
+            <th style="padding:10px 14px;text-align:right;">Total</th>
+            <th style="padding:10px 14px;text-align:center;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in qs_pending %}
+          <tr style="border-bottom:1px solid #fcedb8;">
+            <td style="padding:10px 14px;font-weight:700;color:#7a5800;">{{ p.no_nota|default:"—" }}</td>
+            <td style="padding:10px 14px;color:#8b6914;">{{ p.created_at|date:"d M Y, H:i" }}</td>
+            <td style="padding:10px 14px;text-align:center;">{{ p.items }}</td>
+            <td style="padding:10px 14px;text-align:right;font-weight:700;color:#1e3a47;">Rp {{ p.total|intcomma }}</td>
+            <td style="padding:10px 14px;text-align:center;">
+              <div class="d-flex gap-2 justify-content-center">
+                <a href="/?nota={{ p.nota }}"
+                   class="btn btn-teal btn-sm" style="font-size:12px;padding:4px 12px;">
+                  <i class="fa fa-play me-1"></i>Lanjutkan
+                </a>
+                <button type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        style="font-size:12px;padding:4px 12px;"
+                        onclick="konfirmasiHapus('{% url 'hapus_transaksi' %}?nota={{ p.nota }}', '{{ p.no_nota }}')">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- /container -->
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="modalHapusPending" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:380px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,rgb(38,75,93),rgb(65,118,144));padding:18px 20px;text-align:center;">
+        <div style="width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <i class="fa fa-trash" style="font-size:22px;color:#fff;"></i>
+        </div>
+        <div style="font-weight:700;font-size:15px;color:#fff;">Hapus Transaksi</div>
+      </div>
+      <div style="padding:20px;text-align:center;">
+        <p style="font-size:14px;color:#4a5568;margin-bottom:4px;">
+          Yakin hapus transaksi pending
+        </p>
+        <p style="font-weight:700;font-size:15px;color:#1e3a47;" id="notaHapusLabel">No. —</p>
+        <p style="font-size:12px;color:#94a3b8;margin-top:4px;">Transaksi yang dihapus tidak dapat dikembalikan.</p>
+      </div>
+      <div style="padding:0 20px 20px;display:flex;gap:8px;">
+        <button type="button" data-bs-dismiss="modal"
+                style="flex:1;padding:10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;color:#4a5568;cursor:pointer;">
+          Batal
+        </button>
+        <a id="linkHapus" href="#"
+           style="flex:1;padding:10px;background:#dc3545;border:none;border-radius:8px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;text-align:center;text-decoration:none;">
+          Ya, Hapus
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function konfirmasiHapus(url, noNota) {
+  document.getElementById('linkHapus').href = url;
+  document.getElementById('notaHapusLabel').textContent = 'No. ' + noNota;
+  new bootstrap.Modal(document.getElementById('modalHapusPending')).show();
+}
+
+function updateTahun(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('inputTahun').value = opt.dataset.tahun || '';
+}
+
+function cetakRekap() {
+  document.querySelectorAll('.print-only').forEach(el => el.classList.remove('d-none'));
+  window.print();
+  document.querySelectorAll('.print-only').forEach(el => el.classList.add('d-none'));
+}
+
+function bukaModalCetakHarian() {
+  var m = new bootstrap.Modal(document.getElementById('modalCetakHarian'));
+  m.show();
+}
+</script>
+
+<!-- Modal Rekap Harian -->
+<div class="modal fade" id="modalCetakHarian" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+    <div class="modal-content border-0 shadow" style="border-radius:12px;overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#264b5d,#3a7a96);border:none;padding:16px 20px;">
+        <h5 class="modal-title fw-bold text-white" style="font-size:14px;">
+          <i class="fa fa-calendar me-2"></i>Rekap Harian — {{ nama_bulan }} {{ tahun_param }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p style="font-size:13px;color:#6b7280;margin-bottom:14px;">
+          Pilih tanggal yang memiliki transaksi:
+        </p>
+
+        {% if tanggal_bertransaksi %}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="tglContainer">
+          {% for tgl in tanggal_bertransaksi %}
+          <button type="button"
+                  onclick="pilihTanggal('{{ tgl|date:'Y-m-d' }}', this)"
+                  style="padding:8px 14px;border-radius:8px;border:1.5px solid #d4e3eb;background:#f0f4fb;color:#264b5d;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;"
+                  data-tgl="{{ tgl|date:'Y-m-d' }}">
+            {{ tgl|date:"d M" }}
+          </button>
+          {% endfor %}
+        </div>
+        <div id="tglSelected" style="font-size:12px;color:#059669;font-weight:600;margin-top:10px;display:none;">
+          <i class="fa fa-check-circle me-1"></i>Terpilih: <span id="tglSelectedText"></span>
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">
+          <i class="fa fa-info-circle me-1"></i>Tidak ada transaksi di bulan {{ nama_bulan }} {{ tahun_param }}.
+        </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer border-0 pt-0 px-4 pb-4 gap-2">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="border-radius:7px;">Batal</button>
+        <button type="button" id="btnDownloadHarian" class="btn btn-primary btn-sm fw-bold" style="border-radius:7px;" disabled
+                onclick="downloadRekapHarian()">
+          <i class="fa fa-download me-1"></i>Download Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var _tglDipilih = '';
+
+function pilihTanggal(tgl, btn) {
+  _tglDipilih = tgl;
+  document.querySelectorAll('#tglContainer button').forEach(function(b) {
+    b.style.background = '#f0f4fb';
+    b.style.color = '#264b5d';
+    b.style.borderColor = '#d4e3eb';
+  });
+  btn.style.background = '#264b5d';
+  btn.style.color = '#fff';
+  btn.style.borderColor = '#264b5d';
+  var parts = tgl.split('-');
+  document.getElementById('tglSelectedText').textContent = parts[2] + '/' + parts[1] + '/' + parts[0];
+  document.getElementById('tglSelected').style.display = '';
+  document.getElementById('btnDownloadHarian').disabled = false;
+}
+
+function downloadRekapHarian() {
+  if (!_tglDipilih) return;
+  window.location.href = '/riwayat/cetak/?mode=harian&tanggal=' + _tglDipilih + '&bulan={{ bulan_param }}&tahun={{ tahun_param }}';
+  bootstrap.Modal.getInstance(document.getElementById('modalCetakHarian')).hide();
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

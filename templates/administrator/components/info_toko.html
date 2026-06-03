@@ -1,84 +1,561 @@
 {% load humanize %}
+
+<style>
+  .store-info-page {
+    color: #4b5563;
+  }
+
+  .store-info-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .store-info-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .store-info-breadcrumb {
+    margin-top: 8px;
+    color: #8a92a6;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .store-info-updated {
+    flex: 0 0 auto;
+    padding: 8px 11px;
+    color: #687086;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .store-info-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 16px;
+  }
+
+  .store-panel {
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+  }
+
+  .store-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #eef1f6;
+  }
+
+  .store-panel-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .store-panel-subtitle {
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 12px;
+  }
+
+  .store-panel-body {
+    padding: 18px;
+  }
+
+  .store-wallet-value {
+    color: #2f3446;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .store-wallet-note {
+    margin-top: 8px;
+    color: #8a92a6;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .store-wallet-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .store-ref-code {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+  }
+
+  .store-ref-code-label {
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .store-ref-code-value {
+    margin-top: 3px;
+    color: #3152c9;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .store-ref-copy {
+    flex: 0 0 auto;
+  }
+
+  .store-ref-note {
+    margin: 12px 0 0;
+    color: #687086;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .store-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .store-form-group.full {
+    grid-column: 1 / -1;
+  }
+
+  .store-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #687086;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+
+  .store-form-group .form-control {
+    min-height: 38px;
+    margin: 0 !important;
+    border-color: #cfd6e6;
+    border-radius: 7px;
+    color: #374151;
+    font-size: 14px;
+  }
+
+  .store-form-group .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 .15rem rgba(78, 115, 223, .15);
+  }
+
+  .store-form-error {
+    margin-top: 6px;
+    color: #dc3545;
+    font-size: 12px;
+  }
+
+  .store-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #eef1f6;
+  }
+
+  .store-info-modal-table {
+    width: 100%;
+  }
+
+  .wallet-modal .modal-content {
+    border: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, .22);
+  }
+
+  .wallet-modal .modal-header {
+    align-items: flex-start;
+    padding: 18px 20px;
+    background: #fff;
+    border-bottom: 1px solid #eef1f6;
+  }
+
+  .wallet-modal-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .wallet-modal-subtitle {
+    margin-top: 4px;
+    color: #8a92a6;
+    font-size: 12px;
+  }
+
+  .wallet-modal-close {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #8a92a6;
+    background: #f8fafc;
+    border: 1px solid #e4e8f0;
+    border-radius: 7px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .wallet-modal .modal-body {
+    padding: 18px 20px;
+  }
+
+  .wallet-modal-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+  }
+
+  .wallet-modal-summary-label {
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .wallet-modal-summary-value {
+    margin-top: 3px;
+    color: #2f3446;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .wallet-modal-summary-icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #4e73df;
+    background: #eef3ff;
+    border-radius: 8px;
+  }
+
+  .wallet-modal-table-wrap {
+    overflow-x: auto;
+  }
+
+  .wallet-modal-table {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+
+  .wallet-modal-table thead th {
+    color: #687086;
+    border-bottom: 1px solid #dfe4ee;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .wallet-modal-table tbody td {
+    color: #4b5563;
+    border-bottom: 1px solid #eef1f6;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .wallet-modal-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .wallet-store-name {
+    color: #2f3446;
+    font-weight: 900;
+  }
+
+  .wallet-store-code {
+    display: block;
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .wallet-amount {
+    color: #008f66;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .wallet-date {
+    white-space: nowrap;
+  }
+
+  .wallet-modal .dataTables_wrapper .dataTables_length,
+  .wallet-modal .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 14px;
+    color: #687086;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .wallet-modal .dataTables_wrapper .dataTables_filter input,
+  .wallet-modal .dataTables_wrapper .dataTables_length select {
+    min-height: 34px;
+    border: 1px solid #cfd6e6;
+    border-radius: 7px;
+    color: #374151;
+  }
+
+  .wallet-modal .dataTables_wrapper .dataTables_info,
+  .wallet-modal .dataTables_wrapper .dataTables_paginate {
+    margin-top: 14px;
+    color: #687086;
+    font-size: 13px;
+  }
+
+  .wallet-modal .modal-footer {
+    padding: 14px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #eef1f6;
+  }
+
+  @media (max-width: 991.98px) {
+    .store-info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .store-info-header {
+      flex-direction: column;
+    }
+
+    .store-info-updated {
+      width: 100%;
+    }
+
+    .store-form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .store-wallet-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
 <!-- Modal Detail Wallet-->
-<div class="modal fade" id="staticWallet" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropWallet" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade wallet-modal" id="staticWallet" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropWallet" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropWallet">Detail Transaksi Referensi</h5>
-          
+          <div>
+            <h5 class="modal-title wallet-modal-title" id="staticBackdropWallet">Detail Transaksi Referensi</h5>
+            <div class="wallet-modal-subtitle">Riwayat bonus wallet dari toko yang sobat referensikan.</div>
+          </div>
+          <button type="button" class="wallet-modal-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
-            <table id="detailwallet" class="display">
+            <div class="wallet-modal-summary">
+                <div>
+                    <div class="wallet-modal-summary-label">Saldo Wallet Saat Ini</div>
+                    <div class="wallet-modal-summary-value">Rp.{{wallet|intcomma}}</div>
+                </div>
+                <div class="wallet-modal-summary-icon"><i class="fas fa-wallet"></i></div>
+            </div>
+            <div class="wallet-modal-table-wrap">
+            <table id="detailwallet" class="display wallet-modal-table store-info-modal-table">
                 <thead>
                     <tr>
-                        <th style="font-size: 15px;">No.</th>
-                        <th style="font-size: 15px;">Toko</th>
-                        <th style="font-size: 15px;">Keterangan</th>
-                        <th style="font-size: 15px;">Jumlah</th>
-                        <th style="font-size: 15px;">Tanggal</th>
+                        <th>No.</th>
+                        <th>Toko</th>
+                        <th>Keterangan</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for wallet in detailwallet %}
                     <tr>
-                        <td style="font-size: 15px;">{{forloop.counter}}</td>
-                        <td style="font-size: 15px;">{{wallet.cabang_referensi.nama_toko}} ({{wallet.cabang_referensi.prefix}})</td>
-                        <td style="font-size: 15px;">{{wallet.keterangan}}</td>
-                        <td style="font-size: 15px;">Rp.{{wallet.jumlah|intcomma}}</td>
-                        <td style="font-size: 15px;">{{wallet.created_at|date:"d/M/Y"}}</td>
+                        <td>{{forloop.counter}}</td>
+                        <td>
+                            <span class="wallet-store-name">{{wallet.cabang_referensi.nama_toko}}</span>
+                            <span class="wallet-store-code">{{wallet.cabang_referensi.prefix}}</span>
+                        </td>
+                        <td>{{wallet.keterangan}}</td>
+                        <td><span class="wallet-amount">Rp.{{wallet.jumlah|intcomma}}</span></td>
+                        <td class="wallet-date">{{wallet.created_at|date:"d/M/Y"}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>
 </div>
 
 <script>
-    new DataTable('#detailwallet');
+    new DataTable('#detailwallet', {
+        language: {
+            search: "Cari transaksi:",
+            lengthMenu: "Tampilkan _MENU_ transaksi",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ transaksi",
+            infoEmpty: "Belum ada transaksi referensi",
+            emptyTable: "Belum ada transaksi referensi",
+            zeroRecords: "Transaksi tidak ditemukan",
+        },
+        pageLength: 10
+    });
 </script>
 
-<div>
-    <div class="mt-3 h2 fw-bold">
-        Informasi Toko Saya
+<div class="store-info-page">
+    <div class="store-info-header">
+        <div>
+            <h2 class="store-info-title">Informasi Toko Saya</h2>
+            <div class="store-info-breadcrumb">Toko Saya &rarr; Informasi Toko</div>
+        </div>
+        <div class="store-info-updated">
+            Update Terakhir: {{user.userprofile.cabang.updated_at|date:"d/m/y"}}
+        </div>
     </div>
-    <div class="mb-5  d-flex justify-content-between">
-        <span class="fs-6">Toko Saya &rarr; Informasi Toko</span>
-        <span style="font-size: 13px;font-weight: bold;">Update Terakhir: {{user.userprofile.cabang.updated_at|date:"d/m/y"}}</span>
-    </div>
-    <div class="my-3">
-        <div style="border: 1px solid grey; padding: 10px;border-radius: 5px;background-color: white;box-shadow: 5px 5px 5px lightgrey;display: flex;align-items: center;justify-content: space-between;">
-            <div>    
-                <div style="font-size: 20px;">
-                    Wallet Bonus: <span class="text-primary">Rp.{{wallet|intcomma}}</span>
-                </div>
-                <div style="font-style: italic;">
-                    Referensikan Toko Lain untuk menambah wallet
+
+    <div class="store-info-grid">
+        <div class="store-panel">
+            <div class="store-panel-header">
+                <div>
+                    <h3 class="store-panel-title">Data Toko</h3>
+                    <div class="store-panel-subtitle">Perbarui identitas toko yang tampil di sistem POSMI.</div>
                 </div>
             </div>
-            <div>
-                <button class="btn btn-info btn-sm ms-3" data-bs-toggle="modal" data-bs-target="#staticWallet">detail wallet</button>
-                <button class="ms-3 btn btn-sm btn-success">tarik wallet</button>
+            <div class="store-panel-body">
+                <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
+                    {% csrf_token %}
+                    <div class="store-form-grid">
+                        <div class="store-form-group">
+                            <label for="{{forms.nama_toko.id_for_label}}">Nama Toko</label>
+                            {{forms.nama_toko}}
+                            {% if forms.nama_toko.errors %}<div class="store-form-error">{{forms.nama_toko.errors}}</div>{% endif %}
+                        </div>
+                        <div class="store-form-group">
+                            <label for="{{forms.nama_cabang.id_for_label}}">Nama Cabang</label>
+                            {{forms.nama_cabang}}
+                            {% if forms.nama_cabang.errors %}<div class="store-form-error">{{forms.nama_cabang.errors}}</div>{% endif %}
+                        </div>
+                        <div class="store-form-group full">
+                            <label for="{{forms.alamat_toko.id_for_label}}">Alamat Toko</label>
+                            {{forms.alamat_toko}}
+                            {% if forms.alamat_toko.errors %}<div class="store-form-error">{{forms.alamat_toko.errors}}</div>{% endif %}
+                        </div>
+                        <div class="store-form-group">
+                            <label for="{{forms.telpon.id_for_label}}">Telepon</label>
+                            {{forms.telpon}}
+                            {% if forms.telpon.errors %}<div class="store-form-error">{{forms.telpon.errors}}</div>{% endif %}
+                        </div>
+                        <div class="store-form-group">
+                            <label for="{{forms.keterangan.id_for_label}}">Keterangan</label>
+                            {{forms.keterangan}}
+                            {% if forms.keterangan.errors %}<div class="store-form-error">{{forms.keterangan.errors}}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="store-form-actions">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-save mr-1"></i>
+                            Simpan Informasi
+                        </button>
+                    </div>
+                </form>
             </div>
-            
         </div>
-        
+
+        <div>
+            <div class="store-panel mb-3">
+                <div class="store-panel-header">
+                    <div>
+                        <h3 class="store-panel-title">Wallet Bonus</h3>
+                        <div class="store-panel-subtitle">Bonus dari toko referensi.</div>
+                    </div>
+                </div>
+                <div class="store-panel-body">
+                    <div class="store-wallet-value">Rp.{{wallet|intcomma}}</div>
+                    <div class="store-wallet-note">Referensikan toko lain untuk menambah saldo wallet.</div>
+                    <div class="store-wallet-actions">
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#staticWallet">
+                            <i class="fas fa-list mr-1"></i>
+                            Detail Wallet
+                        </button>
+                        <button class="btn btn-success btn-sm">
+                            <i class="fas fa-money-check-alt mr-1"></i>
+                            Tarik Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-panel">
+                <div class="store-panel-header">
+                    <div>
+                        <h3 class="store-panel-title">Kode Referensi</h3>
+                        <div class="store-panel-subtitle">Bagikan kode toko ini ke toko lain.</div>
+                    </div>
+                </div>
+                <div class="store-panel-body">
+                    <div class="store-ref-code">
+                        <div>
+                            <div class="store-ref-code-label">Kode Toko</div>
+                            <div class="store-ref-code-value">{{kode_toko}}</div>
+                        </div>
+                        <button type="button" class="btn btn-light btn-sm store-ref-copy" onclick="navigator.clipboard && navigator.clipboard.writeText('{{kode_toko}}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <p class="store-ref-note">
+                        Dapatkan bonus 5% dari setiap pembayaran pembelian toko yang sobat referensikan.
+                        Penarikan dana wallet akan masuk ke rekening sobat setelah rekening didaftarkan.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-    <form action="{% url 'info_toko'%}?id={{user.userprofile.cabang.id}}" method="post">
-        <div style="font-size: 20px;margin-top: 20px;margin-bottom: 10px;border-top: 1px solid grey;border-bottom: 1px solid grey;">
-            <span>Kode Toko: <span style="font-weight: bold;">{{kode_toko}}</span></span>
-            <br><span style="font-style: italic;font-size: 15px;">bagikan kode toko sebagai referensi untuk mendapatkan bonus 5% setiap pembayaran untuk  pembelian dari Toko yang sobat refensikan, berlaku selamanya.</span>
-            <br><span style="font-style: italic;font-size: 15px;">penarikan dana dari wallet akan langsung masuk rekening sobat, jangan lupa untuk mendaftarkan rekening sobat yah.</span>
-            
-        </div>
-        {{forms.as_div}}
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary px-3 rounded-pill">
-            Ubah Informasi
-        </button>
-    </form>
 </div>

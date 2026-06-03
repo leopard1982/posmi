@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Management{% endblock %} — POSMI</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; background: #f8f9fc; margin: 0; }
+    html, body { height: 100%; }
+
+    /* Layout */
+    .layout-wrapper { display: flex; height: 100vh; overflow: hidden; }
+    .sidebar {
+      width: 240px; min-width: 240px;
+      background: linear-gradient(180deg,#4e73df 10%,#224abe 100%);
+      display: flex; flex-direction: column; height: 100vh;
+      position: fixed; top: 0; left: 0; z-index: 1000;
+    }
+    .sidebar-header {
+      flex-shrink: 0;
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      background: rgba(0,0,0,.1);
+    }
+    .sidebar-brand { color: #fff; font-weight: 800; font-size: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 12px 8px; }
+    .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 2px; }
+
+    .nav-link-mgmt { color: rgba(255,255,255,.8); padding: 9px 14px; display: block; text-decoration: none; border-radius: 6px; margin-bottom: 2px; font-size: 14px; }
+    .nav-link-mgmt:hover, .nav-link-mgmt.active { color: #fff; background: rgba(255,255,255,.18); }
+    .nav-link-mgmt i { width: 20px; }
+
+    /* Main */
+    .main-wrapper { margin-left: 240px; flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { flex-shrink: 0; background: #fff; border-bottom: 1px solid #e9ecef; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .main-content { flex: 1; overflow-y: auto; padding: 24px; }
+
+    .page-header { margin-bottom: 24px; }
+    .badge-pill { border-radius: 50px; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-wrapper { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Fixed Header -->
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <img src="{% static 'images/posmi-logo.png' %}" style="height:36px;border-radius:6px;" alt="POSMI">
+        <span>Management</span>
+      </div>
+      <div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:4px;text-align:center;">
+        {{ request.user.username }}
+      </div>
+    </div>
+
+    <!-- Scrollable Nav -->
+    <div class="sidebar-scroll">
+      <div class="px-1 mb-1">
+        <small class="text-white-50 px-2 text-uppercase fw-bold" style="font-size:10px;letter-spacing:1px;">Menu Utama</small>
+      </div>
+      <nav>
+        <a href="/management/" class="nav-link-mgmt {% block menu_dashboard %}{% endblock %}">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/management/paket/" class="nav-link-mgmt {% block menu_paket %}{% endblock %}">
+          <i class="fas fa-box"></i> Daftar Paket
+        </a>
+        <a href="/management/promo/" class="nav-link-mgmt {% block menu_promo %}{% endblock %}">
+          <i class="fas fa-tags"></i> Promo &amp; Voucher
+        </a>
+        <a href="/management/testimoni/" class="nav-link-mgmt {% block menu_testimoni %}{% endblock %}">
+          <i class="fas fa-star"></i> Testimoni
+        </a>
+        <a href="/management/cabang/" class="nav-link-mgmt {% block menu_cabang %}{% endblock %}">
+          <i class="fas fa-store"></i> Data Cabang
+        </a>
+        <a href="/management/users/" class="nav-link-mgmt {% block menu_users %}{% endblock %}">
+          <i class="fas fa-users"></i> Pengguna
+        </a>
+        <a href="/management/pembelian/" class="nav-link-mgmt {% block menu_pembelian %}{% endblock %}">
+          <i class="fas fa-credit-card"></i> Riwayat Pembelian
+        </a>
+      </nav>
+
+      <hr style="border-color:rgba(255,255,255,.15);margin:12px 4px;">
+      <div class="px-1 mb-1">
+        <small class="text-white-50 px-2 text-uppercase fw-bold" style="font-size:10px;letter-spacing:1px;">Navigasi</small>
+      </div>
+      <nav>
+        <a href="/" class="nav-link-mgmt"><i class="fas fa-globe"></i> Lihat Halaman Publik</a>
+        <a href="/logout/" class="nav-link-mgmt"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <!-- Fixed Topbar -->
+    <div class="topbar shadow-sm">
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0" style="font-size:13px;">
+            <li class="breadcrumb-item"><a href="/management/" class="text-primary text-decoration-none">Management</a></li>
+            {% block breadcrumb %}{% endblock %}
+          </ol>
+        </nav>
+      </div>
+      <div class="text-muted small">
+        <i class="fas fa-user-shield me-1 text-primary"></i>
+        <strong>{{ request.user.username }}</strong>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="main-content">
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block contents %}{% endblock %}
+    </div>
+  </div>
+</div>
+</body>
+</html>

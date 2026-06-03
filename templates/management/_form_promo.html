@@ -1,0 +1,41 @@
+<div class="row g-3">
+  <div class="col-12 col-md-6">
+    <label class="form-label fw-bold">Nama Promo <span class="text-danger">*</span></label>
+    <input type="text" name="nama" class="form-control" required placeholder="cth: Promo Lebaran 2025">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label fw-bold">Kode <span class="text-danger">*</span></label>
+    <input type="text" name="kode" class="form-control" required placeholder="LEBARAN25" style="text-transform:uppercase">
+  </div>
+  <div class="col-6 col-md-3">
+    <label class="form-label fw-bold">Diskon (Rp)</label>
+    <input type="number" name="disc" class="form-control" min="0" value="0">
+  </div>
+  <div class="col-6 col-md-4">
+    <label class="form-label fw-bold">Kuota Penggunaan</label>
+    <input type="number" name="kuota" class="form-control" min="0" value="0">
+  </div>
+  <div class="col-6 col-md-4">
+    <label class="form-label fw-bold">Berlaku Hingga</label>
+    <input type="date" name="end_period" class="form-control">
+  </div>
+  <div class="col-12 col-md-4">
+    <label class="form-label fw-bold d-block">Berlaku Untuk</label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="is_registrasi" id="{{ prefix }}chk_reg">
+      <label class="form-check-label" for="{{ prefix }}chk_reg">Registrasi baru</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="is_perpanjangan" id="{{ prefix }}chk_perp">
+      <label class="form-check-label" for="{{ prefix }}chk_perp">Perpanjangan lisensi</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="is_upgrade_lisensi" id="{{ prefix }}chk_upg">
+      <label class="form-check-label" for="{{ prefix }}chk_upg">Upgrade paket</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="is_tambah_kuota" id="{{ prefix }}chk_add">
+      <label class="form-check-label" for="{{ prefix }}chk_add">Tambah kuota</label>
+    </div>
+  </div>
+</div>

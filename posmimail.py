@@ -5,7 +5,8 @@ from django.conf import settings
 
 def posmiMail(subject:str,message:str,address:str):
     try:
-        send_mail(subject=subject,message=message,from_email=settings.DEFAULT_FROM_EMAIL,recipient_list=[address])
+        full_message = message + "\n\n[POSMI APPS]"
+        send_mail(subject=subject,message=full_message,from_email=settings.DEFAULT_FROM_EMAIL,recipient_list=[address])
         return True
     except Exception as ex:
         print(ex)

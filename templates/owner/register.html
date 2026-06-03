@@ -1,0 +1,138 @@
+{% extends 'base-landing.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block contents %}
+<style>
+body { background:#eef3f6; }
+.reg-wrap { max-width:600px; margin:50px auto; padding:0 16px 60px; }
+.reg-card { background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.08); overflow:hidden; }
+.reg-header { background:linear-gradient(135deg,#1e2c5a,#3a5298); padding:28px 32px; color:#fff; }
+.reg-header h1 { font-size:1.3rem; font-weight:900; margin:0 0 6px; }
+.reg-header p  { font-size:13px; opacity:.75; margin:0; }
+.reg-body { padding:32px; }
+.form-label { font-size:13px; font-weight:700; color:#1e2c5a; margin-bottom:4px; display:block; }
+.form-control { width:100%; border:1.5px solid #d8e3f5; border-radius:8px; padding:10px 14px; font-size:14px; font-family:'Poppins',sans-serif; outline:none; transition:border-color .2s; }
+.form-control:focus { border-color:#4e73df; }
+.slot-selector { display:flex; align-items:center; gap:12px; }
+.slot-btn { width:36px; height:36px; border:1.5px solid #d8e3f5; border-radius:8px; background:#f0f4fb; font-size:18px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.slot-btn:hover { background:#d8e3f5; }
+.slot-display { font-size:1.5rem; font-weight:900; color:#1e2c5a; min-width:40px; text-align:center; }
+.dur-btn { background:#f0f4fb; border:1.5px solid #d8e3f5; color:#3a4f7a; font-size:13px; font-weight:600; padding:8px 16px; border-radius:7px; cursor:pointer; transition:all .15s; }
+.dur-btn.active { background:#1e2c5a; color:#fff; border-color:#1e2c5a; }
+.harga-preview { background:#f0f4fb; border-radius:10px; padding:16px 20px; margin-top:12px; }
+.harga-preview .total { font-size:1.4rem; font-weight:900; color:#1e2c5a; }
+.harga-preview .info  { font-size:12px; color:#8899bb; margin-top:4px; }
+.btn-submit { width:100%; background:#4e73df; color:#fff; border:none; border-radius:10px; padding:14px; font-size:15px; font-weight:800; cursor:pointer; transition:opacity .2s; margin-top:8px; }
+.btn-submit:hover { opacity:.88; }
+</style>
+
+<div class="reg-wrap">
+  <div class="reg-card">
+    <div class="reg-header">
+      <h1><i class="fa fa-building me-2"></i>Daftar Paket Korporasi</h1>
+      <p>Kelola banyak toko dari satu akun pemilik — pool kuota bersama.</p>
+    </div>
+    <div class="reg-body">
+
+      {% for msg in messages %}
+        <div style="background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;">{{ msg }}</div>
+      {% endfor %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Nama Lengkap</label>
+          <input type="text" name="nama" class="form-control" placeholder="Nama pemilik" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="email@toko.com" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter" minlength="6" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Nomor WhatsApp <span style="font-weight:400;color:#8899bb;">(opsional)</span></label>
+          <input type="text" name="phone" class="form-control" placeholder="081xxxxxxx">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Jumlah Slot Toko</label>
+          <div class="slot-selector">
+            <button type="button" class="slot-btn" onclick="changeSlot(-1)">−</button>
+            <div class="slot-display" id="slotDisplay">1</div>
+            <button type="button" class="slot-btn" onclick="changeSlot(1)">+</button>
+            <input type="hidden" name="jumlah_slot" id="slotInput" value="1">
+            <span style="font-size:12px;color:#8899bb;">× {{ harga_info.bulanan|intcomma }} /slot/bulan</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Durasi Langganan</label>
+          <div class="d-flex flex-wrap gap-2 mt-1">
+            <button type="button" class="dur-btn active" onclick="setDur('bulanan',this)">1 Bulan</button>
+            <button type="button" class="dur-btn" onclick="setDur('3bulanan',this)">3 Bulan</button>
+            <button type="button" class="dur-btn" onclick="setDur('6bulanan',this)">6 Bulan</button>
+            <button type="button" class="dur-btn" onclick="setDur('tahunan',this)">1 Tahun</button>
+            <button type="button" class="dur-btn" onclick="setDur('2tahunan',this)">2 Tahun</button>
+          </div>
+          <input type="hidden" name="durasi" id="durasiInput" value="bulanan">
+        </div>
+
+        <div class="harga-preview" id="hargaPreview">
+          <div class="total" id="totalHarga">Rp {{ harga_info.bulanan|intcomma }}</div>
+          <div class="info" id="infoKuota">1 slot × 500 transaksi = pool 500 transaksi/bulan</div>
+        </div>
+
+        <div class="mt-4">
+          <button type="submit" class="btn-submit">Daftar &amp; Bayar &rarr;</button>
+        </div>
+        <p style="font-size:12px;color:#8899bb;text-align:center;margin-top:12px;">
+          Sudah punya akun Korporasi? <a href="{% url 'owner_login' %}">Login di sini</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const HARGA = {
+  bulanan:  {{ harga_info.bulanan }},
+  '3bulanan': {{ harga_info.3bulanan }},
+  '6bulanan': {{ harga_info.6bulanan }},
+  tahunan:  {{ harga_info.tahunan }},
+  '2tahunan': {{ harga_info.2tahunan }},
+};
+const DUR_LABEL = {
+  bulanan:'1 bulan', '3bulanan':'3 bulan', '6bulanan':'6 bulan', tahunan:'1 tahun', '2tahunan':'2 tahun'
+};
+const KUOTA_PER_SLOT = 500;
+let slot = 1, dur = 'bulanan';
+
+function fmt(n){ return 'Rp '+Number(n).toLocaleString('id-ID'); }
+
+function update(){
+  document.getElementById('slotDisplay').textContent = slot;
+  document.getElementById('slotInput').value = slot;
+  const total = HARGA[dur] * slot;
+  document.getElementById('totalHarga').textContent = fmt(total)+' / '+DUR_LABEL[dur];
+  document.getElementById('infoKuota').textContent = slot+' slot × '+KUOTA_PER_SLOT+' transaksi = pool '+(slot*KUOTA_PER_SLOT).toLocaleString('id-ID')+' transaksi/bulan';
+}
+
+function changeSlot(d){
+  slot = Math.max(1, slot + d);
+  update();
+}
+
+function setDur(d, btn){
+  dur = d;
+  document.querySelectorAll('.dur-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('durasiInput').value = d;
+  update();
+}
+</script>
+{% endblock %}

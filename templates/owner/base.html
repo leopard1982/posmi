@@ -1,0 +1,159 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{% block title %}Dashboard{% endblock %} — POSMI Korporasi</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <style>
+    /* ── Base ── */
+    body { font-family:'Poppins',sans-serif; background:#f4f6fb; }
+
+    /* ── Sidebar: fixed, scroll independen ── */
+    #accordionSidebar {
+      background:linear-gradient(180deg,#1e2c5a,#2c3e6b) !important;
+      position:fixed !important;
+      top:0; left:0;
+      width:224px;
+      height:100vh;
+      overflow-y:auto;
+      overflow-x:hidden;
+      z-index:900;
+      display:flex;
+      flex-direction:column;
+    }
+    #accordionSidebar::-webkit-scrollbar { width:3px; }
+    #accordionSidebar::-webkit-scrollbar-thumb { background:rgba(255,255,255,.2); border-radius:2px; }
+
+    /* Sidebar typography */
+    .sidebar-brand { padding:20px 16px !important; flex-shrink:0; }
+    .sidebar-brand-text { font-size:15px !important; font-weight:900 !important; letter-spacing:.5px; }
+    .sidebar .nav-item .nav-link { color:rgba(255,255,255,.65) !important; font-size:13px; font-weight:600; padding:10px 20px; }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color:#fff !important; background:rgba(255,255,255,.08) !important; }
+    .sidebar .nav-item .nav-link i { width:18px; text-align:center; margin-right:6px; }
+    .sidebar hr { border-color:rgba(255,255,255,.12) !important; }
+    .sidebar-heading { color:rgba(255,255,255,.4) !important; font-size:10px; font-weight:700; letter-spacing:1.2px; padding:10px 20px 4px !important; }
+
+    /* ── Content: offset dari sidebar, scroll independen ── */
+    #content-wrapper {
+      margin-left:224px;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      overflow-x:hidden;
+    }
+
+    /* ── Topbar: sticky di atas konten ── */
+    .topbar {
+      background:#fff;
+      border-bottom:1px solid #e8eef8;
+      position:sticky;
+      top:0;
+      z-index:100;
+    }
+
+    /* ── Common card ── */
+    .owner-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.06); border:none; overflow:hidden; margin-bottom:22px; }
+    .owner-card .card-header { background:#fff; border-bottom:1px solid #eef1f6; padding:16px 22px; }
+    .owner-card .card-header h5 { font-size:14px; font-weight:800; color:#1e2c5a; margin:0 0 2px; }
+    .owner-card .card-header .sub { font-size:12px; color:#8899bb; font-weight:400; }
+
+    /* ── Form ── */
+    .form-label { font-size:13px; font-weight:700; color:#1e2c5a; margin-bottom:6px; display:block; }
+    .form-hint  { font-size:11px; color:#8899bb; margin-top:4px; }
+    .form-control, .form-select { border:1.5px solid #d8e3f5; border-radius:8px; padding:10px 14px; font-size:13px; font-family:'Poppins',sans-serif; transition:border-color .2s; }
+    .form-control:focus, .form-select:focus { border-color:#4e73df; box-shadow:0 0 0 3px rgba(78,115,223,.1); outline:none; }
+    .form-control:disabled { background:#f8fafc; color:#8899bb; }
+
+    /* ── Badges ── */
+    .badge-on  { background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+    .badge-off { background:#fee2e2; color:#991b1b; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+    .code-badge { background:#eef3fb; border-radius:6px; padding:3px 10px; font-family:monospace; font-size:12px; font-weight:700; color:#3a5298; letter-spacing:2px; }
+
+    /* ── Buttons ── */
+    .btn-owner { display:inline-flex; align-items:center; gap:7px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; padding:9px 20px; border:none; transition:opacity .2s; }
+    .btn-owner:hover { opacity:.88; }
+    .btn-owner-primary { background:#1e2c5a; color:#fff; }
+    .btn-owner-primary:hover { color:#fff; }
+    .btn-owner-success { background:#059669; color:#fff; }
+    .btn-owner-danger  { background:#fff; color:#dc3545; border:1.5px solid #dc3545; }
+    .btn-owner-danger:hover { background:#fee2e2; opacity:1; }
+
+    /* ── Responsive ── */
+    @media (max-width:768px) {
+      #accordionSidebar { position:relative !important; width:100%; height:auto; }
+      #content-wrapper { margin-left:0; }
+    }
+
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- ── SIDEBAR ── -->
+  {% include 'owner/_sidebar.html' with active=active_menu %}
+
+  <!-- ── CONTENT WRAPPER ── -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <!-- Content area -->
+      <div class="container-fluid px-4 py-4">
+
+        <!-- Breadcrumb -->
+        {% block breadcrumb %}{% endblock %}
+
+        <!-- Flash messages -->
+        {% if messages %}
+        <div class="mb-3">
+          {% for msg in messages %}
+          <div class="alert alert-dismissible fade show"
+               style="border-radius:10px;font-size:13px;border:none;
+               background:{% if 'berhasil' in msg.message|lower %}#d1fae5;color:#065f46
+               {% elif 'tidak' in msg.message|lower or 'gagal' in msg.message|lower or 'error' in msg.message|lower %}#fee2e2;color:#991b1b
+               {% else %}#fef3c7;color:#92400e{% endif %};"
+               role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Page heading -->
+        {% block heading %}{% endblock %}
+
+        <!-- Page content -->
+        {% block content %}{% endblock %}
+
+      </div><!-- /container-fluid -->
+    </div><!-- /content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">
+        &copy; POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+  </div><!-- /content-wrapper -->
+</div><!-- /wrapper -->
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

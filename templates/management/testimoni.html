@@ -1,0 +1,73 @@
+{% extends 'management/base.html' %}
+{% load humanize %}
+{% block title %}Testimoni{% endblock %}
+{% block menu_testimoni %}active{% endblock %}
+
+{% block contents %}
+<div class="page-header">
+  <h2 class="fw-bold">Moderasi Testimoni</h2>
+  <p class="text-muted">Setujui atau tolak testimoni dari pengguna</p>
+</div>
+
+<div class="card shadow">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th><th>Toko / Cabang</th><th>Isi Testimoni</th>
+            <th>Tgl Bergabung</th><th class="text-center">Status</th>
+            <th class="text-center" style="min-width:180px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in testimonis %}
+          <tr class="{% if not t.is_verified %}table-warning{% endif %}">
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <strong>{{ t.cabang.nama_toko }}</strong><br>
+              <small class="text-muted">{{ t.cabang.nama_cabang }}</small>
+            </td>
+            <td style="max-width:400px">{{ t.testimoni }}</td>
+            <td>{{ t.cabang.created_at|date:"d/m/Y" }}</td>
+            <td class="text-center">
+              {% if t.is_verified %}
+                <span class="badge bg-success">Disetujui</span>
+                {% if t.bonus_diberikan %}
+                <br><span class="badge bg-info mt-1" style="font-size:10px;"><i class="fas fa-wallet me-1"></i>+Rp 50.000</span>
+                {% endif %}
+              {% else %}
+                <span class="badge bg-warning text-dark">Menunggu</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if not t.is_verified %}
+              <form method="post" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="aksi" value="approve">
+                <input type="hidden" name="testimoni_id" value="{{ t.pk }}">
+                <button type="submit" class="btn btn-sm btn-success me-1">Setujui</button>
+              </form>
+              {% else %}
+              <form method="post" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="aksi" value="reject">
+                <input type="hidden" name="testimoni_id" value="{{ t.pk }}">
+                <button type="submit" class="btn btn-sm btn-secondary me-1">Tolak</button>
+              </form>
+              {% endif %}
+              <form method="post" class="d-inline">{% csrf_token %}
+                <input type="hidden" name="aksi" value="hapus">
+                <input type="hidden" name="testimoni_id" value="{{ t.pk }}">
+                <button type="submit" class="btn btn-sm btn-danger"
+                  onclick="return confirm('Hapus testimoni ini?')">Hapus</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="text-center py-5 text-muted">Belum ada testimoni.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -60,24 +60,37 @@
 <body onload="printme()">
     <div class="area-print">
         <div class="text-center">
-            <span class="fw-bold fs-6">{{nama_toko}}</span><br>
+            <span class="fw-bold fs-6">{% if nota_addon_aktif and nota_config.main_header %}{{nota_config.main_header}}{% else %}{{nama_toko}}{% endif %}</span><br>
+            {% if nota_addon_aktif and nota_config.sub_header %}
+            <span style="font-size:11px;">{{nota_config.sub_header}}</span><br>
+            {% else %}
             <span>{{alamat_toko}}</span><br>
             <span>{{telpon_toko}}</span><br>
+            {% endif %}
             <span class="fw-bold">------------------------------</span><br>
             <span class="fw-bold fs-6 text-center">REPRINT #{{penjualan.reprint_nota}}</span><br>
             <span class="fw-bold">----------------------------------------------------</span><br>
+            {% if nota_addon_aktif and nota_config.sub_header %}
+            <span style="font-size:11px;">{{nota_config.sub_header}}</span><br>
+            {% endif %}
+            {% if not nota_addon_aktif or nota_config.tampilkan_tanggal != False %}
             <div class="text-start px-1" style="font-size: 11px;">
                 <span>tanggal: <span class="fw-bold">{{penjualan.tgl_bayar|date:"d/m/Y h:i:s"}}</span></span>
             </div>
-            <div  class="text-start px-1" style="font-size: 11px;">
-                <span>kasir: <span class="fw-bold">{{penjualan.user.userprofile.nama_lengkap|title|truncatechars:"15"}} ({{penjualan.user.username}})</span></span>
+            {% endif %}
+            {% if not nota_addon_aktif or nota_config.tampilkan_kasir != False %}
+            <div class="text-start px-1" style="font-size: 11px;">
+                <span>kasir: <span class="fw-bold">{{kasir_nama|title}} ({{penjualan.user.username}})</span></span>
             </div>
+            {% endif %}
             <div style="font-size: 11px;text-align: left;" class="px-1">
-                pembeli: <span class="fw-bold">{{penjualan.customer|title|truncatechars:"20"}}</span>
+                pembeli: <span class="fw-bold">{{penjualan.customer|default:"-"|title|truncatechars:"20"}}</span>
             </div>
+            {% if not nota_addon_aktif or nota_config.tampilkan_no_nota != False %}
             <div style="font-size: 11px;text-align: left;" class="px-1">
                 no. nota: <span class="fw-bold">{{penjualan.no_nota}}</span>
             </div>
+            {% endif %}
         </div>
         <div>
             <div class="fw-bold text-center pt-2 border-top border-dark"></div>
@@ -97,27 +110,28 @@
         </div>
         <div class="text-center">
             <span class="fw-bold">------------------------------</span><br>
+            {% if nota_addon_aktif and nota_config.footer_text_1 %}
+            <span style="font-size:11px;font-weight:bold;">{{nota_config.footer_text_1}}</span><br>
+            {% if nota_config.footer_text_2 %}<span style="font-size:11px;">{{nota_config.footer_text_2}}</span>{% endif %}
+            {% else %}
             <span style="font-size: 12px;font-weight: bold;">Terima Kasih,</span><br>
             <span style="font-size: 12px;font-weight: bold;">Sudah Berbelanja.</span>
+            {% endif %}
         </div>
+        {% if not user.userprofile.cabang.paket and not user.userprofile.cabang.owner %}
         <div class="fw-bold text-center">
             *****
         </div>
         <div style="font-size:11px" class="text-center">
-            <span class="fw-bold">{{penjualan.nota}}</span>
-            {% if user.userprofile.cabang.paket %}
-            {% else %}
-            <br><span>https://posmi.pythonanywhere.com</span>
-            {% endif%}
+            <span>https://posmi.pythonanywhere.com</span>
         </div>
         <div class="fw-bold text-center mb-5">
             ***** <br>
             <br>
             <span class="fw-bold">------------------------------</span>
         </div>
-        <hr>
-        <hr>
-        <hr>
+        {% endif %}
+        <br><br><br><br>
     </div>
     <script>
         function printme() {

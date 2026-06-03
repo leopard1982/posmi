@@ -1,0 +1,165 @@
+{% load static %}
+<style>
+/* ── Sidebar fixed, scroll independen dari konten ── */
+#accordionSidebar {
+  position: fixed !important;
+  top: 0; left: 0;
+  width: 224px;
+  height: 100vh;
+  overflow: hidden;          /* sembunyikan overflow di wrapper */
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Brand area: fixed di atas, tidak ikut scroll */
+.sidebar-brand-fixed {
+  flex-shrink: 0;
+  background: linear-gradient(180deg,#1e2c5a,#253570);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* Nav items: scroll independen */
+.sidebar-nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar-nav-scroll::-webkit-scrollbar { width: 3px; }
+.sidebar-nav-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 2px; }
+
+/* Content wrapper offset kiri supaya tidak tertutup sidebar */
+#content-wrapper { margin-left: 224px !important; }
+
+/* Topbar sticky di atas konten */
+.topbar { position: sticky !important; top: 0; z-index: 100; }
+
+@media (max-width: 768px) {
+  #accordionSidebar { position: relative !important; width: 100%; height: auto; }
+  #content-wrapper { margin-left: 0 !important; }
+}
+</style>
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- ── Brand: FIXED, tidak ikut scroll ── -->
+  <div class="sidebar-brand-fixed">
+    <a href="{% url 'owner_dashboard' %}"
+       style="display:flex;flex-direction:column;align-items:center;padding:18px 16px 16px;text-decoration:none;gap:10px;">
+      <img src="{% static 'images/posmi-logo.png' %}"
+           alt="POSMI" style="height:44px;border-radius:8px;">
+      <div style="font-size:12px;font-weight:900;color:rgba(255,255,255,.72);letter-spacing:2.4px;text-transform:uppercase;line-height:1;">Korporasi</div>
+    </a>
+  </div>
+
+  <!-- ── Nav: SCROLLABLE ── -->
+  <div class="sidebar-nav-scroll">
+
+  <hr class="sidebar-divider my-0">
+
+  <li class="nav-item {% if active == 'dashboard' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_dashboard' %}">
+      <i class="fa fa-th-large me-2"></i><span>Dashboard</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+  <div class="sidebar-heading">Toko</div>
+
+  <li class="nav-item {% if active == 'klaim' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_klaim_toko' %}">
+      <i class="fa fa-plus-circle me-2"></i><span>Tambah Toko</span>
+    </a>
+  </li>
+
+  <li class="nav-item {% if active == 'toko' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_manajemen_toko' %}">
+      <i class="fa fa-cog me-2"></i><span>Manajemen Toko</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+  <div class="sidebar-heading">Gudang</div>
+
+  <li class="nav-item {% if active == 'gudang' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_gudang' %}">
+      <i class="fa fa-cubes me-2"></i><span>Gudang Utama</span>
+    </a>
+  </li>
+
+  <li class="nav-item {% if active == 'monitoring' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_monitoring_stok' %}">
+      <i class="fa fa-signal me-2"></i><span>Monitoring Stok</span>
+    </a>
+  </li>
+
+  <li class="nav-item {% if active == 'request_barang' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_approval_master_barang' %}">
+      <i class="fa fa-inbox me-2"></i><span>Request Barang</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+  <div class="sidebar-heading">Distribusi</div>
+
+  <li class="nav-item {% if active == 'distribusi' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_distribusi' %}">
+      <i class="fa fa-truck me-2"></i><span>Distribusi ke Toko</span>
+    </a>
+  </li>
+
+  <li class="nav-item {% if active == 'order_toko' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_order_toko' %}">
+      <i class="fa fa-clipboard me-2"></i><span>Order dari Toko</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+  <div class="sidebar-heading">Transfer</div>
+
+  <li class="nav-item {% if active == 'transfer' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_request_transfer' %}">
+      <i class="fa fa-exchange me-2"></i><span>Transfer Stok</span>
+    </a>
+  </li>
+
+  <li class="nav-item {% if active == 'approval' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_approval_transfer' %}">
+      <i class="fa fa-check-circle me-2"></i><span>Persetujuan Transfer</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+  <div class="sidebar-heading">Paket</div>
+
+  <li class="nav-item {% if active == 'upgrade' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_upgrade_paket' %}" style="color:rgba(100,220,130,.9)!important;">
+      <i class="fa fa-arrow-up me-2"></i><span>Upgrade Paket</span>
+    </a>
+  </li>
+
+  <li class="nav-item {% if active == 'downgrade' %}active{% endif %}">
+    <a class="nav-link" href="{% url 'owner_downgrade' %}" style="color:rgba(255,130,130,.85)!important;">
+      <i class="fa fa-arrow-down me-2"></i><span>Downgrade Paket</span>
+    </a>
+  </li>
+
+  <hr class="sidebar-divider">
+  <div class="sidebar-heading">Akun</div>
+
+  {% if from_cms %}
+  <li class="nav-item">
+    <a class="nav-link" href="/cms/">
+      <i class="fa fa-cog me-2"></i><span>Kembali ke CMS</span>
+    </a>
+  </li>
+  {% endif %}
+
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'logoutkan' %}">
+      <i class="fa fa-sign-out me-2"></i><span>Logout</span>
+    </a>
+  </li>
+
+  </div><!-- /sidebar-nav-scroll -->
+</ul>

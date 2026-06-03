@@ -1,0 +1,597 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Distribusi ke Toko — POSMI Korporasi</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS -->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f4f6fb; }
+
+    /* ── Sidebar ── */
+    #accordionSidebar { background: linear-gradient(180deg, #1e2c5a 0%, #2c3e6b 100%) !important; }
+    .sidebar-brand { padding: 20px 16px !important; }
+    .sidebar-brand-text { font-size: 15px !important; font-weight: 900 !important; letter-spacing: .5px; }
+    .sidebar .nav-item .nav-link {
+      color: rgba(255,255,255,.65) !important; font-size: 13px;
+      font-weight: 600; padding: 10px 20px;
+    }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color: #fff !important; background: rgba(255,255,255,.08) !important; }
+    .sidebar .nav-item .nav-link i { width: 18px; text-align: center; }
+    .sidebar hr { border-color: rgba(255,255,255,.12) !important; }
+    .sidebar-heading { color: rgba(255,255,255,.4) !important; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; padding: 10px 20px 4px !important; }
+
+    /* ── Topbar ── */
+    .topbar { background: #fff; border-bottom: 1px solid #e8eef8; }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.05);
+      border: none; overflow: hidden; margin-bottom: 24px;
+    }
+    .section-card .card-header {
+      background: #fff; border-bottom: 1px solid #eef1f6;
+      padding: 16px 20px; font-size: 14px; font-weight: 800; color: #1e2c5a;
+    }
+    .section-card .card-header .sub { font-size: 12px; font-weight: 400; color: #8899bb; margin-top: 2px; }
+
+    /* ── Form elements ── */
+    .form-label { font-size: 13px; font-weight: 700; color: #1e2c5a; margin-bottom: 5px; }
+    .form-control, .form-select {
+      border: 1.5px solid #d8e3f5; border-radius: 8px;
+      padding: 9px 13px; font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #4e73df;
+      box-shadow: 0 0 0 3px rgba(78,115,223,.12);
+    }
+
+    /* ── Barang picker table ── */
+    .barang-picker { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .barang-picker thead th {
+      background: #f8fafc; border-bottom: 1.5px solid #eef1f6;
+      padding: 9px 12px; font-size: 11px; font-weight: 700;
+      color: #8899bb; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .barang-picker tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .1s; }
+    .barang-picker tbody tr:last-child { border: none; }
+    .barang-picker tbody tr:hover { background: #f8fafc; }
+    .barang-picker td { padding: 9px 12px; vertical-align: middle; }
+    .barang-picker tr.row-checked { background: #eef7f0 !important; }
+
+    /* ── Riwayat table ── */
+    .riwayat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .riwayat-table thead th {
+      background: #f8fafc; border-bottom: 1.5px solid #eef1f6;
+      padding: 10px 16px; font-size: 11px; font-weight: 700;
+      color: #8899bb; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .riwayat-table tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .1s; }
+    .riwayat-table tbody tr:last-child { border: none; }
+    .riwayat-table tbody tr:hover { background: #f8fafc; }
+    .riwayat-table td { padding: 11px 16px; vertical-align: middle; }
+
+    /* ── Badges ── */
+    .code-badge {
+      background: #eef3fb; border-radius: 5px; padding: 3px 9px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px; font-weight: 700; color: #3a5298; letter-spacing: 1.5px;
+    }
+    .badge-stok {
+      font-size: 11px; font-weight: 700; padding: 3px 9px;
+      border-radius: 50px; display: inline-block;
+    }
+    .badge-stok-ok   { background: #d1fae5; color: #065f46; }
+    .badge-stok-low  { background: #fef3c7; color: #92400e; }
+    .badge-stok-zero { background: #f3f4f6; color: #9ca3af; }
+
+    .badge-status { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; display: inline-block; }
+    .status-dikirim  { background: #dbeafe; color: #1e40af; }
+    .status-selesai  { background: #d1fae5; color: #065f46; }
+    .status-sebagian { background: #fef3c7; color: #92400e; }
+    .status-draft    { background: #f3f4f6; color: #6b7280; }
+
+    /* ── Alert flash ── */
+    .flash-alert {
+      border-radius: 10px; padding: 12px 16px; font-size: 13px;
+      font-weight: 600; margin-bottom: 14px; border: none;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .flash-success { background: #d1fae5; color: #065f46; }
+    .flash-error   { background: #fee2e2; color: #991b1b; }
+    .flash-warning { background: #fef3c7; color: #92400e; }
+
+    /* ── Qty input in table ── */
+    .qty-input {
+      width: 80px; border: 1.5px solid #d8e3f5; border-radius: 6px;
+      padding: 4px 8px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      text-align: center;
+    }
+    .qty-input:focus { border-color: #4e73df; outline: none; }
+    .qty-input:disabled { background: #f8fafc; color: #bbb; }
+  </style>
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  {% include 'owner/_sidebar.html' with active='distribusi' %}
+
+  <!-- ══════════════ CONTENT WRAPPER ══════════════ -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Distribusi ke Toko
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Page Heading -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap" style="gap:12px;">
+          <div>
+            <h4 style="font-weight:900;color:#1e2c5a;margin:0;">
+              <i class="fa fa-truck me-2"></i>Distribusi ke Toko
+            </h4>
+            <div style="font-size:13px;color:#8899bb;margin-top:2px;">
+              Kirim barang dari Gudang Utama
+              {% if gudang %}&bull; {{ gudang.nama_toko }}{% endif %}
+              ke toko-toko cabang.
+            </div>
+          </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% if messages %}
+          {% for msg in messages %}
+          <div class="flash-alert {% if 'berhasil' in msg.message|lower or msg.tags == 'success' %}flash-success{% elif msg.tags == 'error' or msg.tags == 'danger' %}flash-error{% else %}flash-warning{% endif %}">
+            <span><i class="fa fa-info-circle me-2"></i>{{ msg }}</span>
+            <button onclick="this.parentElement.style.display='none'"
+                    style="background:none;border:none;cursor:pointer;opacity:.6;font-size:16px;line-height:1;padding:0 4px;">&times;</button>
+          </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- ══ MAIN ROW ══ -->
+        <div class="row g-4">
+
+          <!-- ── LEFT: Distribution Form ── -->
+          <div class="col-12 col-lg-5">
+            <div class="section-card">
+              <div class="card-header">
+                <div><i class="fa fa-truck me-2" style="color:#4e73df;"></i>Distribusi ke Toko</div>
+                <div class="sub">Stok akan langsung dikurangi dari Gudang Utama</div>
+              </div>
+              <div class="p-4">
+                <form method="post" action="{% url 'owner_buat_pengiriman' %}" id="formDistribusi">
+                  {% csrf_token %}
+
+                  <!-- Toko Tujuan -->
+                  <div class="mb-3">
+                    <label class="form-label" for="id_toko_tujuan">Toko Tujuan</label>
+                    {% if toko_list %}
+                    <select name="toko_id" id="id_toko_tujuan" class="form-select" required>
+                      <option value="">— pilih toko tujuan —</option>
+                      {% for toko in toko_list %}
+                      <option value="{{ toko.id }}">{{ toko.nama_toko }}</option>
+                      {% endfor %}
+                    </select>
+                    {% else %}
+                    <div class="text-center py-3" style="background:#fffbeb;border-radius:10px;border:1.5px dashed #fde68a;">
+                      <i class="fa fa-exclamation-triangle" style="color:#d97706;margin-bottom:6px;display:block;"></i>
+                      <span style="font-size:13px;color:#92400e;">Belum ada toko terdaftar.</span><br>
+                      <a href="{% url 'owner_klaim_toko' %}" class="btn btn-warning btn-sm fw-bold mt-2" style="border-radius:7px;font-size:12px;color:#1e2c5a;">
+                        <i class="fa fa-plus me-1"></i>Tambah Toko
+                      </a>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Nomor Pengiriman -->
+                  <div class="mb-3">
+                    <label class="form-label" for="id_nomor_pengiriman">Nomor Pengiriman</label>
+                    <div class="input-group">
+                      <input type="text" name="nomor_pengiriman" id="id_nomor_pengiriman"
+                             class="form-control" required
+                             maxlength="20"
+                             placeholder="Dibuat otomatis..."
+                             style="font-family:'Courier New',Courier,monospace;letter-spacing:1px;font-weight:700;">
+                      <button type="button" class="btn btn-outline-secondary btn-sm"
+                              onclick="generateNomor()"
+                              style="border-radius:0 8px 8px 0;border:1.5px solid #d8e3f5;font-size:12px;padding:0 12px;"
+                              title="Generate ulang">
+                        <i class="fa fa-refresh"></i>
+                      </button>
+                    </div>
+                    <div style="font-size:11px;color:#8899bb;margin-top:4px;">Dapat diubah sesuai kebutuhan.</div>
+                  </div>
+
+                  <!-- Catatan -->
+                  <div class="mb-3">
+                    <label class="form-label" for="id_catatan">
+                      Catatan <span style="font-weight:400;color:#8899bb;">(opsional)</span>
+                    </label>
+                    <input type="text" name="catatan" id="id_catatan"
+                           class="form-control" placeholder="Catatan pengiriman...">
+                  </div>
+
+                  <!-- Pilih Barang -->
+                  <div class="mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                      <label class="form-label mb-0">
+                        Pilih Barang
+                        <span id="counterDipilih" style="background:#4e73df;color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;margin-left:6px;">0</span>
+                      </label>
+                      <div class="d-flex gap-2">
+                        <button type="button" onclick="resetSemuaQty()"
+                          style="background:#f0f4fb;border:1.5px solid #d8e3f5;color:#1e2c5a;border-radius:7px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;">
+                          <i class="fa fa-times me-1"></i>Reset
+                        </button>
+                        <button type="button" onclick="toggleFilterAktif(this)"
+                          style="background:#f0f4fb;border:1.5px solid #d8e3f5;color:#1e2c5a;border-radius:7px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;"
+                          data-aktif="0">
+                          <i class="fa fa-filter me-1"></i>Dipilih saja
+                        </button>
+                      </div>
+                    </div>
+
+                    {% if barangs_gudang %}
+                    <div style="border:1.5px solid #d8e3f5;border-radius:10px;overflow:hidden;">
+
+                      <!-- Toolbar: search + info -->
+                      <div style="padding:10px 14px;background:#f8fafc;border-bottom:1px solid #eef1f6;display:flex;align-items:center;gap:8px;">
+                        <i class="fa fa-search" style="color:#8899bb;font-size:12px;flex-shrink:0;"></i>
+                        <input type="text" id="searchBarangPicker"
+                               placeholder="Cari nama atau barcode barang..."
+                               style="border:none;outline:none;flex:1;font-size:12px;font-family:'Poppins',sans-serif;background:transparent;color:#374151;">
+                        <span id="infoJumlahItem" style="font-size:11px;color:#8899bb;white-space:nowrap;">{{ barangs_gudang|length }} item</span>
+                      </div>
+
+                      <!-- Table dengan sticky header -->
+                      <div id="barangPickerScroll" style="max-height:420px;overflow-y:auto;">
+                        <table style="width:100%;border-collapse:collapse;" id="tableBarangPicker">
+                          <thead>
+                            <tr style="position:sticky;top:0;z-index:1;">
+                              <th style="background:#f0f4fb;border-bottom:1.5px solid #eef1f6;padding:8px 12px;font-size:11px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.5px;">Nama Barang</th>
+                              <th style="background:#f0f4fb;border-bottom:1.5px solid #eef1f6;padding:8px 12px;font-size:11px;font-weight:700;color:#8899bb;text-align:center;white-space:nowrap;">Stok</th>
+                              <th style="background:#f0f4fb;border-bottom:1.5px solid #eef1f6;padding:8px 12px;font-size:11px;font-weight:700;color:#8899bb;text-align:center;white-space:nowrap;">Qty Kirim</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for b in barangs_gudang %}
+                            <tr data-nama="{{ b.nama|lower }}" data-barcode="{{ b.barcode|default:''|lower }}"
+                                class="barang-row"
+                                style="border-bottom:1px solid #f0f4f8;transition:background .1s;">
+                              <td style="padding:7px 12px;">
+                                <div style="font-weight:600;color:#1e2c5a;font-size:13px;line-height:1.3;">{{ b.nama|title }}</div>
+                                {% if b.barcode %}<div style="font-family:monospace;font-size:10px;color:#8899bb;">{{ b.barcode }}</div>{% endif %}
+                              </td>
+                              <td style="padding:7px 12px;text-align:center;">
+                                <span style="font-size:12px;font-weight:700;
+                                  {% if b.stok == 0 %}color:#9ca3af;{% elif b.stok < 10 %}color:#dc2626;{% else %}color:#059669;{% endif %}">
+                                  {{ b.stok }}
+                                </span>
+                              </td>
+                              <td style="padding:7px 12px;text-align:center;">
+                                <input type="number"
+                                       name="jumlah_{{ b.id }}"
+                                       class="barang-qty"
+                                       data-id="{{ b.id }}"
+                                       data-nama="{{ b.nama }}"
+                                       data-stok="{{ b.stok }}"
+                                       min="0" max="{{ b.stok }}" value="0"
+                                       style="width:64px;border:1.5px solid #d8e3f5;border-radius:7px;padding:4px 6px;font-size:13px;font-family:'Poppins',sans-serif;text-align:center;outline:none;transition:border-color .15s;"
+                                       onfocus="this.style.borderColor='#4e73df'"
+                                       onblur="this.style.borderColor=parseInt(this.value)>0?'#4e73df':'#d8e3f5'">
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <!-- Footer counter -->
+                      <div style="padding:8px 14px;background:#f8fafc;border-top:1px solid #eef1f6;font-size:12px;color:#8899bb;display:flex;justify-content:space-between;align-items:center;">
+                        <span>Isi qty > 0 untuk barang yang akan dikirim</span>
+                        <span id="footerCounter" style="font-weight:700;color:#4e73df;">0 barang dipilih</span>
+                      </div>
+                    </div>
+
+                    {% else %}
+                    <div class="text-center py-4" style="background:#f8fafc;border-radius:10px;border:1.5px dashed #d8e3f5;">
+                      <i class="fa fa-inbox" style="font-size:28px;opacity:.25;color:#1e2c5a;display:block;margin-bottom:8px;"></i>
+                      <span style="font-size:13px;color:#8899bb;">Belum ada barang di gudang.</span><br>
+                      <a href="{% url 'owner_gudang_tambah' %}" class="btn btn-primary btn-sm fw-bold mt-2" style="border-radius:7px;font-size:12px;">
+                        <i class="fa fa-plus me-1"></i>Tambah Barang
+                      </a>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Submit -->
+                  {% if toko_list and barangs_gudang %}
+                  <button type="button" class="btn btn-primary fw-bold w-100"
+                          onclick="bukaModa()"
+                          style="border-radius:9px;padding:12px;font-size:14px;">
+                    <i class="fa fa-truck me-2"></i>Distribusikan
+                  </button>
+                  {% endif %}
+
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- ── END LEFT ── -->
+
+          <!-- ── RIGHT: Riwayat Distribusi ── -->
+          <div class="col-12 col-lg-7">
+            <div class="section-card">
+              <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                  <div><i class="fa fa-history me-2"></i>Riwayat Pengiriman</div>
+                  <div class="sub">Catatan semua pengiriman dari Gudang Utama ke toko</div>
+                </div>
+              </div>
+
+              {% if riwayat_distribusi %}
+              <div class="table-responsive">
+                <table class="riwayat-table">
+                  <thead>
+                    <tr>
+                      <th>No. Pengiriman</th>
+                      <th>Toko Tujuan</th>
+                      <th class="text-center">Jumlah Item</th>
+                      <th class="text-center">Status</th>
+                      <th>Tanggal</th>
+                      <th class="text-center">Detail</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for p in riwayat_distribusi %}
+                    <tr>
+                      <td>
+                        <span class="code-badge">{{ p.nomor_pengiriman }}</span>
+                      </td>
+                      <td>
+                        <div style="font-weight:600;color:#1e2c5a;font-size:13px;">
+                          {{ p.toko_tujuan.nama_toko|default:p.cabang_tujuan.nama_toko }}
+                        </div>
+                      </td>
+                      <td class="text-center" style="font-weight:700;color:#1e2c5a;">
+                        {{ p.jumlah_item|default:p.items.count }}
+                      </td>
+                      <td class="text-center">
+                        <span class="badge-status status-{{ p.status }}">
+                          {% if p.status == 'dikirim' %}Dikirim
+                          {% elif p.status == 'selesai' %}Selesai
+                          {% elif p.status == 'sebagian' %}Sebagian
+                          {% elif p.status == 'draft' %}Draft
+                          {% else %}{{ p.status|title }}{% endif %}
+                        </span>
+                      </td>
+                      <td style="font-size:12px;color:#6b7280;">
+                        {{ p.created_at|date:"d/m/Y H:i" }}
+                      </td>
+                      <td class="text-center">
+                        <a href="{% url 'owner_detail_pengiriman' p.id %}"
+                           style="font-size:12px;color:#4e73df;font-weight:600;text-decoration:none;">
+                          <i class="fa fa-eye me-1"></i>Lihat
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <div class="text-center py-5" style="color:#8899bb;">
+                <i class="fa fa-truck" style="font-size:36px;opacity:.18;display:block;margin-bottom:12px;"></i>
+                Belum ada riwayat pengiriman.
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <!-- ── END RIGHT ── -->
+
+        </div>
+        <!-- ══ END MAIN ROW ══ -->
+
+      </div><!-- /container-fluid -->
+    </div><!-- /content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">
+        &copy; POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+  </div><!-- /content-wrapper -->
+</div><!-- /wrapper -->
+
+<!-- ══════════════ CONFIRMATION MODAL ══════════════ -->
+<div class="modal fade" id="modalKonfirmasi" tabindex="-1" aria-labelledby="labelModalKonfirmasi" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content" style="border:none;border-radius:16px;overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e2c5a,#3a5298);border:none;padding:18px 22px;">
+        <h5 class="modal-title" id="labelModalKonfirmasi" style="color:#fff;font-weight:800;font-size:15px;margin:0;">
+          <i class="fa fa-truck me-2"></i>Konfirmasi Pengiriman
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body" style="padding:22px;">
+        <p style="font-size:13px;color:#6b7280;margin-bottom:14px;">
+          Barang berikut akan dikirim ke toko tujuan. Stok Gudang Utama akan langsung dikurangi.
+        </p>
+        <div id="konfirmasiTokoInfo" style="font-size:13px;font-weight:700;color:#1e2c5a;margin-bottom:12px;padding:10px 14px;background:#f0f4fb;border-radius:8px;">
+          <i class="fa fa-store me-2" style="color:#4e73df;"></i><span id="konfirmasiNamaToko">—</span>
+        </div>
+        <div style="background:#f8fafc;border-radius:10px;border:1px solid #eef1f6;overflow:hidden;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#f0f4fb;">
+                <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.5px;">Barang</th>
+                <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.5px;text-align:right;">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody id="konfirmasiItems">
+              <!-- Diisi via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="errorPilihBarang" class="mt-3" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;">
+          <i class="fa fa-exclamation-circle me-2"></i>Pilih minimal satu barang dengan jumlah lebih dari 0.
+        </div>
+      </div>
+      <div class="modal-footer" style="border:none;padding:0 22px 20px;gap:10px;">
+        <button type="button" class="btn btn-outline-secondary fw-bold"
+                data-bs-dismiss="modal"
+                style="border-radius:8px;font-size:13px;">
+          Batal
+        </button>
+        <button type="button" class="btn btn-primary fw-bold" id="btnKonfirmasiSubmit"
+                style="border-radius:8px;font-size:13px;padding:9px 22px;">
+          <i class="fa fa-truck me-2"></i>Ya, Kirim Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══════════════ END MODAL ══════════════ -->
+
+<!-- Scripts -->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/chart.js/Chart.bundle.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script>
+// ── Generate nomor pengiriman 10 char alphanumeric ──
+function generateNomor() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var result = '';
+  for (var i = 0; i < 10; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  document.getElementById('id_nomor_pengiriman').value = result;
+}
+
+// Auto-generate on page load
+window.addEventListener('DOMContentLoaded', function () {
+  generateNomor();
+});
+
+// Highlight row saat qty > 0
+document.querySelectorAll('.barang-qty').forEach(function(input) {
+  input.addEventListener('input', function() {
+    var row = this.closest('tr');
+    if (parseInt(this.value) > 0) {
+      row.style.background = '#f0f7ff';
+    } else {
+      row.style.background = '';
+    }
+  });
+});
+
+// ── Search filter for barang picker ──
+var searchInput = document.getElementById('searchBarangPicker');
+if (searchInput) {
+  searchInput.addEventListener('keyup', function () {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('#tableBarangPicker tbody tr').forEach(function (tr) {
+      var nama    = tr.dataset.nama    || '';
+      var barcode = tr.dataset.barcode || '';
+      tr.style.display = (nama.indexOf(q) > -1 || barcode.indexOf(q) > -1) ? '' : 'none';
+    });
+  });
+}
+
+// ── Open confirmation modal ──
+function bukaModa() {
+  var errorEl   = document.getElementById('errorPilihBarang');
+  var itemsBody = document.getElementById('konfirmasiItems');
+  var tokoSel   = document.getElementById('id_toko_tujuan');
+
+  // Kumpulkan barang dengan qty > 0
+  var selected = [];
+  document.querySelectorAll('.barang-qty').forEach(function(input) {
+    var qty  = parseInt(input.value) || 0;
+    if (qty > 0) {
+      selected.push({
+        nama: input.dataset.nama,
+        qty:  qty,
+        stok: parseInt(input.dataset.stok)
+      });
+    }
+  });
+
+  if (selected.length === 0) {
+    errorEl.style.display = 'block';
+    var modal = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+    modal.show();
+    document.getElementById('btnKonfirmasiSubmit').disabled = true;
+    itemsBody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:14px;color:#8899bb;font-size:13px;">Tidak ada barang dipilih.</td></tr>';
+    document.getElementById('konfirmasiNamaToko').textContent = tokoSel ? (tokoSel.options[tokoSel.selectedIndex] ? tokoSel.options[tokoSel.selectedIndex].text : '—') : '—';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+  document.getElementById('btnKonfirmasiSubmit').disabled = false;
+
+  // Fill toko name
+  var namaTokoEl = document.getElementById('konfirmasiNamaToko');
+  if (tokoSel && tokoSel.selectedIndex > 0) {
+    namaTokoEl.textContent = tokoSel.options[tokoSel.selectedIndex].text;
+  } else {
+    namaTokoEl.textContent = '—';
+  }
+
+  // Fill items table
+  var html = '';
+  selected.forEach(function (item) {
+    var warn = item.qty > item.stok ? ' style="color:#dc3545;"' : '';
+    html += '<tr style="border-bottom:1px solid #f0f4f8;">'
+      + '<td style="padding:9px 14px;font-weight:600;color:#1e2c5a;">' + item.nama + '</td>'
+      + '<td style="padding:9px 14px;text-align:right;font-weight:700;"' + warn + '>' + item.qty + '</td>'
+      + '</tr>';
+  });
+  itemsBody.innerHTML = html;
+
+  var modal = new bootstrap.Modal(document.getElementById('modalKonfirmasi'));
+  modal.show();
+}
+
+// ── Submit form from modal ──
+document.getElementById('btnKonfirmasiSubmit').addEventListener('click', function () {
+  document.getElementById('formDistribusi').submit();
+});
+</script>
+</body>
+</html>

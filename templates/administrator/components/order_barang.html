@@ -1,0 +1,157 @@
+{% load humanize %}
+
+<style>
+.ord-page { color:#4b5563; }
+.ord-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+.ord-title { margin:0; color:#2f3446; font-size:26px; font-weight:900; line-height:1.2; }
+.ord-sub { margin-top:6px; color:#8a92a6; font-size:13px; font-weight:600; }
+
+.ord-panel { background:#fff; border:1px solid #e4e8f0; border-radius:10px; box-shadow:0 4px 16px rgba(31,41,55,.06); overflow:hidden; margin-bottom:22px; }
+.ord-panel-hd { display:flex; align-items:center; gap:10px; padding:16px 22px; background:#f8fafc; border-bottom:1px solid #e4e8f0; }
+.ord-panel-hd-title { font-size:14px; font-weight:800; color:#2f3446; }
+.ord-panel-hd-sub   { font-size:12px; color:#8a92a6; margin-top:1px; }
+.ord-body { padding:22px; }
+
+.ord-label { font-size:13px; font-weight:700; color:#374151; margin-bottom:5px; display:block; }
+.ord-control { width:100%; border:1.5px solid #e4e8f0; border-radius:8px; padding:10px 14px; font-size:13px; font-family:'Poppins',sans-serif; color:#374151; background:#fff; }
+.ord-control:focus { border-color:#4e73df; outline:none; box-shadow:0 0 0 3px rgba(78,115,223,.1); }
+.ord-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:700; border:none; cursor:pointer; transition:opacity .2s; }
+.ord-btn-primary { background:#2f3446; color:#fff; }
+.ord-btn-primary:hover { opacity:.88; }
+
+.template-info { background:#f0f7ff; border:1px solid #bee3f8; border-radius:8px; padding:12px 16px; font-size:13px; color:#1a5276; margin-bottom:16px; }
+.template-info code { background:#dbeafe; padding:2px 6px; border-radius:4px; font-size:12px; }
+
+.badge-pending  { background:#fef3c7; color:#92400e; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+.badge-diproses { background:#dbeafe; color:#1e40af; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+.badge-dikirim  { background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+.badge-ditolak  { background:#fee2e2; color:#991b1b; font-size:11px; font-weight:700; padding:3px 10px; border-radius:50px; display:inline-block; }
+
+.ord-table { width:100%; border-collapse:collapse; font-size:13px; }
+.ord-table thead th { background:#f8fafc; border-bottom:1.5px solid #e4e8f0; padding:10px 16px; font-size:11px; font-weight:700; color:#8a92a6; text-transform:uppercase; letter-spacing:.5px; }
+.ord-table tbody tr { border-bottom:1px solid #f0f4f8; }
+.ord-table tbody tr:last-child { border:none; }
+.ord-table td { padding:12px 16px; vertical-align:middle; }
+.no-faktur { font-family:monospace; font-weight:700; font-size:12px; background:#f0f4fb; border-radius:5px; padding:3px 8px; color:#3a5298; }
+</style>
+
+<div class="ord-page">
+  <div class="ord-header">
+    <div>
+      <h2 class="ord-title"><i class="fa fa-shopping-basket me-2" style="font-size:22px;color:#8a92a6;"></i>Order Barang ke Gudang</h2>
+      <div class="ord-sub">{{ cabang.nama_toko }} → Gudang Utama Korporasi</div>
+    </div>
+  </div>
+
+  {% if notif_ok %}
+  <div style="background:#d1fae5;color:#065f46;border-radius:8px;padding:13px 18px;font-size:13px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <i class="fa fa-check-circle" style="font-size:16px;flex-shrink:0;"></i>
+    <span>{{ notif_ok }}</span>
+  </div>
+  {% endif %}
+  {% if notif_err %}
+  <div style="background:#fee2e2;color:#991b1b;border-radius:8px;padding:13px 18px;font-size:13px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <i class="fa fa-exclamation-circle" style="font-size:16px;flex-shrink:0;"></i>
+    <span>{{ notif_err }}</span>
+  </div>
+  {% endif %}
+
+  <div class="row g-4">
+
+    <!-- Form Order -->
+    <div class="col-12 col-lg-5">
+      <div class="ord-panel">
+        <div class="ord-panel-hd">
+          <div>
+            <div class="ord-panel-hd-title"><i class="fa fa-upload me-2"></i>Buat Order Baru</div>
+            <div class="ord-panel-hd-sub">Upload file Excel berisi barcode dan jumlah yang diinginkan.</div>
+          </div>
+        </div>
+        <div class="ord-body">
+
+          <div class="template-info mb-3">
+            <strong>Format file Excel:</strong><br>
+            Kolom: <code>barcode</code> &nbsp; <code>nama_barang</code> &nbsp; <code>jumlah</code><br>
+            <span style="font-size:12px;color:#4b5563;">
+              Download template di bawah — sudah berisi semua barang dari gudang, tinggal isi kolom jumlah.
+            </span>
+          </div>
+          <a href="{% url 'download_template_order' %}" target="_blank"
+             style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;background:#fff;color:#2f3446;border:1.5px solid #e4e8f0;text-decoration:none;margin-bottom:16px;transition:border-color .2s;"
+             onmouseover="this.style.borderColor='#4e73df';this.style.color='#4e73df';"
+             onmouseout="this.style.borderColor='#e4e8f0';this.style.color='#2f3446';">
+            <i class="fa fa-download"></i> Download Template Barang Gudang
+          </a>
+
+          <form method="post" enctype="multipart/form-data"
+                hx-post="{% url 'order_barang_cms' %}"
+                hx-target="#mainpage"
+                hx-encoding="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="ord-label">File Excel (.xlsx) <span style="color:#dc3545;">*</span></label>
+              <input type="file" name="file" class="ord-control" accept=".xlsx,.xls" required>
+            </div>
+
+            <div class="mb-4">
+              <label class="ord-label">Catatan ke Pemilik <span style="font-weight:400;color:#8a92a6;">(opsional)</span></label>
+              <input type="text" name="catatan_toko" class="ord-control" placeholder="Contoh: Stok menipis, mohon segera diproses">
+            </div>
+
+            <button type="submit" class="ord-btn ord-btn-primary w-100">
+              <i class="fa fa-paper-plane"></i>Kirim Order ke Gudang
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat Order -->
+    <div class="col-12 col-lg-7">
+      <div class="ord-panel">
+        <div class="ord-panel-hd">
+          <div>
+            <div class="ord-panel-hd-title"><i class="fa fa-history me-2"></i>Riwayat Order</div>
+            <div class="ord-panel-hd-sub">20 order terakhir dari toko ini.</div>
+          </div>
+        </div>
+
+        {% if riwayat %}
+        <div style="overflow-x:auto;">
+          <table class="ord-table">
+            <thead>
+              <tr>
+                <th>No. Order</th>
+                <th class="text-center">Jml Item</th>
+                <th>Status</th>
+                <th>Catatan Owner</th>
+                <th>Tanggal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for o in riwayat %}
+              <tr>
+                <td><span class="no-faktur">{{ o.nomor_order }}</span></td>
+                <td class="text-center" style="font-weight:700;">{{ o.item_set.count }}</td>
+                <td>
+                  <span class="badge-{{ o.status }}">{{ o.get_status_display }}</span>
+                </td>
+                <td style="font-size:12px;color:#6b7280;font-style:italic;">{{ o.catatan_owner|default:"-" }}</td>
+                <td style="font-size:11px;color:#8a92a6;">{{ o.created_at|date:"d/m/Y H:i" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:40px 20px;color:#8a92a6;">
+          <i class="fa fa-shopping-basket" style="font-size:32px;opacity:.2;display:block;margin-bottom:10px;"></i>
+          Belum ada order yang dikirim.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>

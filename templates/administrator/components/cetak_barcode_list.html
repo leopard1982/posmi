@@ -1,0 +1,261 @@
+{% load humanize %}
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+<style>
+.bc-page { color:#4b5563; max-width:860px; margin:0 auto; }
+.bc-back { display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+  color:#6b7280;cursor:pointer;background:none;border:none;padding:0;margin-bottom:18px; }
+.bc-back:hover { color:#4e73df; }
+.bc-title { font-size:20px;font-weight:900;color:#1e2c5a;margin-bottom:4px; }
+.bc-sub   { font-size:13px;color:#8a92a6;margin-bottom:18px; }
+
+.bc-search {
+  display:flex;gap:10px;align-items:center;margin-bottom:16px;
+}
+.bc-search input {
+  flex:1;padding:9px 14px;border:1.5px solid #d1d5db;border-radius:8px;
+  font-size:13px;color:#374151;background:#fafafa;
+}
+.bc-search input:focus { border-color:#4e73df;outline:none;background:#fff; }
+
+.bc-table { width:100%;border-collapse:collapse;font-size:13px; }
+.bc-table th { background:#f8fafc;color:#6b7280;font-size:11px;font-weight:800;
+  letter-spacing:.6px;text-transform:uppercase;padding:10px 14px;
+  border-bottom:2px solid #e4e8f0;text-align:left; }
+.bc-table td { padding:10px 14px;border-bottom:1px solid #f0f4f8;color:#374151; }
+.bc-table tr:hover td { background:#f8fafc; }
+
+.btn-cetak-item {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;background:#fef3c7;color:#d97706;
+  border:1.5px solid #fde68a;border-radius:7px;
+  font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;
+}
+.btn-cetak-item:hover { background:#fde68a; }
+
+/* Modal print */
+.bc-modal-overlay {
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:9000;
+  align-items:center;justify-content:center;
+}
+.bc-modal-overlay.active { display:flex; }
+.bc-modal {
+  background:#fff;border-radius:14px;padding:28px 24px;
+  max-width:480px;width:95%;box-shadow:0 8px 40px rgba(0,0,0,.2);
+}
+.bc-modal-title { font-size:16px;font-weight:900;color:#1e2c5a;margin-bottom:4px; }
+.bc-modal-sub   { font-size:12px;color:#8a92a6;margin-bottom:18px; }
+
+.bc-qty-row { display:flex;align-items:center;gap:12px;margin-bottom:16px; }
+.bc-qty-row label { font-size:13px;font-weight:700;color:#374151;min-width:100px; }
+.bc-qty-row input {
+  width:80px;padding:7px 10px;border:1.5px solid #d1d5db;border-radius:7px;
+  font-size:14px;font-weight:700;text-align:center;
+}
+
+.bc-preview-area {
+  border:1px dashed #d1d5db;border-radius:8px;padding:10px;
+  background:#fafafa;margin-bottom:18px;
+  display:flex;flex-wrap:wrap;gap:6px;min-height:60px;
+  max-height:200px;overflow-y:auto;
+}
+
+.bc-btn-row { display:flex;gap:10px; }
+.bc-btn-cancel {
+  flex:1;padding:10px;background:#f3f4f6;color:#5a5c69;
+  border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+}
+.bc-btn-print {
+  flex:2;padding:10px;background:#d97706;color:#fff;
+  border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.bc-btn-print:hover { background:#b45309; }
+
+/* Label card */
+.label-card {
+  border:1px dashed #9ca3af;border-radius:4px;padding:5px 7px;
+  text-align:center;background:#fff;width:110px;flex-shrink:0;
+}
+.label-nama-toko   { font-size:7px;font-weight:700;color:#374151;margin-bottom:1px; }
+.label-nama-produk { font-size:7px;color:#374151;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96px; }
+.label-harga { font-size:8px;font-weight:700;color:#059669;margin-top:1px; }
+
+@media print {
+  body * { visibility:hidden; }
+  #printArea, #printArea * { visibility:visible; }
+  #printArea {
+    position:fixed;top:0;left:0;width:100%;
+    display:flex;flex-wrap:wrap;gap:4px;padding:4mm;
+    background:#fff;
+  }
+}
+</style>
+
+<div class="bc-page">
+
+  <button class="bc-back" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+    <i class="fa fa-arrow-left"></i> Kembali ke Add-ons
+  </button>
+
+  <div class="bc-title"><i class="fa fa-barcode me-2" style="color:#d97706;"></i>Cetak Label Barcode</div>
+  <div class="bc-sub">Pilih produk lalu atur jumlah label yang akan dicetak.</div>
+
+  <div class="bc-search">
+    <input type="text" id="bcSearchInput" placeholder="Cari nama produk..." value="{{ q }}"
+      hx-get="{% url 'cms_cetak_barcode_page' %}" hx-trigger="keyup changed delay:400ms"
+      hx-target="#mainpage" hx-include="#bcSearchInput" name="q">
+  </div>
+
+  <div style="background:#fff;border:1px solid #e4e8f0;border-radius:12px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.04);">
+    <table class="bc-table">
+      <thead>
+        <tr>
+          <th>Nama Produk</th>
+          <th>Barcode</th>
+          <th>Harga Ecer</th>
+          <th style="text-align:center;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for barang in barangs %}
+        <tr>
+          <td style="font-weight:700;">{{ barang.nama }}</td>
+          <td style="font-family:monospace;color:#6b7280;">{{ barang.barcode }}</td>
+          <td>Rp {{ barang.harga_ecer|intcomma }}</td>
+          <td style="text-align:center;">
+            <button class="btn-cetak-item"
+              onclick="bukaModal('{{ barang.id }}','{{ barang.nama|escapejs }}','{{ barang.barcode|escapejs }}','{{ barang.harga_ecer|intcomma|escapejs }}')">
+              <i class="fa fa-barcode"></i> Cetak
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:28px;">Produk tidak ditemukan.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /bc-page -->
+
+<!-- Modal Cetak -->
+<div class="bc-modal-overlay" id="bcModal">
+  <div class="bc-modal">
+    <div class="bc-modal-title" id="bcModalTitle">Cetak Barcode</div>
+    <div class="bc-modal-sub" id="bcModalSub">Label barcode produk</div>
+
+    <div class="bc-qty-row">
+      <label>Jumlah Label</label>
+      <input type="number" id="bcQtyInput" min="1" max="200" value="1">
+    </div>
+
+    <div class="bc-preview-area" id="bcPreviewArea"></div>
+
+    <div class="bc-btn-row">
+      <button class="bc-btn-cancel" onclick="tutupModal()">Batal</button>
+      <button class="bc-btn-print" onclick="cetakSekarang()">
+        <i class="fa fa-print"></i> Cetak Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Area tersembunyi untuk print -->
+<div id="printArea" style="display:none;"></div>
+
+<script>
+var NAMA_TOKO    = '{{ cabang.nama_toko|escapejs }}';
+var TIPE         = '{{ barcode_config.tipe_barcode|default:"CODE128"|escapejs }}';
+var SHOW_NAMA_TOKO   = {{ barcode_config.tampilkan_nama_toko|default:True|yesno:"true,false" }};
+var SHOW_NAMA_PRODUK = {{ barcode_config.tampilkan_nama_produk|default:True|yesno:"true,false" }};
+var SHOW_HARGA       = {{ barcode_config.tampilkan_harga|default:True|yesno:"true,false" }};
+
+var _currentBarcode = '';
+var _currentNama    = '';
+var _currentHarga   = '';
+
+function bukaModal(id, nama, barcode, harga) {
+  _currentBarcode = barcode;
+  _currentNama    = nama;
+  _currentHarga   = 'Rp ' + harga;
+  document.getElementById('bcModalTitle').textContent = 'Cetak Barcode — ' + nama;
+  document.getElementById('bcModalSub').textContent   = 'Barcode: ' + barcode;
+  document.getElementById('bcQtyInput').value = 1;
+  renderPreview(1);
+  document.getElementById('bcModal').classList.add('active');
+}
+
+function tutupModal() {
+  document.getElementById('bcModal').classList.remove('active');
+}
+
+function makeLabel(barcode, nama, harga) {
+  var card = document.createElement('div');
+  card.className = 'label-card';
+  if (SHOW_NAMA_TOKO) {
+    var t = document.createElement('div');
+    t.className = 'label-nama-toko'; t.textContent = NAMA_TOKO;
+    card.appendChild(t);
+  }
+  var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  card.appendChild(svg);
+  try {
+    JsBarcode(svg, barcode, {
+      format: TIPE === 'QR' ? 'qrcode' : TIPE,
+      width:1.2, height:26, displayValue:true, fontSize:7, margin:2,
+    });
+  } catch(e) {}
+  if (SHOW_NAMA_PRODUK) {
+    var p = document.createElement('div');
+    p.className = 'label-nama-produk'; p.textContent = nama;
+    card.appendChild(p);
+  }
+  if (SHOW_HARGA) {
+    var h = document.createElement('div');
+    h.className = 'label-harga'; h.textContent = harga;
+    card.appendChild(h);
+  }
+  return card;
+}
+
+function renderPreview(n) {
+  var area = document.getElementById('bcPreviewArea');
+  area.innerHTML = '';
+  for (var i = 0; i < Math.min(n, 20); i++) {
+    area.appendChild(makeLabel(_currentBarcode, _currentNama, _currentHarga));
+  }
+  if (n > 20) {
+    var more = document.createElement('div');
+    more.style.cssText = 'font-size:11px;color:#9ca3af;align-self:center;padding:8px;';
+    more.textContent = '+ ' + (n - 20) + ' label lainnya akan dicetak';
+    area.appendChild(more);
+  }
+}
+
+function cetakSekarang() {
+  var n = parseInt(document.getElementById('bcQtyInput').value) || 1;
+  var printArea = document.getElementById('printArea');
+  printArea.innerHTML = '';
+  printArea.style.display = 'flex';
+  printArea.style.flexWrap = 'wrap';
+  printArea.style.gap = '4px';
+  printArea.style.padding = '4mm';
+  for (var i = 0; i < n; i++) {
+    printArea.appendChild(makeLabel(_currentBarcode, _currentNama, _currentHarga));
+  }
+  setTimeout(function() {
+    window.print();
+    setTimeout(function() {
+      printArea.innerHTML = '';
+      printArea.style.display = 'none';
+    }, 500);
+  }, 200);
+}
+
+document.getElementById('bcQtyInput').addEventListener('input', function() {
+  renderPreview(parseInt(this.value) || 1);
+});
+</script>

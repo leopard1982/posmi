@@ -1,92 +1,138 @@
-{% extends 'base-histori.html'%}
+{% load static %}
 {% load humanize %}
-{% block contents%}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konfirmasi Void Transaksi — POSMI</title>
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#f4f6fb; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .void-card { background:#fff; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,.1); max-width:520px; width:100%; overflow:hidden; }
+    .void-header { background:linear-gradient(135deg,#7f1d1d,#dc2626); padding:20px 26px; color:#fff; }
+    .void-header .icon { width:44px; height:44px; background:rgba(255,255,255,.15); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+    .void-header h1 { font-size:16px; font-weight:900; margin:0 0 3px; }
+    .void-header p  { font-size:12px; opacity:.75; margin:0; }
+    .void-body { padding:24px 26px; }
+    .info-row { display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f0f4f8; font-size:13px; }
+    .info-row:last-child { border:none; }
+    .info-label { color:#8899bb; font-weight:600; min-width:110px; flex-shrink:0; }
+    .info-val   { color:#1e2c5a; font-weight:700; }
+    .detail-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:12px; }
+    .detail-table thead th { background:#f8fafc; border-bottom:1.5px solid #eef1f6; padding:8px 10px; font-size:11px; font-weight:700; color:#8899bb; text-transform:uppercase; letter-spacing:.5px; }
+    .detail-table tbody tr { border-bottom:1px solid #f0f4f8; }
+    .detail-table tbody tr:last-child { border:none; }
+    .detail-table td { padding:8px 10px; color:#374151; vertical-align:middle; }
+    .total-row td { background:#fef2f2; font-weight:700; color:#dc2626; }
+    .warn-box { background:#fff5f5; border:1.5px solid #fca5a5; border-radius:10px; padding:14px 16px; margin-top:16px; }
+    .warn-box p { font-size:13px; color:#7f1d1d; font-weight:600; margin:0 0 12px; }
+    .form-control { border:1.5px solid #d8e3f5; border-radius:8px; padding:10px 13px; font-size:13px; font-family:'Poppins',sans-serif; }
+    .form-control:focus { border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.1); outline:none; }
+    .btn-void { background:#dc2626; color:#fff; border:none; border-radius:8px; padding:10px 22px; font-size:13px; font-weight:700; cursor:pointer; transition:opacity .2s; }
+    .btn-void:hover { opacity:.88; }
+    .btn-back { background:#f1f5f9; color:#374151; border:none; border-radius:8px; padding:10px 18px; font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+    .btn-back:hover { background:#e2e8f0; color:#374151; }
+    .nota-badge { font-family:monospace; font-size:11px; background:#fef2f2; color:#dc2626; border-radius:5px; padding:2px 8px; }
+  </style>
+</head>
+<body>
 
-<div class="container py-3">
-    <div class="text-center text-danger fs-4 fw-bold">
-        Konfirmasi Pembatalan Transaksi (void)
+<div class="void-card">
+
+  <!-- Header -->
+  <div class="void-header">
+    <div class="icon"><i class="fa fa-ban" style="font-size:20px;"></i></div>
+    <h1>Konfirmasi Void Transaksi</h1>
+    <p>Tindakan ini akan membatalkan transaksi secara permanen</p>
+  </div>
+
+  <div class="void-body">
+
+    <!-- Info transaksi -->
+    <div style="margin-bottom:8px;">
+      <div class="info-row">
+        <span class="info-label">ID Transaksi</span>
+        <span class="info-val"><span class="nota-badge">{{ penjualan.nota }}</span></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Tanggal</span>
+        <span class="info-val">{{ penjualan.tgl_bayar|date:"d M Y, H:i" }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Kasir</span>
+        <span class="info-val">{{ penjualan.user.userprofile.nama_lengkap }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Customer</span>
+        <span class="info-val">{{ penjualan.customer|default:"—" }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Total</span>
+        <span class="info-val" style="color:#dc2626;font-size:15px;">Rp {{ penjualan.total|intcomma }}</span>
+      </div>
     </div>
-    <div class="my-3">
-        <div class="container w-100 border border-primary rounded p-2">
-            <table class="w-100">
-                <tr>
-                    <td style="min-width: 120px;">ID Transaksi:</td>
-                    <td style="font-weight: bold;">{{penjualan.nota}}</td>
-                </tr>
-                <tr>
-                    <td>Tanggal:</td>
-                    <td  style="font-weight: bold;">{{penjualan.tgl_bayar|date:"d/M/Y h:i:s"}}</td>
-                </tr>
-                <tr>
-                    <td>Kasir:</td>
-                    <td style="font-weight: bold;">{{penjualan.user.userprofile.nama_lengkap}}</td>
-                </tr>
-                <tr>
-                    <td>Customer:</td>
-                    <td style="font-weight: bold;">{{penjualan.customer}}</td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;">Keterangan:</td>
-                    <td  style="font-weight: bold;">
-                        Jumlah: {{penjualan.items}} barang <br>
-                        Total: Rp.{{penjualan.total|intcomma}}
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="border border-primary" style="background-color: blue;color: white;vertical-align: top;font-weight: bold;text-align: center;">Detail:</td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <table class="table">
-                            <tr style="border-bottom: 1px solid blue;">
-                                <th style="min-width: 75px;max-width: 75px;">Kode</th>
-                                <th style="min-width: 75px;max-width: 75px;">Nama</th>
-                                <th style="min-width: 45px;max-width: 45px;">Harga</th>
-                                <th>Total</th>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr class="border border-primary" >
-                    <td colspan="2">
-                        <div class="w-100" style="min-height: 130px;max-height: 130px;overflow-y: scroll;">
-                            <div >
-                                <table class="table" >
-                                    {% for detail in penjualan_detail%}
-                                    <tr>
-                                        <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.barcode}}</td>
-                                        <td style="min-width: 100px;max-width: 100px;;font-size: 13px;">{{detail.barang.nama}}</td>
-                                        <td style="min-width: 60px;max-width: 60px;;font-size: 13px;">{{detail.harga|intcomma}}<br>x{{detail.jumlah|intcomma}}</td>
-                                        <td style="font-size: 13px;">{{detail.total|intcomma}}</td>
-                                    </tr>
-                                    {% endfor%}
-                                </table>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+
+    <!-- Detail barang -->
+    <div style="font-size:11px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Detail Barang</div>
+    <div style="max-height:180px;overflow-y:auto;border:1px solid #eef1f6;border-radius:8px;">
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>Barang</th>
+            <th class="text-center">Qty</th>
+            <th class="text-end">Harga</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detail in penjualan_detail %}
+          <tr>
+            <td>
+              <div style="font-weight:600;">{{ detail.barang.nama|title }}</div>
+              <div style="font-size:10px;color:#8899bb;font-family:monospace;">{{ detail.barang.barcode }}</div>
+            </td>
+            <td class="text-center">{{ detail.jumlah }}</td>
+            <td class="text-end">{{ detail.harga|intcomma }}</td>
+            <td class="text-end" style="font-weight:700;">{{ detail.total|intcomma }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="total-row">
+            <td colspan="3" style="text-align:right;font-size:12px;">Total</td>
+            <td class="text-end">{{ penjualan.total|intcomma }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Form void -->
+    <div class="warn-box">
+      <p><i class="fa fa-exclamation-triangle me-2"></i>Apakah transaksi ini akan dibatalkan (void)?</p>
+      <form action="{{ callback }}" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label style="font-size:12px;font-weight:700;color:#7f1d1d;margin-bottom:5px;display:block;">
+            Alasan Void <span style="color:#dc2626;">*</span>
+          </label>
+          <input type="text" name="alasan" class="form-control" required minlength="5"
+                 placeholder="Minimal 5 karakter — contoh: Salah input barang">
         </div>
-    </div>
-    
-    <div class="border border-danger rounded p-2">
-        <div class="text-danger text-center">Apakah transaksi akan dibatalkan (void)?</div>
-        <div class="mt-2">
-            <form action="{{callback}}" class="px-4" method="post">
-                {% csrf_token %}
-                <input type="text" required minlength="5" name="alasan"  class="form-control" placeholder="alasan void" id="">
-                <div class="d-flex justify-content-center py-2">
-                    <button type="submit" class="mx-2 btn btn-sm btn-danger">Ya, Batalkan</button>
-                    <a href="#" onclick="window.open('', '_self', ''); window.close();" class="mx-2 btn btn-sm btn-secondary">Kembali &rarr;</a>
-                </div>
-            </form>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn-void flex-fill">
+            <i class="fa fa-ban me-2"></i>Ya, Void Transaksi
+          </button>
+          <a href="#" onclick="window.close();" class="btn-back">
+            <i class="fa fa-arrow-left me-1"></i>Batal
+          </a>
         </div>
+      </form>
     </div>
+
+  </div>
 </div>
 
-{% endblock %}
-
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

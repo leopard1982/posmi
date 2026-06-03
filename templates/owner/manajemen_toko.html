@@ -1,0 +1,342 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Toko — Korporasi POSMI</title>
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#f4f6fb; }
+    #accordionSidebar { background:linear-gradient(180deg,#1e2c5a,#2c3e6b)!important; }
+    .sidebar-brand { padding:20px 16px!important; }
+    .sidebar-brand-text { font-size:15px!important; font-weight:900!important; }
+    .sidebar .nav-item .nav-link { color:rgba(255,255,255,.65)!important; font-size:13px; font-weight:600; padding:10px 20px; }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color:#fff!important; background:rgba(255,255,255,.08)!important; }
+    .sidebar .nav-item .nav-link i { width:18px; text-align:center; }
+    .sidebar hr { border-color:rgba(255,255,255,.12)!important; }
+    .sidebar-heading { color:rgba(255,255,255,.4)!important; font-size:10px; font-weight:700; letter-spacing:1.2px; padding:10px 20px 4px!important; }
+
+    /* ── Toko Card ── */
+    .toko-card { background:#fff; border-radius:14px; box-shadow:0 2px 16px rgba(0,0,0,.07); border:none; margin-bottom:24px; overflow:hidden; }
+    .toko-card-header { padding:20px 26px; background:linear-gradient(135deg,#f8fafc,#fff); border-bottom:1.5px solid #eef1f6; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+    .toko-num { width:30px; height:30px; background:#1e2c5a; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; color:#fff; flex-shrink:0; }
+    .toko-title { font-size:16px; font-weight:900; color:#1e2c5a; margin:0; }
+    .toko-sub { font-size:12px; color:#8899bb; margin-top:4px; line-height:1.6; }
+    .badge-aktif    { background:#d1fae5; color:#065f46; font-size:11px; font-weight:700; padding:4px 14px; border-radius:50px; }
+    .badge-nonaktif { background:#fee2e2; color:#991b1b; font-size:11px; font-weight:700; padding:4px 14px; border-radius:50px; }
+    .code-badge { background:#eef3fb; border-radius:6px; padding:4px 11px; font-family:monospace; font-size:12px; font-weight:700; color:#3a5298; letter-spacing:2px; }
+
+    /* ── Section dalam card ── */
+    .tab-section { padding:22px 26px; border-bottom:1px solid #f0f4f8; }
+    .tab-section:last-child { border-bottom:none; }
+    .section-label { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:800; color:#8899bb; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid #f0f4f8; }
+    .section-label i { font-size:13px; }
+
+    /* ── Form ── */
+    .form-label { font-size:13px; font-weight:700; color:#374151; margin-bottom:5px; display:block; }
+    .form-hint  { font-size:11px; color:#8899bb; margin-top:4px; }
+    .form-control { border:1.5px solid #d8e3f5; border-radius:8px; padding:10px 14px; font-size:13px; font-family:'Poppins',sans-serif; transition:border-color .2s; }
+    .form-control:focus { border-color:#4e73df; box-shadow:0 0 0 3px rgba(78,115,223,.1); outline:none; }
+
+    .info-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+    .info-label { font-size:12px; color:#8899bb; font-weight:600; min-width:110px; }
+    .info-value { font-size:13px; font-weight:700; color:#1e2c5a; }
+    .username-info { font-family:monospace; font-weight:800; background:#f0f4fb; border:1px solid #d8e3f5; border-radius:7px; padding:6px 14px; font-size:13px; color:#1e2c5a; display:inline-block; letter-spacing:1px; }
+
+    /* ── Buttons ── */
+    .btn-sm-dark    { background:#1e2c5a; color:#fff; border:none; border-radius:8px; padding:9px 18px; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:opacity .2s; }
+    .btn-sm-dark:hover { opacity:.88; }
+    .btn-sm-danger  { background:#fff; color:#dc3545; border:1.5px solid #dc3545; border-radius:8px; padding:8px 16px; font-size:12px; font-weight:700; cursor:pointer; transition:background .15s; }
+    .btn-sm-danger:hover { background:#fee2e2; }
+    .btn-sm-success { background:#059669; color:#fff; border:none; border-radius:8px; padding:9px 18px; font-size:12px; font-weight:700; cursor:pointer; transition:opacity .2s; }
+    .btn-sm-success:hover { opacity:.88; }
+    .toko-toolbar { background:#fff; border-radius:14px; box-shadow:0 2px 16px rgba(0,0,0,.06); padding:16px 18px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+    .toko-toolbar-form { display:flex; align-items:center; gap:8px; flex:1 1 360px; max-width:620px; }
+    .toko-toolbar-form .form-control { min-height:40px; }
+    .toko-toolbar-count { color:#8899bb; font-size:12px; font-weight:700; }
+    .toko-pagination { display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; background:#fff; border-radius:14px; box-shadow:0 2px 16px rgba(0,0,0,.06); padding:14px 18px; margin:6px 0 24px; }
+    .toko-pagination-info { color:#8899bb; font-size:12px; font-weight:700; }
+    .toko-pagination .page-link { border-color:#d8e3f5; color:#1e2c5a; font-size:12px; font-weight:800; }
+    .toko-pagination .page-item.active .page-link { background:#1e2c5a; border-color:#1e2c5a; }
+  </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+  {% include 'owner/_sidebar.html' with active='toko' %}
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Manajemen Toko
+            </li>
+          </ol>
+        </nav>
+
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+          <div>
+            <h4 style="font-weight:900;color:#1e2c5a;margin:0;"><i class="fa fa-cog me-2"></i>Manajemen Toko</h4>
+            <div style="font-size:13px;color:#8899bb;margin-top:2px;">Kelola status, password admin, dan informasi tiap toko.</div>
+          </div>
+          <a href="{% url 'owner_klaim_toko' %}" class="btn btn-primary btn-sm fw-bold" style="border-radius:8px;">
+            <i class="fa fa-plus me-1"></i>Tambah Toko Baru
+          </a>
+        </div>
+
+        <!-- Messages -->
+        {% for msg in messages %}
+        <div class="alert {% if 'berhasil' in msg.message %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show mb-3" style="border-radius:10px;font-size:13px;" role="alert">
+          {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+
+        <div class="toko-toolbar">
+          <form method="get" class="toko-toolbar-form">
+            <div class="position-relative flex-grow-1">
+              <i class="fa fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#8899bb;font-size:12px;"></i>
+              <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Cari nama toko atau cabang" style="padding-left:36px;">
+            </div>
+            <button type="submit" class="btn-sm-dark">
+              <i class="fa fa-search"></i>Cari
+            </button>
+            {% if q %}
+            <a href="{% url 'owner_manajemen_toko' %}" class="btn-sm-danger" style="text-decoration:none;">
+              Reset
+            </a>
+            {% endif %}
+          </form>
+          <div class="toko-toolbar-count">
+            {{ total_toko|intcomma }} toko{% if q %} cocok untuk "{{ q }}"{% endif %}
+          </div>
+        </div>
+
+        {% if toko_data %}
+          {% for d in toko_data %}
+          <div class="toko-card">
+
+            <!-- Header toko -->
+            <div class="toko-card-header">
+              <div class="d-flex align-items-start gap-3" style="gap:14px!important;">
+                <div class="toko-num" style="margin-top:2px;">{{ page_obj.start_index|add:forloop.counter0 }}</div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                    <div class="toko-title">{{ d.cabang.nama_toko }}</div>
+                    {% if d.cabang.is_active %}
+                      <span class="badge-aktif">Aktif</span>
+                    {% else %}
+                      <span class="badge-nonaktif">Non-aktif</span>
+                    {% endif %}
+                    <span class="code-badge">{{ d.cabang.prefix }}</span>
+                  </div>
+                  <div class="toko-sub">
+                    <i class="fa fa-map-marker me-1"></i>{{ d.cabang.nama_cabang }} &nbsp;·&nbsp;
+                    {{ d.cabang.alamat_toko }} &nbsp;·&nbsp;
+                    <i class="fa fa-phone me-1"></i>{{ d.cabang.telpon }}
+                  </div>
+                </div>
+              </div>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="aksi" value="toggle_aktif">
+                <input type="hidden" name="cabang_id" value="{{ d.cabang.id }}">
+                <button type="submit"
+                  class="{% if d.cabang.is_active %}btn-sm-danger{% else %}btn-sm-success{% endif %}"
+                  onclick="return confirm('{% if d.cabang.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %} toko {{ d.cabang.nama_toko }}?')">
+                  {% if d.cabang.is_active %}
+                    <i class="fa fa-ban me-1"></i>Nonaktifkan
+                  {% else %}
+                    <i class="fa fa-check me-1"></i>Aktifkan
+                  {% endif %}
+                </button>
+              </form>
+            </div>
+
+            <!-- Informasi Cabang -->
+            <div class="tab-section">
+              <div class="section-label">
+                <i class="fa fa-store"></i>Informasi Cabang
+              </div>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="aksi" value="update_cabang">
+                <input type="hidden" name="cabang_id" value="{{ d.cabang.id }}">
+                <div class="row g-3">
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Nama Toko</label>
+                    <input type="text" name="nama_toko" class="form-control" value="{{ d.cabang.nama_toko }}" required>
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Nama Cabang</label>
+                    <input type="text" name="nama_cabang" class="form-control" value="{{ d.cabang.nama_cabang }}">
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <label class="form-label">Alamat</label>
+                    <input type="text" name="alamat_toko" class="form-control" value="{{ d.cabang.alamat_toko }}">
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Telepon</label>
+                    <input type="text" name="telpon" class="form-control" value="{{ d.cabang.telpon }}">
+                  </div>
+                  <div class="col-12 col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn-sm-dark w-100" title="Simpan">
+                      <i class="fa fa-save"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Email Toko -->
+            <div class="tab-section">
+              <div class="section-label">
+                <i class="fa fa-envelope"></i>Email Toko
+              </div>
+              <div class="info-row">
+                <span class="info-label">Email saat ini</span>
+                <span class="info-value">{{ d.cabang.email|default:"-" }}</span>
+              </div>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="aksi" value="ganti_email_toko">
+                <input type="hidden" name="cabang_id" value="{{ d.cabang.id }}">
+                <div class="row g-3 align-items-end">
+                  <div class="col-12 col-md-5">
+                    <label class="form-label">Email Baru</label>
+                    <input type="email" name="email_baru" class="form-control" placeholder="email@baru.com" required>
+                    <div class="form-hint">Email akan dicek ketersediaannya di sistem.</div>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <button type="submit" class="btn-sm-dark">
+                      <i class="fa fa-envelope"></i>Simpan Email
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Password Admin -->
+            <div class="tab-section">
+              <div class="section-label">
+                <i class="fa fa-key"></i>Password Admin
+              </div>
+              <div class="info-row">
+                <span class="info-label">Username admin</span>
+                <span class="username-info">{{ d.cabang.prefix }}1</span>
+              </div>
+              {% if d.admin %}
+              <div class="info-row">
+                <span class="info-label">Nama admin</span>
+                <span class="info-value">{{ d.admin.first_name|default:d.admin.username }}</span>
+              </div>
+              {% endif %}
+              <form method="post" class="mt-3">
+                {% csrf_token %}
+                <input type="hidden" name="aksi" value="ganti_password">
+                <input type="hidden" name="cabang_id" value="{{ d.cabang.id }}">
+                <div class="row g-3 align-items-end">
+                  <div class="col-12 col-md-4">
+                    <label class="form-label">Password Baru</label>
+                    <input type="password" name="password_baru" class="form-control"
+                      placeholder="Minimal 6 karakter" minlength="6" required>
+                    <div class="form-hint">Minimal 6 karakter.</div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <button type="submit" class="btn-sm-dark"
+                      onclick="return confirm('Ganti password admin toko {{ d.cabang.nama_toko }}?')">
+                      <i class="fa fa-key"></i>Ganti Password
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+          </div>
+          {% endfor %}
+
+          {% if page_obj.paginator.num_pages > 1 %}
+          <div class="toko-pagination">
+            <div class="toko-pagination-info">
+              Menampilkan {{ page_obj.start_index }}-{{ page_obj.end_index }} dari {{ total_toko|intcomma }} toko
+            </div>
+            <nav aria-label="Pagination toko">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                  {% if page_obj.has_previous %}
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q|urlencode }}{% endif %}">Sebelumnya</a>
+                  {% else %}
+                  <span class="page-link">Sebelumnya</span>
+                  {% endif %}
+                </li>
+                {% for num in page_obj.paginator.page_range %}
+                  {% if num == page_obj.number %}
+                  <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                  {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                  <li class="page-item"><a class="page-link" href="?page={{ num }}{% if q %}&q={{ q|urlencode }}{% endif %}">{{ num }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                  {% if page_obj.has_next %}
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q|urlencode }}{% endif %}">Berikutnya</a>
+                  {% else %}
+                  <span class="page-link">Berikutnya</span>
+                  {% endif %}
+                </li>
+              </ul>
+            </nav>
+          </div>
+          {% endif %}
+
+        {% else %}
+          <div style="background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:60px 40px;text-align:center;">
+            <div style="font-size:40px;opacity:.15;margin-bottom:14px;"><i class="fa fa-store"></i></div>
+            <h5 style="font-weight:800;color:#1e2c5a;margin-bottom:8px;">{% if q %}Toko Tidak Ditemukan{% else %}Belum Ada Toko{% endif %}</h5>
+            <p style="font-size:13px;color:#8899bb;margin-bottom:20px;">{% if q %}Tidak ada toko yang cocok dengan pencarian "{{ q }}".{% else %}Daftarkan toko pertama ke Paket Korporasi.{% endif %}</p>
+            {% if q %}
+            <a href="{% url 'owner_manajemen_toko' %}" class="btn btn-outline-primary fw-bold" style="border-radius:9px;">
+              Reset Pencarian
+            </a>
+            {% else %}
+            <a href="{% url 'owner_klaim_toko' %}" class="btn btn-primary fw-bold" style="border-radius:9px;">
+              <i class="fa fa-plus me-2"></i>Tambah Toko Pertama
+            </a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">
+        &copy; POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+</body>
+</html>

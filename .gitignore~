@@ -11,3 +11,7 @@ stock/__pycache__
 payment/__pycache__
 static_root
 .env
+.agents
+.claude
+.codex
+.venv

@@ -40,6 +40,9 @@ class DaftarPaket(models.Model):
     harga_per_tahun = models.PositiveIntegerField(default=0)
     harga_per_dua_tahun = models.PositiveIntegerField(default=0)
     disc = models.IntegerField(default=0)
+    is_ceklist_barang = models.BooleanField(default=False)
+    is_pembayaran_tempo = models.BooleanField(default=False)
+    is_add_ons = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nama
@@ -56,7 +59,7 @@ class Cabang(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(max_length=200,blank=True,null=True)
-    kuota_transaksi = models.IntegerField(default=99999999)
+    kuota_transaksi = models.IntegerField(default=75)
     jumlah_kasir = models.IntegerField(default=0)
     lisensi_expired = models.DateTimeField(null=True,blank=True)
     lisensi_grace = models.DateTimeField(null=True,blank=True)
@@ -65,6 +68,9 @@ class Cabang(models.Model):
     kode_referal = models.CharField(max_length=5,verbose_name="Diisi kode prefix user",blank=True,null=True)
     wallet = models.PositiveBigIntegerField(default=0)
     no_nota = models.PositiveIntegerField(default=1)
+    owner = models.ForeignKey('owner.Owner', on_delete=models.SET_NULL, null=True, blank=True, related_name='cabang_korporasi')
+    is_gudang = models.BooleanField(default=False, verbose_name="Gudang Utama")
+    is_email_verified = models.BooleanField(default=False, verbose_name="Email Terverifikasi")
 
     def __str__(self):
         return f"{self.nama_toko} - {self.nama_cabang}"
@@ -78,7 +84,6 @@ class Cabang(models.Model):
 #     is_active = models.BooleanField(default=False)
 
 class Pembayaran(models.Model):
-    id = models.UUIDField(auto_created=True,editable=False,primary_key=True,default=uuid.uuid4)
     user = models.ForeignKey(User,on_delete=models.RESTRICT)
     midtrans_token = models.CharField(max_length=100,null=True,blank=True)
     paket = models.ForeignKey(DaftarPaket,on_delete=models.RESTRICT)

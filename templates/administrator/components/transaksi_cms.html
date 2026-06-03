@@ -1,0 +1,638 @@
+{% load humanize %}
+
+<style>
+  .trx-cms { color: #4b5563; font-family: 'Poppins', sans-serif; }
+
+  /* ── Header ── */
+  .trx-cms-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .trx-cms-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .trx-cms-breadcrumb {
+    margin-top: 6px;
+    color: #8a92a6;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  /* ── KPI Cards ── */
+  .trx-cms-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .trx-cms-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(31, 41, 55, .05);
+  }
+  .trx-cms-kpi-icon {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+  .trx-cms-kpi-icon.green  { color: #008f66; background: #e8f8f2; }
+  .trx-cms-kpi-icon.blue   { color: #3152c9; background: #f0f3ff; }
+  .trx-cms-kpi-icon.orange { color: #b45309; background: #fef3c7; }
+  .trx-cms-kpi-label {
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+  }
+  .trx-cms-kpi-value {
+    margin-top: 3px;
+    color: #2f3446;
+    font-size: 19px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  /* ── Filter bar ── */
+  .trx-cms-filterbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 14px 18px;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(31, 41, 55, .05);
+    margin-bottom: 16px;
+  }
+  .trx-cms-filterbar label {
+    display: block;
+    margin-bottom: 4px;
+    color: #687086;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  .trx-cms-filterbar select {
+    min-height: 36px;
+    min-width: 160px;
+    padding: 6px 10px;
+    background: #f8fafc;
+    border: 1px solid #cfd6e6;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+  }
+  .trx-cms-filterbar select:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 3px rgba(78, 115, 223, .12);
+  }
+  .trx-cms-dl-group {
+    margin-left: auto;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .trx-cms-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+    font-family: 'Poppins', sans-serif;
+  }
+  .trx-cms-btn:hover { opacity: .85; }
+  .trx-cms-btn.primary { background: #3152c9; color: #fff !important; }
+  .trx-cms-btn.secondary { background: #f3f4f6; color: #374151 !important; border: 1px solid #d1d5db; }
+
+  /* ── Table panel ── */
+  .trx-cms-panel {
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(31, 41, 55, .05);
+    overflow: hidden;
+  }
+  .trx-cms-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eef1f6;
+  }
+  .trx-cms-panel-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 15px;
+    font-weight: 900;
+  }
+  .trx-cms-panel-subtitle {
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 12px;
+  }
+  .trx-cms-panel-count {
+    padding: 4px 12px;
+    background: #f0f3ff;
+    border: 1px solid #dce5ff;
+    border-radius: 999px;
+    color: #3152c9;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .trx-cms-table-wrap { padding: 14px 18px 20px; overflow-x: auto; }
+  .trx-cms-table { width: 100% !important; border-collapse: collapse; }
+  .trx-cms-table thead th {
+    padding: 10px 12px;
+    color: #687086;
+    border-bottom: 2px solid #dfe4ee;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .trx-cms-table tbody td {
+    padding: 11px 12px;
+    color: #4b5563;
+    border-bottom: 1px solid #eef1f6;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .trx-cms-table tbody tr:last-child td { border-bottom: none; }
+  .trx-cms-table tbody tr:hover { background: #f8fafc; }
+
+  /* Cell helpers */
+  .trx-nota {
+    font-family: monospace;
+    font-size: 12px;
+    color: #2f3446;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .trx-date { white-space: nowrap; }
+  .trx-date small {
+    display: block;
+    margin-top: 2px;
+    color: #8a92a6;
+    font-size: 11px;
+  }
+  .trx-kasir { font-weight: 700; color: #2f3446; }
+  .trx-money {
+    text-align: right;
+    font-weight: 900;
+    color: #2f3446;
+    white-space: nowrap;
+  }
+  .trx-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+  }
+  .trx-badge.cash     { color: #008f66; background: #e8f8f2; }
+  .trx-badge.transfer { color: #3152c9; background: #f0f3ff; }
+  .trx-detail-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: #f0f3ff;
+    border: 1px solid #dce5ff;
+    border-radius: 7px;
+    color: #3152c9 !important;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+  .trx-detail-btn:hover { background: #dce5ff; }
+
+  /* Empty state */
+  .trx-cms-empty {
+    padding: 48px 20px;
+    text-align: center;
+    color: #8a92a6;
+    font-weight: 800;
+    font-size: 14px;
+  }
+  .trx-cms-empty i {
+    display: block;
+    font-size: 36px;
+    opacity: .25;
+    margin-bottom: 12px;
+  }
+
+  /* DataTables overrides */
+  .trx-cms .dataTables_wrapper .dataTables_length,
+  .trx-cms .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 12px;
+    color: #687086;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .trx-cms .dataTables_wrapper .dataTables_filter input,
+  .trx-cms .dataTables_wrapper .dataTables_length select {
+    min-height: 34px;
+    border: 1px solid #cfd6e6;
+    border-radius: 7px;
+    color: #374151;
+  }
+  .trx-cms .dataTables_wrapper .dataTables_info,
+  .trx-cms .dataTables_wrapper .dataTables_paginate {
+    margin-top: 12px;
+    color: #687086;
+    font-size: 13px;
+  }
+
+  /* Responsive */
+  @media (max-width: 991.98px) {
+    .trx-cms-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .trx-cms-header  { flex-direction: column; }
+    .trx-cms-dl-group { margin-left: 0; width: 100%; }
+  }
+  @media (max-width: 575.98px) {
+    .trx-cms-kpi-row { grid-template-columns: 1fr; }
+    .trx-cms-filterbar { gap: 12px; }
+    .trx-cms-filterbar select { min-width: 100%; width: 100%; }
+  }
+</style>
+
+<div class="trx-cms">
+
+  <!-- ── Page header ── -->
+  <div class="trx-cms-header">
+    <div>
+      <h2 class="trx-cms-title">Transaksi {{ bulannya }} {{ tahunnya }}</h2>
+      <div class="trx-cms-breadcrumb">
+        Histori &rarr; Transaksi {{ bulannya }} {{ tahunnya }}
+        {% if kasir_id %}
+          &rarr; Kasir terpilih
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KPI Cards ── -->
+  <div class="trx-cms-kpi-row">
+    <div class="trx-cms-kpi-card">
+      <div class="trx-cms-kpi-icon green"><i class="fas fa-money-bill-wave"></i></div>
+      <div>
+        <div class="trx-cms-kpi-label">Total Penjualan</div>
+        <div class="trx-cms-kpi-value">Rp {{ total_penjualan|intcomma }}</div>
+      </div>
+    </div>
+    <div class="trx-cms-kpi-card">
+      <div class="trx-cms-kpi-icon blue"><i class="fas fa-receipt"></i></div>
+      <div>
+        <div class="trx-cms-kpi-label">Jumlah Transaksi</div>
+        <div class="trx-cms-kpi-value">{{ jumlah_transaksi|intcomma }}</div>
+      </div>
+    </div>
+    <div class="trx-cms-kpi-card">
+      <div class="trx-cms-kpi-icon orange"><i class="fas fa-chart-line"></i></div>
+      <div>
+        <div class="trx-cms-kpi-label">Rata-rata / Transaksi</div>
+        <div class="trx-cms-kpi-value">
+          {% if jumlah_transaksi %}
+            Rp {% widthratio total_penjualan jumlah_transaksi 1 %}
+          {% else %}
+            Rp 0
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filter bar ── -->
+  <div class="trx-cms-filterbar">
+
+    <!-- Periode -->
+    <div>
+      <label for="selectPeriode">Periode</label>
+      <select id="selectPeriode"
+              hx-get="{% url 'transaksi_bulan_berjalan' %}"
+              hx-target="#mainpage"
+              hx-include="#selectKasir"
+              hx-trigger="change"
+              name="bulan">
+        {% for d in periode_list %}
+          <option value="{{ d.month }}"
+                  data-tahun="{{ d.year }}"
+                  {% if d.month == bulan_param and d.year == tahun_param %}selected{% endif %}>
+            {{ d|date:"F Y" }}
+          </option>
+        {% empty %}
+          <option value="{{ bulan_param }}" data-tahun="{{ tahun_param }}" selected>
+            {{ bulannya }} {{ tahunnya }}
+          </option>
+        {% endfor %}
+      </select>
+      {# Hidden tahun field — updated by JS when period changes #}
+      <input type="hidden" id="hiddenTahunPeriode" name="tahun" value="{{ tahun_param }}">
+    </div>
+
+    <!-- Kasir -->
+    <div>
+      <label for="selectKasir">Kasir</label>
+      <select id="selectKasir"
+              hx-get="{% url 'transaksi_bulan_berjalan' %}"
+              hx-target="#mainpage"
+              hx-include="#selectPeriode, #hiddenTahunPeriode"
+              hx-trigger="change"
+              name="kasir">
+        <option value="" {% if not kasir_id %}selected{% endif %}>Semua Kasir</option>
+        {% for k in kasir_list %}
+          <option value="{{ k.user.id }}" {% if kasir_id == k.user.id|stringformat:"s" %}selected{% endif %}>
+            {{ k.nama_lengkap|default:k.user.username }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Download buttons -->
+    <div class="trx-cms-dl-group">
+      <a href="{% url 'cetak_rekap_cms' %}?mode=bulanan&bulan={{ bulan_param }}&tahun={{ tahun_param }}{% if kasir_id %}&kasir={{ kasir_id }}{% endif %}"
+         class="trx-cms-btn primary" target="_blank">
+        <i class="fas fa-file-excel"></i>Rekap Bulanan
+      </a>
+      <button type="button" class="trx-cms-btn secondary" onclick="bukaModalRekapHarian()">
+        <i class="fas fa-calendar-day"></i>Rekap Harian
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Transaction table ── -->
+  {% if transaksi %}
+  <div class="trx-cms-panel">
+    <div class="trx-cms-panel-header">
+      <div>
+        <h3 class="trx-cms-panel-title">Daftar Transaksi</h3>
+        <div class="trx-cms-panel-subtitle">
+          Semua transaksi pada periode {{ bulannya }} {{ tahunnya }}
+          {% if kasir_id %} — kasir terpilih{% endif %}
+        </div>
+      </div>
+      <span class="trx-cms-panel-count">{{ jumlah_transaksi|intcomma }} transaksi</span>
+    </div>
+    <div class="trx-cms-table-wrap">
+      <table id="trxCmsDataTable" class="trx-cms-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>No. Nota</th>
+            <th>Tanggal &amp; Waktu</th>
+            <th>Kasir</th>
+            <th>Customer</th>
+            <th class="text-center">Metode</th>
+            <th class="text-right">Total</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transaksi %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><span class="trx-nota">{{ t.no_nota }}</span></td>
+            <td class="trx-date">
+              {{ t.tgl_bayar|date:"d M Y" }}
+              <small>{{ t.tgl_bayar|date:"H:i:s" }}</small>
+            </td>
+            <td class="trx-kasir">{{ t.user.userprofile.nama_lengkap|default:t.user.username }}</td>
+            <td>{{ t.customer|default:"—" }}</td>
+            <td class="text-center">
+              {% if t.metode == 0 %}
+                <span class="trx-badge cash"><i class="fas fa-money-bill-alt me-1"></i>Cash</span>
+              {% else %}
+                <span class="trx-badge transfer"><i class="fas fa-exchange-alt me-1"></i>Transfer</span>
+              {% endif %}
+            </td>
+            <td class="trx-money">Rp {{ t.total|intcomma }}</td>
+            <td class="text-center">
+              <div class="d-flex gap-2 justify-content-center">
+                <a target="_blank"
+                   href="{% url 'detail_penjualan_histori' %}?id={{ t.no_nota }}"
+                   class="trx-detail-btn">
+                  <i class="fas fa-eye"></i>Detail
+                </a>
+                <a target="_blank"
+                   href="{% url 'konfirmasi_void' %}?id={{ t.nota }}"
+                   style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:700;background:#fff;color:#dc2626;border:1.5px solid #fca5a5;text-decoration:none;transition:all .15s;"
+                   onmouseover="this.style.background='#fee2e2'"
+                   onmouseout="this.style.background='#fff'">
+                  <i class="fa fa-ban"></i>Void
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      if (typeof DataTable === 'undefined') return;
+      new DataTable('#trxCmsDataTable', {
+        language: {
+          search: "Cari transaksi:",
+          lengthMenu: "Tampilkan _MENU_ data",
+          info: "Menampilkan _START_–_END_ dari _TOTAL_ transaksi",
+          infoEmpty: "Tidak ada transaksi",
+          zeroRecords: "Transaksi tidak ditemukan",
+          paginate: { previous: "&lsaquo;", next: "&rsaquo;" }
+        },
+        pageLength: 25,
+        order: [[2, 'desc']]
+      });
+    })();
+  </script>
+
+  {% else %}
+  <div class="trx-cms-panel">
+    <div class="trx-cms-empty">
+      <i class="fas fa-inbox"></i>
+      Tidak ada transaksi pada periode {{ bulannya }} {{ tahunnya }}{% if kasir_id %} untuk kasir yang dipilih{% endif %}.
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- /trx-cms -->
+
+
+<!-- ══════════════════════════════════════════════
+     Modal Rekap Harian
+══════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalRekapHarianCMS" tabindex="-1" aria-labelledby="modalRekapHarianCMSLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:14px;overflow:hidden;">
+
+      <!-- Header -->
+      <div class="modal-header border-0"
+           style="background:linear-gradient(135deg,#2f3446,#3152c9);padding:18px 22px;">
+        <h5 class="modal-title fw-bold text-white" id="modalRekapHarianCMSLabel" style="font-size:14px;">
+          <i class="fas fa-calendar-day me-2"></i>Rekap Harian — {{ bulannya }} {{ tahunnya }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body px-4 pt-4 pb-2">
+        <p style="font-size:13px;color:#6b7280;margin-bottom:14px;">
+          Pilih tanggal yang memiliki transaksi, kemudian klik <strong>Download Excel</strong>:
+        </p>
+
+        {% if tanggal_bertransaksi %}
+        <div id="tglContainerCMS" style="display:flex;flex-wrap:wrap;gap:8px;">
+          {% for tgl in tanggal_bertransaksi %}
+          <button type="button"
+                  onclick="pilihTanggalCMS('{{ tgl|date:'Y-m-d' }}', this)"
+                  data-tgl="{{ tgl|date:'Y-m-d' }}"
+                  style="padding:8px 14px;border-radius:8px;border:1.5px solid #dce5ff;background:#f3f6ff;color:#3152c9;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;">
+            {{ tgl|date:"d M" }}
+          </button>
+          {% endfor %}
+        </div>
+        <div id="tglSelectedCMS" style="font-size:12px;color:#059669;font-weight:700;margin-top:10px;display:none;">
+          <i class="fas fa-check-circle me-1"></i>Terpilih: <span id="tglSelectedTextCMS"></span>
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:24px 0;color:#9ca3af;font-size:13px;">
+          <i class="fas fa-info-circle me-1"></i>Tidak ada tanggal bertransaksi di {{ bulannya }} {{ tahunnya }}.
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer border-0 px-4 pb-4 pt-2 gap-2">
+        <button type="button"
+                class="btn btn-sm btn-secondary"
+                data-bs-dismiss="modal"
+                style="border-radius:8px;font-family:'Poppins',sans-serif;">
+          Batal
+        </button>
+        <button type="button"
+                id="btnDownloadHarianCMS"
+                class="btn btn-sm btn-primary fw-bold"
+                style="border-radius:8px;font-family:'Poppins',sans-serif;"
+                disabled
+                onclick="downloadRekapHarianCMS()">
+          <i class="fas fa-file-download me-1"></i>Download Excel
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ── Modal helpers ────────────────────────────────────────────────────────────
+
+function bukaModalRekapHarian() {
+  var el = document.getElementById('modalRekapHarianCMS');
+  if (!el) return;
+  var m = bootstrap.Modal.getOrCreateInstance(el);
+  m.show();
+}
+
+// ── Date picker inside modal ─────────────────────────────────────────────────
+
+var _tglDipilihCMS = '';
+
+function pilihTanggalCMS(tgl, btn) {
+  _tglDipilihCMS = tgl;
+
+  // Reset all buttons
+  document.querySelectorAll('#tglContainerCMS button').forEach(function (b) {
+    b.style.background   = '#f3f6ff';
+    b.style.color        = '#3152c9';
+    b.style.borderColor  = '#dce5ff';
+  });
+
+  // Highlight selected
+  btn.style.background  = '#3152c9';
+  btn.style.color       = '#fff';
+  btn.style.borderColor = '#3152c9';
+
+  // Show label
+  var parts = tgl.split('-');
+  document.getElementById('tglSelectedTextCMS').textContent = parts[2] + '/' + parts[1] + '/' + parts[0];
+  document.getElementById('tglSelectedCMS').style.display = '';
+
+  // Enable download button
+  document.getElementById('btnDownloadHarianCMS').disabled = false;
+}
+
+function downloadRekapHarianCMS() {
+  if (!_tglDipilihCMS) return;
+  var url = "{% url 'cetak_rekap_cms' %}?mode=harian"
+          + "&tanggal=" + _tglDipilihCMS
+          + "&bulan={{ bulan_param }}"
+          + "&tahun={{ tahun_param }}"
+          + "&kasir={{ kasir_id }}";
+  window.location.href = url;
+
+  var el = document.getElementById('modalRekapHarianCMS');
+  if (el) {
+    var m = bootstrap.Modal.getInstance(el);
+    if (m) m.hide();
+  }
+}
+
+// ── Sync hidden tahun field when period dropdown changes ─────────────────────
+(function () {
+  var selPeriode = document.getElementById('selectPeriode');
+  var hidTahun   = document.getElementById('hiddenTahunPeriode');
+  if (!selPeriode || !hidTahun) return;
+
+  function syncTahun() {
+    var opt = selPeriode.options[selPeriode.selectedIndex];
+    if (opt && opt.dataset.tahun) {
+      hidTahun.value = opt.dataset.tahun;
+    }
+  }
+
+  // Run once on load
+  syncTahun();
+
+  // Update before HTMX fires (changeEvent is what hx-trigger:"change" uses)
+  selPeriode.addEventListener('change', syncTahun);
+})();
+</script>

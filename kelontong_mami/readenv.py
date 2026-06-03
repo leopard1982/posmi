@@ -2,14 +2,18 @@ from django.conf import settings
 import os
 
 def readEnv(envnya):
-    file_name = os.path.join(settings.BASE_DIR,'.env')
-    file = open(file_name,'r')
-    list_env=[]
-    for data in file:
-        if data.split('=')[0]==envnya:
-            if(data.split('=')[1]=="True"):
-                return True
-            elif(data.split('=')[1]=="False"):
-                return False
-            return data.split('=')[1]
+    file_name = os.path.join(settings.BASE_DIR, '.env')
+    with open(file_name, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            key, _, value = line.partition('=')
+            if key == envnya:
+                value = value.strip()
+                if value == 'True':
+                    return True
+                if value == 'False':
+                    return False
+                return value
     return None

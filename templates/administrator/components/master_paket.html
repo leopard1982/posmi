@@ -1,0 +1,150 @@
+{% load humanize %}
+<div>
+  <div class="mt-3 h2 fw-bold">Daftar Paket</div>
+  <div class="mb-3 fs-6 text-muted">Super Admin &rarr; Master Data &rarr; Paket</div>
+
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+      <button type="button" class="btn" data-bs-dismiss="alert">X</button>
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Tombol tambah -->
+  <div class="mb-3 text-end">
+    <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalTambahPaket">
+      + Tambah Paket
+    </button>
+  </div>
+
+  <!-- Tabel paket -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Nama Paket</th>
+          <th class="text-center">Maks Transaksi</th>
+          <th class="text-center">Maks User</th>
+          <th class="text-end">Harga/Bulan</th>
+          <th class="text-end">Harga/3 Bln</th>
+          <th class="text-end">Harga/6 Bln</th>
+          <th class="text-end">Harga/Tahun</th>
+          <th class="text-end">Harga/2 Tahun</th>
+          <th class="text-center">Disc (%)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for paket in pakets %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td><strong>{{ paket.nama }}</strong></td>
+          <td class="text-center">{{ paket.max_transaksi|intcomma }}</td>
+          <td class="text-center">{{ paket.max_user_login }}</td>
+          <td class="text-end">Rp {{ paket.harga_per_bulan|intcomma }}</td>
+          <td class="text-end">Rp {{ paket.harga_per_tiga_bulan|intcomma }}</td>
+          <td class="text-end">Rp {{ paket.harga_per_enam_bulan|intcomma }}</td>
+          <td class="text-end">Rp {{ paket.harga_per_tahun|intcomma }}</td>
+          <td class="text-end">Rp {{ paket.harga_per_dua_tahun|intcomma }}</td>
+          <td class="text-center">{{ paket.disc }}%</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning me-1"
+              onclick="isiFormEditPaket('{{ paket.pk }}','{{ paket.nama }}',{{ paket.max_transaksi }},{{ paket.max_user_login }},{{ paket.harga_per_bulan }},{{ paket.harga_per_tiga_bulan }},{{ paket.harga_per_enam_bulan }},{{ paket.harga_per_tahun }},{{ paket.harga_per_dua_tahun }},{{ paket.disc }})"
+              data-bs-toggle="modal" data-bs-target="#modalEditPaket">Edit</button>
+            <button class="btn btn-sm btn-danger"
+              onclick="isiFormHapusPaket('{{ paket.pk }}','{{ paket.nama }}')"
+              data-bs-toggle="modal" data-bs-target="#modalHapusPaket">Hapus</button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11" class="text-center text-muted py-4">Belum ada data paket.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Tambah Paket -->
+<div class="modal fade" id="modalTambahPaket" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_paket' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="tambah">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Tambah Paket Baru</h5></div>
+        <div class="modal-body">
+          {% include 'administrator/components/_form_paket.html' %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-success fw-bold">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Paket -->
+<div class="modal fade" id="modalEditPaket" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_paket' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="edit">
+        <input type="hidden" name="paket_id" id="edit_paket_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Edit Paket</h5></div>
+        <div class="modal-body">
+          {% include 'administrator/components/_form_paket.html' with prefix="edit_" %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning fw-bold">Perbarui</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Hapus Paket -->
+<div class="modal fade" id="modalHapusPaket" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_paket' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="hapus">
+        <input type="hidden" name="paket_id" id="hapus_paket_id">
+        <div class="modal-header bg-danger text-white"><h5 class="modal-title fw-bold">Hapus Paket</h5></div>
+        <div class="modal-body">
+          Yakin ingin menghapus paket "<strong id="hapus_paket_nama"></strong>"?<br>
+          <small class="text-danger">Pastikan tidak ada cabang yang masih memakai paket ini.</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger fw-bold">Ya, Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function isiFormEditPaket(id, nama, max_t, max_u, hb, h3, h6, ht, h2t, disc) {
+  document.getElementById('edit_paket_id').value = id;
+  document.querySelector('#modalEditPaket [name="nama"]').value = nama;
+  document.querySelector('#modalEditPaket [name="max_transaksi"]').value = max_t;
+  document.querySelector('#modalEditPaket [name="max_user_login"]').value = max_u;
+  document.querySelector('#modalEditPaket [name="harga_per_bulan"]').value = hb;
+  document.querySelector('#modalEditPaket [name="harga_per_tiga_bulan"]').value = h3;
+  document.querySelector('#modalEditPaket [name="harga_per_enam_bulan"]').value = h6;
+  document.querySelector('#modalEditPaket [name="harga_per_tahun"]').value = ht;
+  document.querySelector('#modalEditPaket [name="harga_per_dua_tahun"]').value = h2t;
+  document.querySelector('#modalEditPaket [name="disc"]').value = disc;
+}
+function isiFormHapusPaket(id, nama) {
+  document.getElementById('hapus_paket_id').value = id;
+  document.getElementById('hapus_paket_nama').textContent = nama;
+}
+</script>

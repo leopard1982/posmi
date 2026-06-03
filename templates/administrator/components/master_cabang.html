@@ -1,0 +1,120 @@
+{% load humanize %}
+<div>
+  <div class="mt-3 h2 fw-bold">Manajemen Cabang</div>
+  <div class="mb-3 fs-6 text-muted">Super Admin &rarr; Master Data &rarr; Cabang</div>
+
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+      <button type="button" class="btn" data-bs-dismiss="alert">X</button>
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="mb-2 fw-bold">Total: {{ cabangs.count|intcomma }} cabang terdaftar</div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle" id="tabelCabang">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Nama Toko</th>
+          <th>Cabang</th>
+          <th>Email</th>
+          <th>Kode</th>
+          <th>Paket Aktif</th>
+          <th>Lisensi Expired</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cabangs %}
+        <tr class="{% if not c.is_active %}table-secondary{% endif %}">
+          <td>{{ forloop.counter }}</td>
+          <td><strong>{{ c.nama_toko }}</strong></td>
+          <td>{{ c.nama_cabang }}</td>
+          <td>{{ c.email|default:"-" }}</td>
+          <td><code>{{ c.prefix|default:"-" }}</code></td>
+          <td>
+            {% if c.paket %}
+              <span class="badge bg-primary">{{ c.paket.nama }}</span>
+            {% else %}
+              <span class="badge bg-light text-dark">Paket Dasar</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if c.paket and c.lisensi_expired %}
+              {{ c.lisensi_expired|date:"d/m/Y" }}
+            {% elif not c.paket %}
+              <span class="text-success">Selamanya</span>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {% if c.is_active %}
+              <span class="badge bg-success">Aktif</span>
+            {% else %}
+              <span class="badge bg-danger">Nonaktif</span>
+            {% endif %}
+          </td>
+          <td class="text-center" style="min-width:200px">
+            <!-- Toggle aktif/nonaktif -->
+            <form method="post" action="{% url 'master_cabang' %}" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="aksi" value="toggle">
+              <input type="hidden" name="cabang_id" value="{{ c.pk }}">
+              <button type="submit" class="btn btn-sm {% if c.is_active %}btn-secondary{% else %}btn-success{% endif %} me-1">
+                {% if c.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+              </button>
+            </form>
+            <!-- Set paket -->
+            <button class="btn btn-sm btn-info"
+              onclick="isiFormSetPaket('{{ c.pk }}','{{ c.paket.pk|default:'' }}')"
+              data-bs-toggle="modal" data-bs-target="#modalSetPaket">Set Paket</button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="text-center text-muted py-4">Belum ada cabang terdaftar.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Set Paket -->
+<div class="modal fade" id="modalSetPaket" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'master_cabang' %}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="set_paket">
+        <input type="hidden" name="cabang_id" id="sp_cabang_id">
+        <div class="modal-header"><h5 class="modal-title fw-bold">Atur Paket Cabang</h5></div>
+        <div class="modal-body">
+          <label class="form-label fw-bold">Pilih Paket</label>
+          <select name="paket_id" id="sp_paket_id" class="form-control">
+            <option value="">-- Paket Dasar (tanpa paket) --</option>
+            {% for p in pakets %}
+            <option value="{{ p.pk }}">{{ p.nama }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary fw-bold">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function isiFormSetPaket(cabangId, paketId) {
+  document.getElementById('sp_cabang_id').value = cabangId;
+  const sel = document.getElementById('sp_paket_id');
+  sel.value = paketId || '';
+}
+</script>

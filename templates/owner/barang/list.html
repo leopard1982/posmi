@@ -1,0 +1,198 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Barang — {{ cabang.nama_toko }}</title>
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#f4f6fb; }
+    #accordionSidebar { background:linear-gradient(180deg,#1e2c5a 0%,#2c3e6b 100%)!important; }
+    .sidebar-brand { padding:20px 16px!important; }
+    .sidebar-brand-text { font-size:15px!important; font-weight:900!important; }
+    .sidebar .nav-item .nav-link { color:rgba(255,255,255,.65)!important; font-size:13px; font-weight:600; padding:10px 20px; }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color:#fff!important; background:rgba(255,255,255,.08)!important; }
+    .sidebar .nav-item .nav-link i { width:18px; text-align:center; }
+    .sidebar hr { border-color:rgba(255,255,255,.12)!important; }
+    .sidebar-heading { color:rgba(255,255,255,.4)!important; font-size:10px; font-weight:700; letter-spacing:1.2px; padding:10px 20px 4px!important; }
+
+    .section-card { background:#fff; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.06); border:none; overflow:hidden; }
+    .toko-tab { display:inline-flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+    .toko-tab a { padding:7px 16px; border-radius:7px; font-size:13px; font-weight:600; text-decoration:none; border:1.5px solid #d8e3f5; color:#3a4f7a; background:#fff; transition:all .15s; }
+    .toko-tab a.active { background:#1e2c5a; color:#fff; border-color:#1e2c5a; }
+    .toko-tab a:hover:not(.active) { border-color:#4e73df; color:#4e73df; }
+
+    .barang-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .barang-table thead th { background:#f8fafc; border-bottom:1.5px solid #eef1f6; padding:10px 16px; font-size:11px; font-weight:700; color:#8899bb; text-transform:uppercase; letter-spacing:.5px; }
+    .barang-table tbody tr { border-bottom:1px solid #f0f4f8; transition:background .1s; }
+    .barang-table tbody tr:last-child { border:none; }
+    .barang-table tbody tr:hover { background:#f8fafc; }
+    .barang-table td { padding:11px 16px; vertical-align:middle; }
+    .stok-low  { color:#dc2626; font-weight:700; }
+    .stok-ok   { color:#059669; font-weight:700; }
+    .stok-zero { color:#9ca3af; }
+    .btn-edit  { background:#4e73df; color:#fff; border:none; border-radius:6px; padding:5px 12px; font-size:11px; font-weight:600; }
+    .btn-hapus { background:#fff; color:#dc3545; border:1.5px solid #dc3545; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:600; }
+  </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {% include 'owner/_sidebar.html' with active='barang' from_cms=is_store_admin %}
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Master Barang
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+          <div>
+            <h4 style="font-weight:900;color:#1e2c5a;margin:0;"><i class="fa fa-boxes me-2"></i>Master Barang Korporasi</h4>
+            <div style="font-size:13px;color:#8899bb;margin-top:2px;">{{ cabang.nama_toko }} — {{ jumlah_barang|intcomma }} item</div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'owner_barang_template' %}" class="btn btn-outline-secondary btn-sm fw-bold" style="border-radius:7px;">
+              <i class="fa fa-download me-1"></i>Template
+            </a>
+            <a href="{% url 'owner_barang_upload' cabang.id %}" class="btn btn-outline-primary btn-sm fw-bold" style="border-radius:7px;">
+              <i class="fa fa-upload me-1"></i>Upload Excel
+            </a>
+            <a href="{% url 'owner_barang_download' cabang.id %}" class="btn btn-outline-success btn-sm fw-bold" style="border-radius:7px;">
+              <i class="fa fa-file-excel-o me-1"></i>Download
+            </a>
+            <a href="{% url 'owner_barang_tambah' cabang.id %}" class="btn btn-primary btn-sm fw-bold" style="border-radius:7px;">
+              <i class="fa fa-plus me-1"></i>Tambah Barang
+            </a>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        {% for msg in messages %}
+          <div class="alert {% if 'berhasil' in msg.message %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" style="border-radius:10px;font-size:13px;" role="alert">
+            {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+
+        <!-- Toko tabs -->
+        <div class="toko-tab">
+          {% for cab in cabang_list %}
+            <a href="{% url 'owner_barang_toko' cab.id %}" {% if cab.id == cabang.id %}class="active"{% endif %}>
+              {{ cab.nama_toko }}
+            </a>
+          {% endfor %}
+        </div>
+
+        <!-- Search + Table -->
+        <div class="section-card">
+          <div class="p-3 border-bottom d-flex align-items-center gap-2" style="border-color:#eef1f6!important;">
+            <i class="fa fa-search" style="color:#8899bb;"></i>
+            <input type="text" id="searchBarang" class="form-control form-control-sm border-0" placeholder="Cari nama atau barcode barang..." style="font-family:'Poppins',sans-serif;">
+          </div>
+          {% if barangs %}
+          <div class="table-responsive">
+            <table class="barang-table" id="tableBarang">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Barcode</th>
+                  <th>Nama Barang</th>
+                  <th>Satuan</th>
+                  <th class="text-end">Stok</th>
+                  <th class="text-end">Harga Beli</th>
+                  <th class="text-end">Harga Ecer</th>
+                  <th class="text-end">Harga Grosir</th>
+                  <th class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in barangs %}
+                <tr>
+                  <td style="color:#8899bb;font-size:12px;">{{ forloop.counter }}</td>
+                  <td style="font-family:monospace;font-size:12px;color:#3a5298;">{{ b.barcode }}</td>
+                  <td>
+                    <div style="font-weight:600;color:#1e2c5a;">{{ b.nama|title }}</div>
+                    {% if b.keterangan %}<div style="font-size:11px;color:#8899bb;">{{ b.keterangan|truncatechars:40 }}</div>{% endif %}
+                  </td>
+                  <td style="font-size:12px;">{{ b.satuan }}</td>
+                  <td class="text-end">
+                    <span class="{% if b.stok == 0 %}stok-zero{% elif b.stok < 5 %}stok-low{% else %}stok-ok{% endif %}">
+                      {{ b.stok|intcomma }}
+                    </span>
+                  </td>
+                  <td class="text-end" style="font-size:12px;">Rp {{ b.harga_beli|intcomma }}</td>
+                  <td class="text-end" style="font-size:12px;">Rp {{ b.harga_ecer|intcomma }}</td>
+                  <td class="text-end" style="font-size:12px;">Rp {{ b.harga_grosir|intcomma }}</td>
+                  <td class="text-center">
+                    <div class="d-flex gap-1 justify-content-center">
+                      <a href="{% url 'owner_barang_edit' cabang.id b.id %}" class="btn-edit"><i class="fa fa-pencil me-1"></i>Edit</a>
+                      <form method="post" style="display:inline;" onsubmit="return confirm('Hapus barang {{ b.nama }}?')">
+                        {% csrf_token %}
+                        <input type="hidden" name="aksi" value="hapus">
+                        <input type="hidden" name="barang_id" value="{{ b.id }}">
+                        <button type="submit" class="btn-hapus"><i class="fa fa-trash-o"></i></button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-5" style="color:#8899bb;">
+            <i class="fa fa-inbox" style="font-size:36px;opacity:.2;display:block;margin-bottom:12px;"></i>
+            Belum ada barang di {{ cabang.nama_toko }}.<br>
+            <a href="{% url 'owner_barang_tambah' cabang.id %}" class="btn btn-primary btn-sm fw-bold mt-3" style="border-radius:7px;">
+              <i class="fa fa-plus me-1"></i>Tambah Barang Pertama
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">&copy; POSMI — Paket Korporasi</div>
+    </footer>
+  </div>
+</div>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script>
+document.getElementById('searchBarang').addEventListener('keyup', function(){
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#tableBarang tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+</script>
+</body>
+</html>

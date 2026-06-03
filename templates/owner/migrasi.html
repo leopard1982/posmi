@@ -1,0 +1,376 @@
+{% extends 'base-landing.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block contents %}
+<style>
+body { background: #eef3f6; }
+
+.page-wrap {
+  max-width: 720px;
+  margin: 48px auto;
+  padding: 0 16px 64px;
+}
+
+.back-link {
+  font-size: 13px;
+  color: #4e73df;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.back-link:hover { text-decoration: underline; color: #4e73df; }
+
+/* ── Main card ── */
+.mig-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+.mig-header {
+  background: linear-gradient(135deg, #1e2c5a 0%, #3a5298 100%);
+  padding: 28px 32px;
+  color: #fff;
+}
+.mig-header h1 { font-size: 1.25rem; font-weight: 900; margin: 0 0 6px; }
+.mig-header p  { font-size: 13px; opacity: .75; margin: 0; }
+
+.mig-body { padding: 32px; }
+
+/* ── Info box ── */
+.info-box {
+  background: #f0f7ff;
+  border: 1px solid #bee3f8;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: #1a5276;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+/* ── Section header ── */
+.field-section {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8899bb;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 16px;
+  margin-top: 28px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #eef1f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.field-section:first-of-type { margin-top: 0; }
+
+/* ── Form fields ── */
+.field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e2c5a;
+  margin-bottom: 6px;
+  display: block;
+}
+.field-label .req { color: #dc3545; margin-left: 2px; }
+.field-label .opt { font-weight: 400; color: #8899bb; font-size: 12px; margin-left: 4px; }
+
+.form-control {
+  width: 100%;
+  border: 1.5px solid #d8e3f5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  color: #1e2c5a;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  background: #fff;
+}
+.form-control:focus {
+  border-color: #4e73df;
+  box-shadow: 0 0 0 3px rgba(78,115,223,.1);
+}
+.field-hint { font-size: 11px; color: #8899bb; margin-top: 5px; }
+
+/* ── Slot selector ── */
+.slot-row { display: flex; align-items: center; gap: 10px; }
+.slot-btn {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border: 1.5px solid #d8e3f5;
+  border-radius: 8px;
+  background: #f0f4fb;
+  font-size: 18px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.slot-btn:hover { background: #d8e3f5; }
+.slot-num {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #1e2c5a;
+  min-width: 36px;
+  text-align: center;
+}
+.slot-hint { font-size: 12px; color: #8899bb; }
+
+/* ── Duration buttons ── */
+.dur-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.dur-btn {
+  background: #f0f4fb;
+  border: 1.5px solid #d8e3f5;
+  color: #3a4f7a;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.dur-btn.active { background: #1e2c5a; color: #fff; border-color: #1e2c5a; }
+
+/* ── Preview box ── */
+.preview-box {
+  background: #f0f4fb;
+  border: 1px solid #d8e3f5;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 16px;
+}
+.preview-total { font-size: 1.2rem; font-weight: 900; color: #1e2c5a; }
+.preview-detail { font-size: 12px; color: #8899bb; margin-top: 4px; }
+
+/* ── Submit ── */
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg, #1e2c5a, #3a5298);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 28px;
+  transition: opacity .2s;
+}
+.btn-submit:hover { opacity: .9; }
+
+/* ── Error ── */
+.error-banner {
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.error-banner ul { margin: 4px 0 0; padding-left: 18px; }
+</style>
+
+<div class="page-wrap">
+
+  <a href="/" class="back-link">
+    <i class="fa fa-arrow-left"></i> Kembali ke Beranda
+  </a>
+
+  <div class="mig-card">
+
+    <!-- Header -->
+    <div class="mig-header">
+      <h1><i class="fa fa-exchange me-2"></i>Upgrade ke Paket Korporasi</h1>
+      <p>Pindahkan toko individual Anda ke sistem multi-toko dengan pool kuota bersama.</p>
+    </div>
+
+    <div class="mig-body">
+
+      <!-- Error -->
+      {% if errors %}
+      <div class="error-banner">
+        <i class="fa fa-exclamation-circle" style="font-size:16px;flex-shrink:0;margin-top:1px;"></i>
+        <div>
+          {% if errors|length == 1 %}
+            {{ errors.0 }}
+          {% else %}
+            <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Info -->
+      <div class="info-box">
+        <i class="fa fa-info-circle me-2"></i>
+        Setelah upgrade, toko Anda bergabung ke Paket Korporasi dengan <strong>pool kuota bersama</strong>.
+        Sisa kuota individual saat ini akan otomatis ditambahkan ke pool.
+        Anda bisa menambah toko lain dari dashboard Korporasi.
+      </div>
+
+      <form method="post" autocomplete="off">
+        {% csrf_token %}
+
+        <!-- SEKSI 1: Verifikasi Toko -->
+        <div class="field-section">
+          <i class="fa fa-store"></i> Verifikasi Kepemilikan Toko
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-4">
+            <label class="field-label">Kode Toko <span class="req">*</span></label>
+            <input type="text" name="kode_toko" class="form-control"
+              placeholder="abcd" maxlength="4" required autocomplete="off"
+              value="{{ form.kode_toko|default:'' }}"
+              style="letter-spacing:4px;font-weight:700;text-transform:lowercase;font-size:1rem;">
+            <div class="field-hint">4 huruf · lihat di Admin → Info Toko</div>
+          </div>
+          <div class="col-12 col-md-8">
+            <label class="field-label">Password Admin Toko <span class="req">*</span></label>
+            <input type="password" name="password_admin" class="form-control"
+              placeholder="Password akun admin toko Anda" required autocomplete="new-password">
+            <div class="field-hint">Digunakan untuk memverifikasi kepemilikan toko</div>
+          </div>
+        </div>
+
+        <!-- SEKSI 2: Data Pemilik & Akun Korporasi -->
+        <div class="field-section">
+          <i class="fa fa-user"></i> Akun Korporasi Baru
+        </div>
+
+        <div style="background:#fff8e1;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;font-size:12px;color:#856404;margin-bottom:16px;">
+          <i class="fa fa-exclamation-triangle me-2"></i>
+          Akun Korporasi adalah akun <strong>terpisah</strong> dari akun admin toko.
+          Gunakan email yang <strong>belum pernah terdaftar</strong> di POSMI.
+        </div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label class="field-label">Nama Pemilik <span class="req">*</span></label>
+            <input type="text" name="nama_pemilik" class="form-control"
+              placeholder="Nama lengkap pemilik usaha"
+              value="{{ form.nama_pemilik|default:'' }}" required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="field-label">No. WhatsApp <span class="opt">(opsional)</span></label>
+            <input type="text" name="phone" class="form-control"
+              placeholder="081xxxxxxx"
+              value="{{ form.phone|default:'' }}">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="field-label">Email Akun Korporasi <span class="req">*</span></label>
+            <input type="email" name="email_owner" class="form-control"
+              placeholder="email@korporasi.com"
+              value="{{ form.email_owner|default:'' }}" required autocomplete="off">
+            <div class="field-hint">Dipakai untuk login ke /owner/ — harus berbeda dari email toko</div>
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="field-label">Password Akun Korporasi <span class="req">*</span></label>
+            <input type="password" name="password_owner" class="form-control"
+              placeholder="Minimal 6 karakter" minlength="6" required autocomplete="new-password">
+            <div class="field-hint">Password untuk masuk ke dashboard Korporasi</div>
+          </div>
+        </div>
+
+        <!-- SEKSI 3: Pilihan Paket -->
+        <div class="field-section">
+          <i class="fa fa-cubes"></i> Pilihan Paket Korporasi
+        </div>
+
+        <div class="mb-4">
+          <label class="field-label">Jumlah Slot Toko</label>
+          <div class="slot-row">
+            <button type="button" class="slot-btn" onclick="changeSlot(-1)">−</button>
+            <div class="slot-num" id="slotDisplay">1</div>
+            <button type="button" class="slot-btn" onclick="changeSlot(1)">+</button>
+            <input type="hidden" name="jumlah_slot" id="slotInput" value="1">
+            <span class="slot-hint">× Rp {{ harga_info.bulanan|intcomma }}/slot/bulan</span>
+          </div>
+          <div class="field-hint mt-2">Slot pertama sudah terisi toko Anda. Tambah slot untuk toko-toko lain.</div>
+        </div>
+
+        <div class="mb-2">
+          <label class="field-label">Durasi Berlangganan</label>
+          <div class="dur-row">
+            <button type="button" class="dur-btn active" onclick="setDur('bulanan',this)">1 Bulan</button>
+            <button type="button" class="dur-btn" onclick="setDur('3bulanan',this)">3 Bulan</button>
+            <button type="button" class="dur-btn" onclick="setDur('6bulanan',this)">6 Bulan</button>
+            <button type="button" class="dur-btn" onclick="setDur('tahunan',this)">1 Tahun</button>
+            <button type="button" class="dur-btn" onclick="setDur('2tahunan',this)">2 Tahun</button>
+          </div>
+          <input type="hidden" name="durasi" id="durasiInput" value="bulanan">
+        </div>
+
+        <!-- Preview harga -->
+        <div class="preview-box">
+          <div class="preview-total" id="previewTotal">—</div>
+          <div class="preview-detail" id="previewDetail">—</div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-submit">
+          <i class="fa fa-exchange me-2"></i>Upgrade ke Paket Korporasi Sekarang
+        </button>
+
+        <p style="font-size:12px;color:#8899bb;text-align:center;margin-top:16px;">
+          Sudah punya akun Korporasi?
+          <a href="{% url 'owner_login' %}" style="color:#4e73df;">Login di sini</a>
+        </p>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const HARGA = {
+  bulanan:    {{ harga_info.bulanan }},
+  '3bulanan': {{ harga_info.3bulanan }},
+  '6bulanan': {{ harga_info.6bulanan }},
+  tahunan:    {{ harga_info.tahunan }},
+  '2tahunan': {{ harga_info.2tahunan }},
+};
+const DUR_LABEL = {
+  bulanan: '1 bulan', '3bulanan': '3 bulan',
+  '6bulanan': '6 bulan', tahunan: '1 tahun', '2tahunan': '2 tahun'
+};
+const KUOTA = {{ kuota_per_slot }};
+let slot = 1, dur = 'bulanan';
+
+function fmt(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+
+function update() {
+  document.getElementById('slotDisplay').textContent = slot;
+  document.getElementById('slotInput').value = slot;
+  const total = HARGA[dur] * slot;
+  const pool  = slot * KUOTA;
+  document.getElementById('previewTotal').textContent =
+    fmt(total) + '  /  ' + DUR_LABEL[dur];
+  document.getElementById('previewDetail').textContent =
+    slot + ' slot × ' + KUOTA.toLocaleString('id-ID') +
+    ' transaksi = pool ' + pool.toLocaleString('id-ID') +
+    ' transaksi/bulan  (+sisa kuota individual saat ini)';
+}
+
+function changeSlot(d) { slot = Math.max(1, slot + d); update(); }
+
+function setDur(d, btn) {
+  dur = d;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('durasiInput').value = d;
+  update();
+}
+
+update();
+</script>
+{% endblock %}

@@ -1,0 +1,341 @@
+{% extends 'owner/base.html' %}
+{% load humanize %}
+
+{% block title %}Upgrade Paket{% endblock %}
+
+{% block extra_css %}
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.upgrade-kpi {
+  min-height: 108px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e8eef8;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.05);
+}
+.upgrade-kpi-label {
+  color: #8899bb;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+.upgrade-kpi-value {
+  margin-top: 8px;
+  color: #1e2c5a;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.upgrade-kpi-note {
+  margin-top: 7px;
+  color: #8899bb;
+  font-size: 12px;
+}
+.upgrade-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.upgrade-panel {
+  background: #fff;
+  border: 1px solid #e8eef8;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+.upgrade-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #eef1f6;
+}
+.upgrade-panel-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  border-radius: 11px;
+}
+.upgrade-panel-title {
+  margin: 0;
+  color: #1e2c5a;
+  font-size: 15px;
+  font-weight: 900;
+}
+.upgrade-panel-subtitle {
+  margin-top: 3px;
+  color: #8899bb;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.upgrade-panel-body {
+  padding: 20px 22px;
+}
+.duration-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+.duration-chip {
+  position: relative;
+}
+.duration-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.duration-chip label {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 9px;
+  border: 1.5px solid #d8e3f5;
+  border-radius: 8px;
+  color: #3a4f7a;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.duration-chip input:checked + label {
+  color: #fff;
+  background: #1e2c5a;
+  border-color: #1e2c5a;
+}
+.price-preview {
+  margin-top: 16px;
+  padding: 15px;
+  background: #f8fafc;
+  border: 1px solid #e8eef8;
+  border-radius: 10px;
+}
+.price-preview-total {
+  color: #1e2c5a;
+  font-size: 22px;
+  font-weight: 900;
+}
+.price-preview-note {
+  margin-top: 4px;
+  color: #8899bb;
+  font-size: 12px;
+}
+@media (max-width: 1199.98px) {
+  .upgrade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .upgrade-panel-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 767.98px) {
+  .upgrade-grid,
+  .duration-grid { grid-template-columns: 1fr; }
+}
+{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+    <li class="breadcrumb-item">
+      <a href="{% url 'owner_dashboard' %}" style="color:#8899bb;text-decoration:none;">
+        <i class="fa fa-building me-1"></i>Korporasi
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+      Upgrade Paket
+    </li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block heading %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div>
+    <h4 style="font-weight:900;color:#1e2c5a;margin:0;">
+      <i class="fa fa-arrow-up me-2"></i>Upgrade Paket
+    </h4>
+    <div style="font-size:13px;color:#8899bb;margin-top:2px;">
+      Tambah slot toko atau perpanjang masa aktif Paket Korporasi.
+    </div>
+  </div>
+  <a href="{% url 'owner_dashboard' %}" class="btn btn-outline-primary btn-sm fw-bold" style="border-radius:8px;">
+    <i class="fa fa-arrow-left me-1"></i>Dashboard
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="upgrade-grid">
+  <div class="upgrade-kpi">
+    <div class="upgrade-kpi-label">Total Slot</div>
+    <div class="upgrade-kpi-value">{{ owner.jumlah_slot|intcomma }}</div>
+    <div class="upgrade-kpi-note">Slot korporasi aktif</div>
+  </div>
+  <div class="upgrade-kpi">
+    <div class="upgrade-kpi-label">Slot Terpakai</div>
+    <div class="upgrade-kpi-value" style="color:#4e73df;">{{ owner.slot_terpakai|intcomma }}</div>
+    <div class="upgrade-kpi-note">Toko yang terhubung</div>
+  </div>
+  <div class="upgrade-kpi">
+    <div class="upgrade-kpi-label">Pool Kuota</div>
+    <div class="upgrade-kpi-value" style="color:#059669;">{{ owner.kuota_transaksi_pool|intcomma }}</div>
+    <div class="upgrade-kpi-note">Sisa transaksi bulan ini</div>
+  </div>
+  <div class="upgrade-kpi">
+    <div class="upgrade-kpi-label">Aktif Sampai</div>
+    <div class="upgrade-kpi-value" style="font-size:17px;">
+      {% if owner.lisensi_expired %}{{ owner.lisensi_expired|date:"d M Y" }}{% else %}-{% endif %}
+    </div>
+    <div class="upgrade-kpi-note">Masa aktif paket</div>
+  </div>
+</section>
+
+<section class="upgrade-panel-grid">
+  <div class="upgrade-panel">
+    <div class="upgrade-panel-header">
+      <div class="upgrade-panel-icon" style="background:#d1fae5;color:#059669;"><i class="fa fa-plus"></i></div>
+      <div>
+        <h2 class="upgrade-panel-title">Tambah Slot Toko</h2>
+        <div class="upgrade-panel-subtitle">Tambah kapasitas toko dan pool kuota korporasi.</div>
+      </div>
+    </div>
+    <div class="upgrade-panel-body">
+      <form method="post" data-upgrade-form="slot">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="tambah_slot">
+        <!-- Info sisa hari & harga prorata -->
+        <div style="background:#f0f7ff;border:1px solid #bee3f8;border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:#1a5276;line-height:1.8;">
+          <div class="d-flex justify-content-between mb-1">
+            <span>Sisa hari langganan</span>
+            <strong>{{ sisa_hari }} hari</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span>Tarif per hari</span>
+            <span>Rp {{ harga_per_hari|intcomma }} / slot</span>
+          </div>
+          <div class="d-flex justify-content-between" style="border-top:1px solid #bee3f8;padding-top:8px;margin-top:4px;">
+            <span style="font-weight:700;">Biaya per slot tambahan</span>
+            <strong style="font-size:15px;color:#1e2c5a;">Rp {{ harga_per_slot_prorata|intcomma }}</strong>
+          </div>
+          <div style="font-size:11px;color:#5d9ab5;margin-top:6px;">
+            Rp {{ harga_per_hari|intcomma }} × {{ sisa_hari }} hari = Rp {{ harga_per_slot_prorata|intcomma }} / slot
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Jumlah Slot Tambahan</label>
+          <input type="number" name="jumlah_slot" id="slotTambahInput" class="form-control" min="1" value="1">
+          <div class="form-hint">Slot baru bisa dipakai untuk menambahkan toko di menu Tambah Toko.</div>
+        </div>
+
+        <div class="price-preview" id="slotPreview"
+             style="background:#f0f4fb;border-radius:10px;padding:14px 18px;margin-bottom:12px;">
+          <div class="price-preview-total" id="slotTotalDisplay"
+               style="font-size:1.3rem;font-weight:900;color:#1e2c5a;">Rp {{ harga_per_slot_prorata|intcomma }}</div>
+          <div class="price-preview-note" id="slotNoteDisplay"
+               style="font-size:12px;color:#8899bb;margin-top:3px;">
+            1 slot tambahan × Rp {{ harga_per_slot_prorata|intcomma }}
+          </div>
+        </div>
+
+        {% if sisa_hari > 0 %}
+        <button type="submit" class="btn-owner btn-owner-success mt-2 w-100 justify-content-center">
+          <i class="fa fa-plus"></i>Tambah Slot
+        </button>
+        {% else %}
+        <div style="background:#fee2e2;color:#991b1b;border-radius:8px;padding:12px 16px;font-size:13px;font-weight:600;text-align:center;">
+          <i class="fa fa-exclamation-circle me-2"></i>Langganan tidak aktif. Perpanjang paket dulu.
+        </div>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <div class="upgrade-panel">
+    <div class="upgrade-panel-header">
+      <div class="upgrade-panel-icon" style="background:#eef3ff;color:#4e73df;"><i class="fa fa-calendar-check"></i></div>
+      <div>
+        <h2 class="upgrade-panel-title">Perpanjang Paket</h2>
+        <div class="upgrade-panel-subtitle">Perpanjang masa aktif seluruh slot korporasi.</div>
+      </div>
+    </div>
+    <div class="upgrade-panel-body">
+      <form method="post" data-upgrade-form="renew" data-current-slot="{{ owner.jumlah_slot }}">
+        {% csrf_token %}
+        <input type="hidden" name="aksi" value="perpanjang">
+        <div class="mb-3">
+          <label class="form-label">Jumlah Slot Aktif</label>
+          <input type="text" class="form-control" value="{{ owner.jumlah_slot|intcomma }} slot" disabled>
+          <div class="form-hint">Biaya perpanjangan dihitung dari total slot aktif.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Durasi</label>
+          <div class="duration-grid">
+            <div class="duration-chip"><input id="renew-bulanan" type="radio" name="durasi" value="bulanan" data-price="{{ harga_info.bulanan }}" checked><label for="renew-bulanan"><span>1 Bulan</span><small>Rp {{ harga_info.bulanan|intcomma }}</small></label></div>
+            <div class="duration-chip"><input id="renew-3bulanan" type="radio" name="durasi" value="3bulanan" data-price="{{ harga_info.3bulanan }}"><label for="renew-3bulanan"><span>3 Bulan</span><small>Rp {{ harga_info.3bulanan|intcomma }}</small></label></div>
+            <div class="duration-chip"><input id="renew-6bulanan" type="radio" name="durasi" value="6bulanan" data-price="{{ harga_info.6bulanan }}"><label for="renew-6bulanan"><span>6 Bulan</span><small>Rp {{ harga_info.6bulanan|intcomma }}</small></label></div>
+            <div class="duration-chip"><input id="renew-tahunan" type="radio" name="durasi" value="tahunan" data-price="{{ harga_info.tahunan }}"><label for="renew-tahunan"><span>1 Tahun</span><small>Rp {{ harga_info.tahunan|intcomma }}</small></label></div>
+            <div class="duration-chip"><input id="renew-2tahunan" type="radio" name="durasi" value="2tahunan" data-price="{{ harga_info.2tahunan }}"><label for="renew-2tahunan"><span>2 Tahun</span><small>Rp {{ harga_info.2tahunan|intcomma }}</small></label></div>
+          </div>
+        </div>
+        <div class="price-preview">
+          <div class="price-preview-total" data-total-preview>Rp 0</div>
+          <div class="price-preview-note" data-note-preview>Perpanjang semua slot</div>
+        </div>
+        <button type="submit" class="btn-owner btn-owner-primary mt-3 w-100 justify-content-center">
+          <i class="fa fa-calendar-check"></i>Perpanjang Paket
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function rupiah(v) { return 'Rp ' + Number(v||0).toLocaleString('id-ID'); }
+
+// ── Tambah Slot: preview harga prorata ──
+const HARGA_PRORATA = {{ harga_per_slot_prorata }};
+const slotInput     = document.getElementById('slotTambahInput');
+const slotTotal     = document.getElementById('slotTotalDisplay');
+const slotNote      = document.getElementById('slotNoteDisplay');
+
+function updateSlotPreview() {
+  const n = Math.max(1, parseInt(slotInput.value) || 1);
+  const total = HARGA_PRORATA * n;
+  slotTotal.textContent = rupiah(total);
+  slotNote.textContent  = n + ' slot tambahan × ' + rupiah(HARGA_PRORATA);
+}
+if (slotInput) {
+  slotInput.addEventListener('input', updateSlotPreview);
+  updateSlotPreview();
+}
+
+// ── Perpanjang: preview harga × jumlah slot ──
+function setupRenewForm(form) {
+  const totalEl = form.querySelector('[data-total-preview]');
+  const noteEl  = form.querySelector('[data-note-preview]');
+  const slots   = Number(form.dataset.currentSlot || 0);
+
+  function update() {
+    const sel = form.querySelector('input[name="durasi"]:checked');
+    const price = Number(sel ? sel.dataset.price : 0);
+    totalEl.textContent = rupiah(price * slots);
+    noteEl.textContent  = slots + ' slot × ' + rupiah(price);
+  }
+  form.querySelectorAll('input[name="durasi"]').forEach(i => i.addEventListener('change', update));
+  update();
+}
+document.querySelectorAll('[data-upgrade-form="renew"]').forEach(setupRenewForm);
+</script>
+{% endblock %}

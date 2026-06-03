@@ -1,0 +1,124 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota Lunas Tempo</title>
+    <style>
+        @media print {
+            @page { size: portrait; margin: 0%; }
+            body {
+                font-family: "Poppins", sans-serif;
+                font-size: 12px;
+                color: black;
+                background-color: white;
+                min-width: 6cm;
+                max-width: 6cm;
+                margin: 0;
+                margin-bottom: 2cm;
+            }
+            .no-print { display: none; }
+            table { break-inside: avoid; }
+        }
+        body { font-family: "Poppins", sans-serif; font-size: 12px; background: #fff; }
+        .area-print { min-width: 6cm; max-width: 6cm; padding-left: 2mm; padding-right: 2mm; }
+        .lunas-badge {
+            display: inline-block;
+            border: 2px solid #15803d;
+            color: #15803d;
+            padding: 2px 10px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin: 4px 0;
+        }
+        .item-row { margin-bottom: 5px; font-size: 11px; font-weight: bold; }
+        .watermark { font-size: 9px; color: #aaa; text-align: center; }
+        .no-print-bar { padding: 10px; background: #15803d; color: #fff; text-align: center; font-size: 13px; }
+        .no-print-bar a { color: #fcd34d; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body onload="printme()">
+
+    <div class="no-print no-print-bar">
+        Halaman ini akan dicetak otomatis.
+        <a href="/cms/tempo/">Klik di sini</a> untuk kembali ke daftar tempo.
+    </div>
+
+    <div class="area-print">
+        <div class="text-center">
+            <span class="fw-bold fs-6">{{nama_toko}}</span><br>
+            <span>{{alamat_toko}}</span><br>
+            <span>{{telpon_toko}}</span><br>
+            <span class="fw-bold">------------------------------</span><br>
+            <span class="lunas-badge">✓ LUNAS TEMPO</span><br>
+            <span class="fw-bold">------------------------------</span>
+            <div class="text-start px-1" style="font-size: 11px;">
+                <span>tgl. lunas: <span class="fw-bold">{{penjualan.tgl_bayar|date:"d/m/Y H:i"}}</span></span>
+            </div>
+            <div class="text-start px-1" style="font-size: 11px;">
+                <span>jatuh tempo: <span class="fw-bold">{{penjualan.jatuh_tempo|date:"d/m/Y"}}</span></span>
+            </div>
+            <div class="text-start px-1" style="font-size: 11px;">
+                <span>kasir: <span class="fw-bold">{{penjualan.user.userprofile.nama_lengkap|title|truncatechars:"15"}}</span></span>
+            </div>
+            <div class="text-start px-1" style="font-size: 11px;">
+                pembeli: <span class="fw-bold">{{penjualan.customer|title|truncatechars:"20"}}</span>
+            </div>
+            <div class="text-start px-1" style="font-size: 11px;">
+                no. nota: <span class="fw-bold">{{penjualan.no_nota}}</span>
+            </div>
+            <div class="text-start px-1" style="font-size: 11px;">
+                metode: <span class="fw-bold">{% if penjualan.metode == 0 %}Cash{% else %}Transfer{% endif %}</span>
+            </div>
+        </div>
+
+        <div>
+            <div class="fw-bold text-center pt-2 border-top border-dark"></div>
+            {% for detail in penjualan_detail %}
+            <div class="item-row">
+                <div style="font-size: 12px;">{{detail.barang.nama|title}}</div>
+                <div class="d-flex justify-content-between">
+                    <span>{{detail.jumlah|intcomma}} x Rp.{{detail.harga|intcomma}}</span>
+                    <span>Rp.{{detail.total|intcomma}}</span>
+                </div>
+            </div>
+            {% endfor %}
+            <div style="font-size: 11px; font-weight: bold;" class="d-flex justify-content-between pt-2 border-top border-dark">
+                <span>{% if penjualan.metode == 0 %}Cash{% else %}Transfer{% endif %}</span>
+                <span style="font-size: 12px;">Rp.{{total|intcomma}}</span>
+            </div>
+        </div>
+
+        <div class="text-center mt-2">
+            <span class="fw-bold">------------------------------</span><br>
+            <span style="font-size: 12px; font-weight: bold;">Terima Kasih,</span><br>
+            <span style="font-size: 12px; font-weight: bold;">Pembayaran Lunas.</span>
+        </div>
+
+        <div class="fw-bold text-center mt-1">*****</div>
+
+        {% if not user.userprofile.cabang.paket and not user.userprofile.cabang.owner %}
+        <div class="watermark mt-1">https://posmi.pythonanywhere.com</div>
+        {% endif %}
+
+        <div class="fw-bold text-center mb-5">
+            ***** <br><br>
+            <span class="fw-bold">------------------------------</span>
+        </div>
+        <hr><hr><hr>
+    </div>
+
+    <script>
+        function printme() {
+            window.print();
+            window.onafterprint = function() {
+                window.location.href = "/cms/tempo/";
+            };
+        }
+    </script>
+</body>
+</html>

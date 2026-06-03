@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include,re_path
 from django.views.static import serve
 from django.conf import settings
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +27,12 @@ urlpatterns = [
     path('payment/',include('payment.urls')),
     path('promo/',include('promo.urls')),
     path('tutorial/',include('cara.urls')),
+    path('management/',include('management.urls')),
+    path('owner/',include('owner.urls')),
+    path('api/',  include('api.urls')),
+    path('syarat-ketentuan/', TemplateView.as_view(template_name='legal/tos.html'), name='tos'),
+    path('kebijakan-privasi/', TemplateView.as_view(template_name='legal/privacy.html'), name='privacy'),
+    path('sla/', TemplateView.as_view(template_name='legal/sla.html'), name='sla'),
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 ]

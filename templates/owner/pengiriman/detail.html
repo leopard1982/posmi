@@ -1,0 +1,357 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Detail Pengiriman {{ pengiriman.nomor_pengiriman }} — POSMI</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'images/posmi.ico' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f4f6fb; }
+
+    /* Sidebar */
+    #accordionSidebar { background: linear-gradient(180deg, #1e2c5a 0%, #2c3e6b 100%) !important; }
+    .sidebar-brand { padding: 20px 16px !important; }
+    .sidebar-brand-text { font-size: 15px !important; font-weight: 900 !important; letter-spacing: .5px; }
+    .sidebar .nav-item .nav-link { color: rgba(255,255,255,.65) !important; font-size: 13px; font-weight: 600; padding: 10px 20px; }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color: #fff !important; background: rgba(255,255,255,.08) !important; }
+    .sidebar .nav-item .nav-link i { width: 18px; text-align: center; }
+    .sidebar hr { border-color: rgba(255,255,255,.12) !important; }
+    .sidebar-heading { color: rgba(255,255,255,.4) !important; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; padding: 10px 20px 4px !important; }
+
+    /* Topbar */
+    .topbar { background: #fff; border-bottom: 1px solid #e8eef8; }
+
+    /* Breadcrumb */
+    .breadcrumb-custom { font-size: 12px; margin-bottom: 4px; }
+    .breadcrumb-custom a { color: #4e73df; text-decoration: none; font-weight: 600; }
+    .breadcrumb-custom a:hover { text-decoration: underline; }
+    .breadcrumb-custom span { color: #8899bb; }
+
+    /* Header info card */
+    .header-card {
+      background: linear-gradient(135deg, #1e2c5a 0%, #2c3e6b 100%);
+      border-radius: 14px; padding: 24px 28px; margin-bottom: 24px;
+      box-shadow: 0 4px 18px rgba(30,44,90,.18); color: #fff;
+    }
+    .header-card .nomor {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.4rem; font-weight: 900; letter-spacing: 1.5px;
+      background: rgba(255,255,255,.12); display: inline-block;
+      padding: 4px 14px; border-radius: 8px; margin-bottom: 12px;
+    }
+    .header-card .info-row { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 6px; opacity: .85; }
+    .header-card .info-row i { width: 16px; opacity: .7; }
+    .header-card .info-row strong { opacity: 1; }
+
+    /* Status badges */
+    .badge-status { font-size: 11px; font-weight: 700; padding: 3px 11px; border-radius: 50px; display: inline-block; white-space: nowrap; }
+    .status-dikirim      { background: #dbeafe; color: #1e40af; }
+    .status-selesai      { background: #d1fae5; color: #065f46; }
+    .status-sebagian     { background: #fef3c7; color: #92400e; }
+    .status-draft        { background: #f1f5f9; color: #64748b; }
+
+    /* Item status badges */
+    .item-pending        { background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; display: inline-block; }
+    .item-diterima       { background: #d1fae5; color: #065f46; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; display: inline-block; }
+    .item-dikembalikan   { background: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; display: inline-block; }
+    .item-kembali-gudang { background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 50px; display: inline-block; }
+
+    /* Section card */
+    .section-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.05); border: none; overflow: hidden; margin-bottom: 24px; }
+    .section-card .card-header { background: #fff; border-bottom: 1px solid #eef1f6; padding: 16px 20px; font-size: 14px; font-weight: 800; color: #1e2c5a; }
+    .section-card .card-header .sub { font-size: 12px; font-weight: 400; color: #8899bb; margin-top: 2px; }
+
+    /* Table */
+    .item-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .item-table thead th {
+      background: #f8fafc; border-bottom: 1.5px solid #eef1f6;
+      padding: 11px 14px; font-size: 11px; font-weight: 700;
+      color: #8899bb; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .item-table tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .1s; }
+    .item-table tbody tr:last-child { border: none; }
+    .item-table tbody tr:hover { background: #f8fafc; }
+    .item-table td { padding: 12px 14px; vertical-align: middle; }
+    .item-table tr.has-return { background: #fff8f8; }
+
+    /* Return form */
+    .return-form-wrap {
+      background: #fff3f3; border: 1.5px solid #fca5a5;
+      border-radius: 10px; padding: 12px 14px; margin-top: 8px;
+    }
+    .return-form-wrap label { font-size: 12px; font-weight: 700; color: #991b1b; margin-bottom: 5px; display: block; }
+    .return-form-wrap textarea {
+      border: 1.5px solid #fca5a5; border-radius: 7px;
+      padding: 8px 10px; font-size: 12px; width: 100%; resize: vertical;
+      font-family: 'Poppins', sans-serif; min-height: 70px;
+    }
+    .return-form-wrap textarea:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.1); }
+    .btn-konfirmasi {
+      background: #dc2626; color: #fff; border: none; border-radius: 7px;
+      padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
+      margin-top: 8px; transition: background .15s;
+    }
+    .btn-konfirmasi:hover { background: #b91c1c; }
+
+    /* Nomor badge */
+    .nomor-sm {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px; font-weight: 700; background: #eef3fb;
+      color: #3a5298; padding: 2px 8px; border-radius: 5px;
+    }
+
+    /* Flash */
+    .flash-alert { border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; margin-bottom: 16px; border: none; }
+  </style>
+</head>
+
+<body id="page-top">
+<div id="wrapper">
+
+  <!-- Sidebar -->
+  {% include 'owner/_sidebar.html' with active='gudang' %}
+
+  <!-- Content Wrapper -->
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <!-- Page Content -->
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="/owner/" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building" style="margin-right:6px;"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color:#1e2c5a;font-weight:700;">
+              Detail Pengiriman
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Flash messages -->
+        {% for msg in messages %}
+        <div class="flash-alert d-flex align-items-center justify-content-between"
+             style="background:{% if msg.tags == 'error' or msg.tags == 'danger' %}#fee2e2;color:#991b1b;{% elif msg.tags == 'success' %}#d1fae5;color:#065f46;{% else %}#fef3c7;color:#92400e;{% endif %}">
+          <span><i class="fa fa-info-circle mr-2"></i>{{ msg }}</span>
+          <button onclick="this.parentElement.style.display='none'"
+                  style="background:none;border:none;cursor:pointer;opacity:.6;font-size:16px;line-height:1;padding:0 4px;">&times;</button>
+        </div>
+        {% endfor %}
+
+        <!-- Header info card -->
+        <div class="header-card">
+          <div class="nomor">{{ pengiriman.nomor_pengiriman }}</div>
+          <div class="row g-0">
+            <div class="col-12 col-md-6">
+              <div class="info-row">
+                <i class="fa fa-store"></i>
+                <span>Toko Tujuan: <strong>{{ pengiriman.toko_tujuan.nama_toko }}</strong></span>
+              </div>
+              <div class="info-row">
+                <i class="fa fa-calendar"></i>
+                <span>Tanggal: <strong>{{ pengiriman.tanggal|date:"d F Y, H:i" }}</strong></span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="info-row">
+                <i class="fa fa-tag"></i>
+                <span>Status:&nbsp;
+                  {% if pengiriman.status == 'dikirim' %}
+                    <span class="badge-status status-dikirim"><i class="fa fa-paper-plane mr-1"></i>Dikirim</span>
+                  {% elif pengiriman.status == 'selesai' %}
+                    <span class="badge-status status-selesai"><i class="fa fa-check-circle mr-1"></i>Selesai</span>
+                  {% elif pengiriman.status == 'sebagian' %}
+                    <span class="badge-status status-sebagian"><i class="fa fa-adjust mr-1"></i>Sebagian</span>
+                  {% else %}
+                    <span class="badge-status status-draft"><i class="fa fa-file mr-1"></i>Draft</span>
+                  {% endif %}
+                </span>
+              </div>
+              {% if pengiriman.catatan %}
+              <div class="info-row">
+                <i class="fa fa-comment"></i>
+                <span>Catatan: <strong>{{ pengiriman.catatan }}</strong></span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Items table -->
+        <div class="section-card">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+              <div><i class="fa fa-boxes mr-2"></i>Daftar Item Pengiriman</div>
+              <div class="sub">{{ items|length }} item dalam pengiriman ini</div>
+            </div>
+          </div>
+
+          {% if items %}
+          <div class="table-responsive">
+            <table class="item-table">
+              <thead>
+                <tr>
+                  <th style="width:36px;">#</th>
+                  <th>Nama Barang</th>
+                  <th class="text-center">Jml Dikirim</th>
+                  <th class="text-center">Jml Diterima</th>
+                  <th class="text-center">Status</th>
+                  <th>Catatan Toko</th>
+                  <th class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in items %}
+                <tr {% if item.status == 'dikembalikan' %}class="has-return"{% endif %}>
+                  <td style="color:#b0b7c3; font-size:12px; font-weight:600;">{{ forloop.counter }}</td>
+                  <td>
+                    <div style="font-weight:700; color:#1e2c5a; font-size:13px;">
+                      {{ item.barang.nama }}
+                    </div>
+                    {% if item.barang.barcode %}
+                    <div style="font-size:11px; color:#8899bb; font-family:monospace;">{{ item.barang.barcode }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="text-center" style="font-weight:700; font-size:14px; color:#1e2c5a;">
+                    {{ item.jumlah_dikirim }}
+                    <div style="font-size:11px; color:#8899bb; font-weight:400;">{{ item.barang.satuan }}</div>
+                  </td>
+                  <td class="text-center" style="font-weight:700; font-size:14px;">
+                    {% if item.jumlah_diterima is not None %}
+                      <span style="color:#059669;">{{ item.jumlah_diterima }}</span>
+                      <div style="font-size:11px; color:#8899bb; font-weight:400;">{{ item.barang.satuan }}</div>
+                    {% else %}
+                      <span style="color:#b0b7c3; font-size:12px;">—</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if item.status == 'pending' %}
+                      <span class="item-pending">
+                        <i class="fa fa-clock mr-1"></i>Menunggu Konfirmasi Toko
+                      </span>
+                    {% elif item.status == 'diterima' %}
+                      <span class="item-diterima">
+                        <i class="fa fa-check mr-1"></i>Diterima
+                      </span>
+                    {% elif item.status == 'dikembalikan' %}
+                      <span class="item-dikembalikan">
+                        <i class="fa fa-undo mr-1"></i>Dikembalikan
+                      </span>
+                    {% elif item.status == 'kembali_gudang' %}
+                      <span class="item-kembali-gudang">
+                        <i class="fa fa-check-double mr-1"></i>Kembali ke Gudang (Dikonfirmasi)
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td style="font-size:12px; color:#64748b;">
+                    {{ item.catatan_toko|default:"—" }}
+                  </td>
+                  <td class="text-center">
+                    {% if item.status == 'dikembalikan' %}
+                      <!-- Inline return confirmation form -->
+                      <button class="btn btn-sm btn-danger fw-bold"
+                              style="border-radius:7px; font-size:12px;"
+                              onclick="toggleReturnForm('returnForm{{ item.id }}')">
+                        <i class="fa fa-undo mr-1"></i>Konfirmasi Pengembalian
+                      </button>
+                    {% else %}
+                      <span style="font-size:12px; color:#c9d3e0;">—</span>
+                    {% endif %}
+                  </td>
+                </tr>
+
+                <!-- Return form row (hidden by default) -->
+                {% if item.status == 'dikembalikan' %}
+                <tr id="returnForm{{ item.id }}" style="display:none; background:#fff8f8;">
+                  <td colspan="7" style="padding:0;">
+                    <div class="return-form-wrap mx-3 my-2">
+                      <form method="POST" action="">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <label>
+                          <i class="fa fa-comment-alt mr-1"></i>
+                          Catatan Gudang (opsional) — konfirmasi bahwa barang kembali ke gudang:
+                        </label>
+                        <textarea name="catatan_gudang" placeholder="Masukkan catatan penerimaan kembali barang..."></textarea>
+                        <div class="d-flex align-items-center gap-2" style="gap:8px;">
+                          <button type="submit" class="btn-konfirmasi">
+                            <i class="fa fa-check mr-1"></i>Konfirmasi Pengembalian ke Gudang
+                          </button>
+                          <button type="button"
+                                  onclick="toggleReturnForm('returnForm{{ item.id }}')"
+                                  style="background:none; border:none; font-size:12px; color:#8899bb; cursor:pointer; padding:7px 10px;">
+                            Batal
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endif %}
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          {% else %}
+          <div class="text-center py-5" style="color:#8899bb;">
+            <i class="fa fa-box-open" style="font-size:40px; opacity:.15; display:block; margin-bottom:14px;"></i>
+            Tidak ada item dalam pengiriman ini.
+          </div>
+          {% endif %}
+
+        </div><!-- /section-card -->
+
+        <!-- Back button -->
+        <div class="mb-4">
+          <a href="{% url 'owner_daftar_pengiriman' %}"
+             style="color:#4e73df; font-size:13px; font-weight:600; text-decoration:none;">
+            <i class="fa fa-arrow-left mr-2"></i>Kembali ke Daftar Pengiriman
+          </a>
+        </div>
+
+      </div><!-- /container-fluid -->
+    </div><!-- /content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px; color:#b0b7c3;">
+        &copy; 2025 POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+  </div><!-- /content-wrapper -->
+</div><!-- /wrapper -->
+
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script>
+function toggleReturnForm(id) {
+  var row = document.getElementById(id);
+  if (!row) return;
+  row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
+}
+</script>
+</body>
+</html>

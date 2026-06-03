@@ -1,35 +1,258 @@
 {% load humanize %}
-<div>
-    <div class="mt-3 h2 fw-bold">
-        Tambah Barang
+
+<style>
+  .upload-preview-page {
+    color: #4b5563;
+  }
+
+  .upload-preview-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .upload-preview-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .upload-preview-breadcrumb {
+    margin-top: 8px;
+    color: #8a92a6;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .upload-preview-confirm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .upload-preview-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .upload-preview-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 78px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+  }
+
+  .upload-preview-icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #4e73df;
+    background: #f3f6ff;
+    border-radius: 8px;
+  }
+
+  .upload-preview-label {
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .upload-preview-value {
+    margin-top: 2px;
+    color: #2f3446;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .upload-preview-panel {
+    background: #fff;
+    border: 1px solid #e4e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 22px rgba(31, 41, 55, .05);
+    overflow: hidden;
+  }
+
+  .upload-preview-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #eef1f6;
+  }
+
+  .upload-preview-panel-title {
+    margin: 0;
+    color: #2f3446;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .upload-preview-panel-subtitle {
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 12px;
+  }
+
+  .upload-preview-table-wrap {
+    padding: 14px 18px 18px;
+    overflow-x: auto;
+  }
+
+  #datasetUploadBarang {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+
+  #datasetUploadBarang thead th {
+    color: #687086;
+    border-bottom: 1px solid #dfe4ee;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  #datasetUploadBarang tbody td {
+    color: #4b5563;
+    border-bottom: 1px solid #eef1f6;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  #datasetUploadBarang tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .upload-preview-name {
+    color: #2f3446;
+    font-weight: 900;
+  }
+
+  .upload-preview-code {
+    display: inline-block;
+    margin-top: 3px;
+    color: #8a92a6;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .upload-preview-money {
+    white-space: nowrap;
+  }
+
+  .upload-preview-page .dataTables_wrapper .dataTables_length,
+  .upload-preview-page .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 14px;
+    color: #687086;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .upload-preview-page .dataTables_wrapper .dataTables_filter input,
+  .upload-preview-page .dataTables_wrapper .dataTables_length select {
+    min-height: 34px;
+    border: 1px solid #cfd6e6;
+    border-radius: 7px;
+    color: #374151;
+  }
+
+  .upload-preview-page .dataTables_wrapper .dataTables_info,
+  .upload-preview-page .dataTables_wrapper .dataTables_paginate {
+    margin-top: 14px;
+    color: #687086;
+    font-size: 13px;
+  }
+
+  @media (max-width: 991.98px) {
+    .upload-preview-header {
+      flex-direction: column;
+    }
+
+    .upload-preview-summary {
+      grid-template-columns: 1fr;
+    }
+
+    .upload-preview-confirm {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="upload-preview-page">
+    <div class="upload-preview-header">
+        <div>
+            <h2 class="upload-preview-title">Preview Upload Barang</h2>
+            <div class="upload-preview-breadcrumb">Barang &rarr; Upload / Update Barang &rarr; Preview</div>
+        </div>
+        <a hx-get="{% url 'konfirmasi_upload'%}?id={{id_uploadbarang}}" hx-target="#mainpage" class="btn btn-primary upload-preview-confirm">
+            <i class="fas fa-check"></i>
+            <span>Konfirmasi Upload</span>
+        </a>
     </div>
-    <div class="mb-5 fs-6 px-1">
-        Barang &rarr; Tambah Barang &rarr; Daftar Tambah Barang
-    </div>
+
     {% if messages %}
-                                    {% for message in messages %}
-                                    <div class="alert alert-primary alert-dismissible fade show " role="alert">
-                                        <button type="button" class=" btn" data-bs-dismiss="alert" aria-label="Close">X</button>    
-                                        <span>{{message}}</span>
-                                            
-                                    </div>
-                                    
-                                    {% endfor %}
+    <div class="mb-3">
+        {% for message in messages %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <span>{{message}}</span>
+        </div>
+        {% endfor %}
+    </div>
     {% endif %}
-    <div class="mt-5 p-2">
-        <div class="d-flex justify-content-between">
-            <div style="padding-left: 30px;border-left: 5px solid lightgrey;margin-bottom: 20px;">
-                Total Barang Diupload: {{total_barang}} item(s)<br>
-                Tanggal Upload: {{tanggal_upload|date:"d/m/Y"}}
-            </div>
-            <div class="d-flex justify-content-center align-items-center">
-                <a hx-get="{% url 'konfirmasi_upload'%}?id={{id_uploadbarang}}" hx-target="#mainpage" class="btn btn-primary  rounded-pill" style="padding-left: 20px;padding-right: 20px;">Konfirmasi</a>
+
+    <div class="upload-preview-summary">
+        <div class="upload-preview-card">
+            <div class="upload-preview-icon"><i class="fas fa-boxes"></i></div>
+            <div>
+                <div class="upload-preview-label">Total Barang Diupload</div>
+                <div class="upload-preview-value">{{total_barang|intcomma}} item</div>
             </div>
         </div>
-        
-        
-        <div class="mt-3">
-            <table id="datasetUploadBarang"  >
+        <div class="upload-preview-card">
+            <div class="upload-preview-icon"><i class="fas fa-calendar"></i></div>
+            <div>
+                <div class="upload-preview-label">Tanggal Upload</div>
+                <div class="upload-preview-value">{{tanggal_upload|date:"d/m/Y"}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-preview-panel">
+        <div class="upload-preview-panel-header">
+            <div>
+                <h3 class="upload-preview-panel-title">Data Barang dari File</h3>
+                <div class="upload-preview-panel-subtitle">Periksa kembali data sebelum menekan konfirmasi upload.</div>
+            </div>
+        </div>
+        <div class="upload-preview-table-wrap">
+            <table id="datasetUploadBarang">
                 <thead>
                     <tr>
                         <th>No.</th>
@@ -38,42 +261,41 @@
                         <th class="text-center">Stok</th>
                         <th>Harga Beli</th>
                         <th>Harga Ecer</th>
-                        <th>Min. Grosir</th>
+                        <th class="text-center">Min. Grosir</th>
                         <th>Harga Grosir</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for barang in list_informasi %}
-                    <tr style="padding-bottom: 10px;border-bottom: 1px solid lightgrey;">
+                    <tr>
                         <td>{{forloop.counter}}</td>
-                        <td>{{barang.nama}}<br><span style="font-size: 12px;font-weight: bold;">({{barang.barcode}})</span></td>
+                        <td>
+                            <div class="upload-preview-name">{{barang.nama}}</div>
+                            <span class="upload-preview-code">{{barang.barcode}}</span>
+                        </td>
                         <td class="text-center">{{barang.satuan}}</td>
                         <td class="text-center">{{barang.stok|intcomma}}</td>
-                        <td>Rp.{{barang.harga_beli|intcomma}}.00</td>
-                        <td>Rp.{{barang.harga_ecer|intcomma}}.00</td>
+                        <td class="upload-preview-money">Rp.{{barang.harga_beli|intcomma}}.00</td>
+                        <td class="upload-preview-money">Rp.{{barang.harga_ecer|intcomma}}.00</td>
                         <td class="text-center">{{barang.min_beli_grosir}}</td>
-                        <td>Rp.{{barang.harga_grosir|intcomma}}.00</td>
+                        <td class="upload-preview-money">Rp.{{barang.harga_grosir|intcomma}}.00</td>
                     </tr>
-                    <!-- <tr>
-                        <td colspan="8"><b>Keterangan:</b>{{barang.keterangan|upper}}</td>
-                    </tr> -->
                     {% endfor%}
                 </tbody>
-                <!-- <tfoot>
-                    <tr>
-                        {% for headers in df_headers %}
-                        <th>{{headers}}</th>
-                        {% endfor %}
-                    </tr>
-                </tfoot> -->
             </table>
-            <script>
-                new DataTable('#datasetUploadBarang',{
-                    language: {
-                        search: "Pencarian Data: ",
-                    }
-                });
-            </script>
         </div>
     </div>
+
+    <script>
+        new DataTable('#datasetUploadBarang', {
+            language: {
+                search: "Cari barang:",
+                lengthMenu: "Tampilkan _MENU_ barang",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ barang",
+                infoEmpty: "Belum ada data barang",
+                zeroRecords: "Barang tidak ditemukan",
+            },
+            pageLength: 10
+        });
+    </script>
 </div>

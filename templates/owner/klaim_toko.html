@@ -1,0 +1,293 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftarkan Toko Baru — Korporasi POSMI</title>
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family:'Poppins',sans-serif; background:#f4f6fb; }
+    #accordionSidebar { background:linear-gradient(180deg,#1e2c5a,#2c3e6b)!important; }
+    .sidebar-brand { padding:20px 16px!important; }
+    .sidebar-brand-text { font-size:15px!important; font-weight:900!important; }
+    .sidebar .nav-item .nav-link { color:rgba(255,255,255,.65)!important; font-size:13px; font-weight:600; padding:10px 20px; }
+    .sidebar .nav-item .nav-link:hover,
+    .sidebar .nav-item.active .nav-link { color:#fff!important; background:rgba(255,255,255,.08)!important; }
+    .sidebar .nav-item .nav-link i { width:18px; text-align:center; }
+    .sidebar hr { border-color:rgba(255,255,255,.12)!important; }
+    .sidebar-heading { color:rgba(255,255,255,.4)!important; font-size:10px; font-weight:700; letter-spacing:1.2px; padding:10px 20px 4px!important; }
+
+    /* ── Page card ── */
+    .page-card { background:#fff; border-radius:14px; box-shadow:0 2px 14px rgba(0,0,0,.06); border:none; overflow:hidden; }
+    .page-card-header {
+      background:linear-gradient(135deg,#1e2c5a,#3a5298);
+      padding:22px 28px; color:#fff;
+      display:flex; align-items:center; gap:14px;
+    }
+    .page-card-header .icon { width:42px; height:42px; background:rgba(255,255,255,.15); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .page-card-header h5 { font-size:16px; font-weight:900; margin:0 0 3px; }
+    .page-card-header p  { font-size:12px; opacity:.75; margin:0; }
+
+    /* ── Section dalam form ── */
+    .form-section { padding:24px 28px; border-bottom:1px solid #f0f4f8; }
+    .form-section:last-child { border-bottom:none; }
+    .form-section-title { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; color:#8899bb; text-transform:uppercase; letter-spacing:1px; margin-bottom:18px; padding-bottom:10px; border-bottom:1.5px solid #eef1f6; }
+
+    /* ── Form fields ── */
+    .form-label { font-size:13px; font-weight:700; color:#1e2c5a; margin-bottom:6px; display:block; }
+    .form-label .req { color:#dc3545; margin-left:2px; }
+    .form-label .opt { font-weight:400; color:#8899bb; font-size:12px; }
+    .form-hint { font-size:11px; color:#8899bb; margin-top:5px; }
+    .form-control, .form-select { border:1.5px solid #d8e3f5; border-radius:8px; padding:10px 14px; font-size:13px; font-family:'Poppins',sans-serif; transition:border-color .2s; }
+    .form-control:focus, .form-select:focus { border-color:#4e73df; box-shadow:0 0 0 3px rgba(78,115,223,.1); outline:none; }
+    .form-control:disabled { background:#f8fafc; color:#8899bb; cursor:default; }
+
+    /* ── Kode toko ── */
+    .kode-wrap { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .kode-display {
+      font-family:monospace; font-size:1.8rem; font-weight:900; letter-spacing:8px;
+      color:#1e2c5a; background:#f0f4fb; border:2px solid #d8e3f5;
+      border-radius:10px; padding:10px 24px; min-width:160px; text-align:center;
+      text-transform:uppercase;
+    }
+    .btn-acak { background:#f0f4fb; border:1.5px solid #d8e3f5; color:#1e2c5a; border-radius:8px; padding:11px 18px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all .15s; display:inline-flex; align-items:center; gap:6px; }
+    .btn-acak:hover { background:#d8e3f5; }
+
+    /* ── Info box ── */
+    .info-box { background:#f0f7ff; border:1px solid #bee3f8; border-radius:9px; padding:13px 18px; font-size:13px; color:#1a5276; line-height:1.75; }
+
+    /* ── Slot badge ── */
+    .slot-badge { display:inline-flex; align-items:center; gap:8px; background:#e8f4fd; border:1px solid #bee3f8; border-radius:8px; padding:9px 16px; font-size:13px; font-weight:700; color:#1e6f9f; }
+
+    /* ── Submit ── */
+    .btn-submit { background:linear-gradient(135deg,#1e2c5a,#3a5298); color:#fff; border:none; border-radius:9px; padding:13px 28px; font-size:14px; font-weight:800; cursor:pointer; transition:opacity .2s; display:inline-flex; align-items:center; gap:8px; }
+    .btn-submit:hover { opacity:.9; }
+  </style>
+</head>
+<body id="page-top">
+<div id="wrapper">
+
+  {% include 'owner/_sidebar.html' with active='klaim' %}
+
+  <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content">
+
+      <!-- Topbar -->
+      {% include 'owner/_topbar.html' %}
+
+      <div class="container-fluid px-4">
+
+        <!-- Breadcrumb + Heading -->
+        <nav aria-label="breadcrumb" class="mb-3 mt-3">
+          <ol class="breadcrumb" style="font-size:12px;background:none;padding:0;margin:0;">
+            <li class="breadcrumb-item">
+              <a href="{% url 'owner_dashboard' %}" style="color:#8899bb;text-decoration:none;">
+                <i class="fa fa-building me-1"></i>Korporasi
+              </a>
+            </li>
+            <li class="breadcrumb-item active" style="color:#1e2c5a;font-weight:700;">Tambah Toko</li>
+          </ol>
+        </nav>
+
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+          <div>
+            <h4 style="font-weight:900;color:#1e2c5a;margin:0;">Daftarkan Toko Baru</h4>
+            <div style="font-size:13px;color:#8899bb;margin-top:3px;">Tambahkan toko ke dalam Paket Korporasi Anda.</div>
+          </div>
+          <span class="slot-badge">
+            <i class="fa fa-store"></i>
+            Slot tersedia: <strong>{{ owner.slot_tersedia }}</strong> dari {{ owner.jumlah_slot }} slot
+          </span>
+        </div>
+
+        {% if owner.slot_tersedia <= 0 %}
+        <div style="background:#fee2e2;color:#991b1b;border-radius:10px;padding:16px 20px;font-size:13px;font-weight:600;">
+          <i class="fa fa-exclamation-circle me-2"></i>
+          Semua slot sudah penuh. Tambah slot terlebih dahulu melalui halaman
+          <a href="{% url 'owner_upgrade_paket' %}" style="color:#991b1b;text-decoration:underline;">Upgrade Paket</a>
+          sebelum mendaftarkan toko baru.
+        </div>
+
+        {% else %}
+
+        {% for msg in messages %}
+        <div class="alert alert-danger alert-dismissible fade show mb-4" style="border-radius:10px;font-size:13px;" role="alert">
+          <i class="fa fa-times-circle me-2"></i>{{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+
+        <div class="page-card">
+
+          <!-- Card header -->
+          <div class="page-card-header">
+            <div class="icon"><i class="fa fa-plus-circle"></i></div>
+            <div>
+              <h5>Data Toko Baru</h5>
+              <p>Lengkapi informasi toko dan akun admin. Sistem akan membuat toko beserta akun login admin secara otomatis.</p>
+            </div>
+          </div>
+
+          <form method="post" id="formDaftarToko">
+            {% csrf_token %}
+
+            <!-- ── Kode Toko ── -->
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="fa fa-tag"></i> Kode Toko
+              </div>
+              <div class="row g-4 align-items-start">
+                <div class="col-12 col-lg-5">
+                  <label class="form-label">Kode Unik Toko <span class="req">*</span></label>
+                  <div class="kode-wrap">
+                    <div class="kode-display" id="kodeDisplay">{{ kode_preview|upper }}</div>
+                    <button type="button" class="btn-acak" onclick="acakKode()">
+                      <i class="fa fa-random"></i>Acak Ulang
+                    </button>
+                  </div>
+                  <input type="hidden" name="kode_toko" id="kodeToko" value="{{ kode_preview }}">
+                  <div class="form-hint mt-2">
+                    Kode 4 huruf unik sebagai identitas toko.
+                    Username admin: <strong id="previewUsername">{{ kode_preview }}1</strong>
+                  </div>
+                </div>
+                <div class="col-12 col-lg-7">
+                  <div class="info-box">
+                    <i class="fa fa-lightbulb-o me-2" style="color:#2980b9;"></i>
+                    Kode toko digunakan sebagai <strong>identitas unik</strong> di sistem.
+                    Username admin dibentuk otomatis: kode + angka <strong>1</strong>
+                    (contoh: <code>abcd1</code>).
+                    Kode tidak dapat diubah setelah toko dibuat.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Informasi Toko ── -->
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="fa fa-store"></i> Informasi Toko
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <label class="form-label">Nama Toko <span class="req">*</span></label>
+                  <input type="text" name="nama_toko" class="form-control" required
+                    placeholder="Contoh: Toko Makmur Jaya" value="{{ form.nama_toko|default:'' }}">
+                </div>
+                <div class="col-12 col-md-3">
+                  <label class="form-label">Nama Cabang <span class="opt">(opsional)</span></label>
+                  <input type="text" name="nama_cabang" class="form-control"
+                    placeholder="Pusat / Cabang 1" value="{{ form.nama_cabang|default:'Pusat' }}">
+                </div>
+                <div class="col-12 col-md-5">
+                  <label class="form-label">Alamat Toko</label>
+                  <input type="text" name="alamat_toko" class="form-control"
+                    placeholder="Jalan, nomor, kota" value="{{ form.alamat_toko|default:'' }}">
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label">Nomor Telepon</label>
+                  <input type="text" name="telpon_toko" class="form-control"
+                    placeholder="081xxxxxxx" value="{{ form.telpon_toko|default:'' }}">
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label">Email Toko <span class="req">*</span></label>
+                  <input type="email" name="email_toko" class="form-control" required
+                    placeholder="email@toko.com" value="{{ form.email_toko|default:'' }}">
+                  <div class="form-hint">Digunakan untuk login dan notifikasi toko.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Akun Admin ── -->
+            <div class="form-section">
+              <div class="form-section-title">
+                <i class="fa fa-user-shield"></i> Akun Admin Toko
+              </div>
+              <div class="info-box mb-4">
+                <i class="fa fa-info-circle me-2" style="color:#2980b9;"></i>
+                Admin toko dapat login di <strong>/login/</strong> menggunakan username
+                <strong id="infoUsername">{{ kode_preview }}1</strong> atau email toko
+                dengan password yang ditentukan di bawah.
+              </div>
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <label class="form-label">Nama Admin <span class="req">*</span></label>
+                  <input type="text" name="nama_admin" class="form-control" required
+                    placeholder="Nama lengkap admin toko" value="{{ form.nama_admin|default:'' }}">
+                </div>
+                <div class="col-12 col-md-2">
+                  <label class="form-label">Username Admin</label>
+                  <input type="text" class="form-control" id="usernamePreview"
+                    value="{{ kode_preview }}1" disabled>
+                  <div class="form-hint">Otomatis dari kode toko.</div>
+                </div>
+                <div class="col-12 col-md-3">
+                  <label class="form-label">Password Admin <span class="req">*</span></label>
+                  <input type="password" name="password_admin" class="form-control" required
+                    placeholder="Minimal 6 karakter" minlength="6">
+                </div>
+                <div class="col-12 col-md-3">
+                  <label class="form-label">Konfirmasi Password <span class="req">*</span></label>
+                  <input type="password" id="konfirmPassword" class="form-control"
+                    placeholder="Ulangi password" minlength="6">
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Submit ── -->
+            <div class="form-section d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <a href="{% url 'owner_dashboard' %}" style="font-size:13px;color:#8899bb;text-decoration:none;">
+                <i class="fa fa-arrow-left me-1"></i>Batal, kembali ke Dashboard
+              </a>
+              <button type="submit" class="btn-submit">
+                <i class="fa fa-plus-circle"></i>Daftarkan Toko ke Korporasi
+              </button>
+            </div>
+
+          </form>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <footer class="sticky-footer bg-white mt-auto">
+      <div class="container my-auto py-2 text-center" style="font-size:12px;color:#b0b7c3;">
+        &copy; POSMI &mdash; Paket Korporasi
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script>
+function acakKode() {
+  const h = 'abcdefghijklmnopqrstuvwxyz';
+  let k = '';
+  for (let i = 0; i < 4; i++) k += h[Math.floor(Math.random() * 26)];
+  document.getElementById('kodeToko').value = k;
+  document.getElementById('kodeDisplay').textContent = k.toUpperCase();
+  document.getElementById('usernamePreview').value = k + '1';
+  document.getElementById('previewUsername').textContent = k + '1';
+  document.getElementById('infoUsername').textContent = k + '1';
+}
+
+document.getElementById('formDaftarToko').addEventListener('submit', function(e) {
+  const pw = this.querySelector('[name="password_admin"]').value;
+  const kf = document.getElementById('konfirmPassword').value;
+  if (pw !== kf) {
+    e.preventDefault();
+    alert('Konfirmasi password tidak cocok. Silakan periksa kembali.');
+  }
+});
+</script>
+</body>
+</html>

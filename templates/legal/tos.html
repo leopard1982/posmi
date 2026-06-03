@@ -1,0 +1,448 @@
+{% extends "base-landing.html" %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<title>Syarat &amp; Ketentuan — POSMI</title>
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, #1e2c5a 0%, #2e4080 100%);
+    padding: 60px 0 50px;
+    color: #fff;
+  }
+  .legal-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .legal-hero p {
+    color: rgba(255,255,255,.75);
+    font-size: 15px;
+    margin-bottom: 0;
+  }
+  .legal-body {
+    padding: 56px 0 72px;
+  }
+  .legal-card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 14px;
+    padding: 40px 44px;
+    box-shadow: 0 2px 16px rgba(30,44,90,.07);
+  }
+  .legal-section {
+    margin-bottom: 40px;
+  }
+  .legal-section:last-child {
+    margin-bottom: 0;
+  }
+  .legal-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e2c5a;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+  }
+  .legal-section h2 .section-num {
+    display: inline-block;
+    background: #1e2c5a;
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .legal-section p {
+    color: #555;
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 10px;
+  }
+  .legal-section ul, .legal-section ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+  }
+  .legal-section ul li, .legal-section ol li {
+    color: #555;
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 6px;
+  }
+  .legal-section ul li strong, .legal-section ol li strong {
+    color: #1e2c5a;
+  }
+  .definition-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .definition-item {
+    background: #f8f9fc;
+    border-left: 3px solid #1e2c5a;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+  }
+  .definition-item .term {
+    font-weight: 700;
+    color: #1e2c5a;
+    font-size: 14px;
+  }
+  .definition-item .desc {
+    color: #666;
+    font-size: 13.5px;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+  .package-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 14px;
+  }
+  .package-table th {
+    background: #1e2c5a;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .package-table th:first-child { border-radius: 8px 0 0 0; }
+  .package-table th:last-child  { border-radius: 0 8px 0 0; }
+  .package-table td {
+    padding: 10px 14px;
+    color: #555;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+  }
+  .package-table tr:last-child td { border-bottom: none; }
+  .package-table tr:nth-child(even) td { background: #f8f9fc; }
+  .badge-green {
+    display: inline-block;
+    background: #d4edda;
+    color: #155724;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .info-box {
+    background: #f0f4ff;
+    border: 1px solid #c7d4ff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+  }
+  .info-box p {
+    margin-bottom: 0;
+    color: #2e4080;
+    font-size: 14px;
+  }
+  .contact-block {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #444;
+    font-size: 14.5px;
+  }
+  .contact-item i {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+  .last-updated {
+    font-size: 13px;
+    color: #999;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    text-align: right;
+  }
+  @media (max-width: 768px) {
+    .legal-card { padding: 28px 20px; }
+    .definition-grid { grid-template-columns: 1fr; }
+    .legal-hero h1 { font-size: 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block contents %}
+<!-- Hero -->
+<section class="legal-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 text-center">
+        <div style="display:inline-block;background:rgba(255,255,255,.15);border-radius:30px;padding:4px 16px;font-size:12px;font-weight:600;letter-spacing:1px;color:#fff;text-transform:uppercase;margin-bottom:16px;">Dokumen Legal</div>
+        <h1>Syarat &amp; Ketentuan Penggunaan</h1>
+        <p>Harap baca dengan seksama sebelum menggunakan layanan POSMI. Dengan mengakses atau menggunakan layanan kami, Anda menyetujui syarat dan ketentuan ini.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Body -->
+<section class="legal-body">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-9">
+        <div class="legal-card">
+
+          <!-- 1. Pendahuluan -->
+          <div class="legal-section">
+            <h2><span class="section-num">1</span> Pendahuluan</h2>
+            <p>POSMI (selanjutnya disebut "Layanan") adalah aplikasi Point of Sale (POS) berbasis web yang dikembangkan dan dioperasikan oleh <strong>CV. Leopard Oke Satu</strong> ("Perusahaan"), berdomisili di Indonesia. POSMI dirancang untuk membantu usaha kecil hingga menengah dalam mengelola transaksi penjualan, stok barang, laporan keuangan, dan kegiatan operasional toko secara digital.</p>
+            <p>Dokumen Syarat &amp; Ketentuan ini mengatur hubungan hukum antara Perusahaan dan setiap individu maupun badan usaha ("Pengguna") yang mengakses atau menggunakan Layanan POSMI melalui platform web di alamat yang kami sediakan.</p>
+            <p>Dengan mendaftar, masuk, atau menggunakan Layanan dalam bentuk apapun, Pengguna dianggap telah membaca, memahami, dan menyetujui seluruh isi dokumen ini secara penuh tanpa terkecuali. Jika Anda tidak menyetujui syarat dan ketentuan ini, harap hentikan penggunaan Layanan segera.</p>
+          </div>
+
+          <!-- 2. Definisi -->
+          <div class="legal-section">
+            <h2><span class="section-num">2</span> Definisi</h2>
+            <p>Dalam Syarat &amp; Ketentuan ini, istilah-istilah berikut memiliki arti sebagaimana didefinisikan di bawah ini:</p>
+            <div class="definition-grid">
+              <div class="definition-item">
+                <div class="term">Pengguna</div>
+                <div class="desc">Individu, pemilik usaha, atau badan hukum yang mendaftar dan menggunakan Layanan POSMI, baik dalam kapasitas sebagai pemilik toko (<em>owner</em>) maupun staf/kasir.</div>
+              </div>
+              <div class="definition-item">
+                <div class="term">Layanan</div>
+                <div class="desc">Seluruh fitur, fungsi, antarmuka, dan infrastruktur yang disediakan oleh POSMI melalui platform web, termasuk namun tidak terbatas pada modul POS, manajemen stok, laporan, dan pengelolaan pengguna.</div>
+              </div>
+              <div class="definition-item">
+                <div class="term">Paket</div>
+                <div class="desc">Tingkatan berlangganan yang tersedia pada POSMI, yaitu Paket Gratis, Paket Bisnis Kecil, Paket Bisnis Medium, dan Paket Korporasi, masing-masing dengan fitur dan kuota yang berbeda.</div>
+              </div>
+              <div class="definition-item">
+                <div class="term">Data</div>
+                <div class="desc">Segala informasi yang dimasukkan, diunggah, atau dihasilkan oleh Pengguna melalui Layanan, termasuk data transaksi, data produk, data pelanggan, dan informasi toko.</div>
+              </div>
+              <div class="definition-item">
+                <div class="term">Akun</div>
+                <div class="desc">Identitas digital unik yang dibuat oleh Pengguna untuk mengakses Layanan, terdiri dari nama pengguna, kata sandi, dan informasi profil terkait.</div>
+              </div>
+              <div class="definition-item">
+                <div class="term">Konten</div>
+                <div class="desc">Semua teks, gambar, data, dan informasi lainnya yang diunggah, dibuat, atau disimpan oleh Pengguna dalam Layanan.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Penggunaan Layanan -->
+          <div class="legal-section">
+            <h2><span class="section-num">3</span> Penggunaan Layanan</h2>
+            <p><strong style="color:#1e2c5a;">Penggunaan yang diizinkan:</strong></p>
+            <ul>
+              <li>Menggunakan Layanan untuk keperluan operasional bisnis yang sah sesuai peraturan perundang-undangan Indonesia.</li>
+              <li>Mengakses Layanan melalui peramban web standar pada perangkat yang kompatibel.</li>
+              <li>Menginput, mengelola, dan mengekspor data toko milik Pengguna sendiri.</li>
+              <li>Memberikan akses kepada staf atau kasir dalam batas kuota akun yang berlaku pada Paket yang dipilih.</li>
+              <li>Menggunakan fitur pelaporan dan analitik untuk kepentingan bisnis internal.</li>
+            </ul>
+            <p><strong style="color:#1e2c5a;">Larangan penggunaan:</strong></p>
+            <ul>
+              <li>Menggunakan Layanan untuk kegiatan yang melanggar hukum, termasuk penipuan, pencucian uang, atau kejahatan siber.</li>
+              <li>Menyebarkan malware, virus, atau kode berbahaya melalui platform Layanan.</li>
+              <li>Melakukan reverse engineering, dekompilasi, atau mencoba mengakses kode sumber Layanan tanpa izin tertulis.</li>
+              <li>Menjual kembali, menyewakan, atau mendistribusikan Layanan kepada pihak ketiga tanpa perjanjian reseller tertulis dari Perusahaan.</li>
+              <li>Melakukan penambangan data (<em>data scraping</em>) secara otomatis tanpa izin tertulis.</li>
+              <li>Menggunakan identitas palsu atau menyamar sebagai pihak lain dalam Layanan.</li>
+              <li>Melakukan tindakan yang membebani infrastruktur Layanan secara berlebihan.</li>
+            </ul>
+            <div class="info-box">
+              <p><i class="fa fa-info-circle me-2"></i> Pelanggaran terhadap ketentuan penggunaan dapat mengakibatkan penangguhan atau penutupan akun tanpa pemberitahuan sebelumnya, serta tindakan hukum jika diperlukan.</p>
+            </div>
+          </div>
+
+          <!-- 4. Paket & Pembayaran -->
+          <div class="legal-section">
+            <h2><span class="section-num">4</span> Paket &amp; Pembayaran</h2>
+            <p>POSMI menyediakan empat tingkatan paket berlangganan sebagai berikut:</p>
+            <table class="package-table">
+              <thead>
+                <tr>
+                  <th>Paket</th>
+                  <th>Biaya</th>
+                  <th>Kuota &amp; Fitur Utama</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Gratis</strong></td>
+                  <td><span class="badge-green">Rp 0</span></td>
+                  <td>1 toko, 1 kasir, 100 produk, laporan dasar</td>
+                </tr>
+                <tr>
+                  <td><strong>Bisnis Kecil</strong></td>
+                  <td>Sesuai halaman harga</td>
+                  <td>1 toko, 3 kasir, 500 produk, laporan lengkap, ekspor Excel</td>
+                </tr>
+                <tr>
+                  <td><strong>Bisnis Medium</strong></td>
+                  <td>Sesuai halaman harga</td>
+                  <td>3 toko, 10 kasir, produk tidak terbatas, semua fitur Bisnis Kecil + manajemen multi-toko</td>
+                </tr>
+                <tr>
+                  <td><strong>Korporasi</strong></td>
+                  <td>Hubungi kami</td>
+                  <td>Toko tidak terbatas, kasir tidak terbatas, onboarding khusus, SLA prioritas, dukungan API</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="margin-top:16px;">Ketentuan pembayaran:</p>
+            <ul>
+              <li>Pembayaran dilakukan di muka melalui metode pembayaran yang tersedia pada platform.</li>
+              <li>Paket berlangganan berlaku selama periode yang dipilih (bulanan atau tahunan) dan akan berakhir secara otomatis apabila tidak diperbarui.</li>
+              <li>Pengguna dapat mengajukan <strong>pengembalian dana (refund) dalam 30 (tiga puluh) hari kalender</strong> sejak tanggal pembayaran, dengan syarat Layanan mengalami gangguan signifikan yang disebabkan oleh Perusahaan dan tidak dapat diselesaikan dalam waktu wajar.</li>
+              <li>Permintaan refund di luar ketentuan di atas tidak akan diproses.</li>
+              <li>Harga dapat berubah sewaktu-waktu; perubahan harga akan diberitahukan minimal 30 hari sebelum berlaku.</li>
+            </ul>
+          </div>
+
+          <!-- 5. Hak & Kewajiban Pengguna -->
+          <div class="legal-section">
+            <h2><span class="section-num">5</span> Hak &amp; Kewajiban Pengguna</h2>
+            <p><strong style="color:#1e2c5a;">Hak Pengguna:</strong></p>
+            <ul>
+              <li>Mengakses Layanan sesuai fitur dan kuota Paket yang aktif.</li>
+              <li>Mendapatkan dukungan teknis sesuai tingkatan Paket yang berlangganan.</li>
+              <li>Mengekspor Data milik sendiri kapan saja selama berlangganan aktif.</li>
+              <li>Meminta penghapusan akun dan Data pribadi sesuai ketentuan Kebijakan Privasi.</li>
+              <li>Mendapatkan pemberitahuan atas perubahan material pada Layanan atau harga.</li>
+            </ul>
+            <p><strong style="color:#1e2c5a;">Kewajiban Pengguna:</strong></p>
+            <ul>
+              <li>Menjaga kerahasiaan kredensial akun (nama pengguna dan kata sandi).</li>
+              <li>Memberikan informasi yang akurat dan terkini saat mendaftar dan memperbarui profil.</li>
+              <li>Bertanggung jawab penuh atas seluruh aktivitas yang dilakukan melalui akun miliknya.</li>
+              <li>Melaporkan segera kepada Perusahaan apabila mengetahui adanya akses tidak sah pada akunnya.</li>
+              <li>Mematuhi seluruh ketentuan dalam dokumen ini serta peraturan perundang-undangan yang berlaku.</li>
+            </ul>
+          </div>
+
+          <!-- 6. Hak & Kewajiban POSMI -->
+          <div class="legal-section">
+            <h2><span class="section-num">6</span> Hak &amp; Kewajiban POSMI</h2>
+            <p><strong style="color:#1e2c5a;">Hak Perusahaan:</strong></p>
+            <ul>
+              <li>Menangguhkan atau menutup akun Pengguna yang terbukti melanggar Syarat &amp; Ketentuan ini.</li>
+              <li>Mengubah, menambah, atau menghapus fitur Layanan dengan pemberitahuan yang wajar kepada Pengguna.</li>
+              <li>Melakukan pemeliharaan terjadwal (<em>maintenance</em>) yang dapat mempengaruhi ketersediaan Layanan.</li>
+              <li>Menggunakan Data yang dianonimkan untuk keperluan analisis dan peningkatan Layanan.</li>
+            </ul>
+            <p><strong style="color:#1e2c5a;">Kewajiban Perusahaan:</strong></p>
+            <ul>
+              <li>Menyediakan Layanan sesuai dengan komitmen ketersediaan (<em>uptime</em>) yang tercantum dalam SLA masing-masing Paket.</li>
+              <li>Menjaga kerahasiaan dan keamanan Data Pengguna sesuai UU PDP No. 27 Tahun 2022.</li>
+              <li>Memberikan pemberitahuan kepada Pengguna apabila terjadi pelanggaran data yang berdampak pada informasi pribadi mereka.</li>
+              <li>Menyediakan saluran dukungan teknis yang dapat diakses oleh Pengguna sesuai ketentuan Paket.</li>
+              <li>Mencadangkan Data Pengguna secara berkala untuk mencegah kehilangan data akibat kegagalan sistem.</li>
+            </ul>
+          </div>
+
+          <!-- 7. Kerahasiaan Data -->
+          <div class="legal-section">
+            <h2><span class="section-num">7</span> Kerahasiaan Data</h2>
+            <p>Perusahaan berkomitmen untuk melindungi privasi dan kerahasiaan Data Pengguna sesuai dengan ketentuan <strong>Undang-Undang Perlindungan Data Pribadi (UU PDP) No. 27 Tahun 2022</strong> dan peraturan turunannya.</p>
+            <ul>
+              <li>Data Pengguna tidak akan dijual, disewakan, atau dibagikan kepada pihak ketiga untuk tujuan komersial tanpa persetujuan eksplisit Pengguna.</li>
+              <li>Akses terhadap Data Pengguna dibatasi hanya kepada personel Perusahaan yang memiliki kebutuhan operasional yang sah.</li>
+              <li>Data yang disimpan dilindungi dengan enkripsi dan langkah-langkah keamanan teknis yang sesuai standar industri.</li>
+              <li>Pengguna memiliki hak untuk mengakses, mengoreksi, dan meminta penghapusan data pribadinya sebagaimana diatur dalam UU PDP No. 27/2022.</li>
+              <li>Apabila terjadi insiden kebocoran data, Perusahaan wajib melaporkan kepada Badan Siber dan Sandi Negara (BSSN) dan memberitahu Pengguna yang terdampak dalam waktu 72 jam sejak insiden diketahui.</li>
+            </ul>
+            <p>Untuk informasi lebih lengkap, silakan baca <a href="{% url 'privacy' %}" style="color:#1e2c5a;font-weight:600;">Kebijakan Privasi POSMI</a>.</p>
+          </div>
+
+          <!-- 8. Pembatasan Tanggung Jawab -->
+          <div class="legal-section">
+            <h2><span class="section-num">8</span> Pembatasan Tanggung Jawab</h2>
+            <p>Layanan POSMI disediakan "sebagaimana adanya" (<em>as-is</em>). Dalam batas maksimum yang diizinkan oleh hukum yang berlaku:</p>
+            <ul>
+              <li>Perusahaan tidak bertanggung jawab atas kerugian tidak langsung, insidental, khusus, atau konsekuensial yang timbul dari penggunaan atau ketidakmampuan menggunakan Layanan.</li>
+              <li>Perusahaan tidak menjamin bahwa Layanan akan bebas dari gangguan, kesalahan, atau virus komputer setiap saat.</li>
+              <li>Total tanggung jawab Perusahaan kepada Pengguna atas klaim apapun tidak akan melebihi jumlah biaya berlangganan yang telah dibayarkan oleh Pengguna dalam 3 (tiga) bulan terakhir sebelum klaim terjadi.</li>
+              <li>Pengguna bertanggung jawab sepenuhnya atas akurasi data yang diinput ke dalam Layanan dan keputusan bisnis yang diambil berdasarkan laporan yang dihasilkan oleh Layanan.</li>
+            </ul>
+          </div>
+
+          <!-- 9. Perubahan Layanan -->
+          <div class="legal-section">
+            <h2><span class="section-num">9</span> Perubahan Layanan</h2>
+            <p>Perusahaan berhak mengubah, memperbarui, atau menghentikan seluruh atau sebagian Layanan kapan saja. Untuk perubahan yang bersifat material (perubahan harga, penghentian fitur utama, atau perubahan signifikan pada ketentuan ini), Perusahaan akan:</p>
+            <ul>
+              <li>Memberikan pemberitahuan melalui email terdaftar Pengguna minimal <strong>30 (tiga puluh) hari</strong> sebelum perubahan berlaku.</li>
+              <li>Menampilkan pengumuman pada halaman utama platform POSMI.</li>
+            </ul>
+            <p>Penggunaan Layanan secara berkelanjutan setelah tanggal efektif perubahan dianggap sebagai penerimaan terhadap ketentuan yang diperbarui.</p>
+          </div>
+
+          <!-- 10. Hukum yang Berlaku -->
+          <div class="legal-section">
+            <h2><span class="section-num">10</span> Hukum yang Berlaku</h2>
+            <p>Syarat &amp; Ketentuan ini diatur oleh dan ditafsirkan sesuai dengan <strong>hukum Negara Kesatuan Republik Indonesia</strong>. Apabila timbul sengketa yang berkaitan dengan Layanan ini, para pihak sepakat untuk:</p>
+            <ol>
+              <li>Menyelesaikan sengketa terlebih dahulu melalui musyawarah mufakat dalam jangka waktu 30 (tiga puluh) hari.</li>
+              <li>Apabila musyawarah tidak menghasilkan kesepakatan, sengketa akan diselesaikan melalui Badan Arbitrase Nasional Indonesia (BANI) atau pengadilan yang berwenang di wilayah hukum tempat Perusahaan berdomisili.</li>
+            </ol>
+          </div>
+
+          <!-- 11. Kontak -->
+          <div class="legal-section">
+            <h2><span class="section-num">11</span> Kontak</h2>
+            <p>Apabila Anda memiliki pertanyaan, masukan, atau keluhan mengenai Syarat &amp; Ketentuan ini atau Layanan POSMI secara umum, silakan hubungi kami melalui:</p>
+            <div class="contact-block">
+              <div class="contact-item">
+                <i class="fa fa-envelope" style="background:#e8eeff;color:#1e2c5a;"></i>
+                <div>
+                  <div style="font-size:12px;color:#999;margin-bottom:2px;">Email</div>
+                  <a href="mailto:adhy.chandra@live.co.uk" style="color:#1e2c5a;font-weight:600;text-decoration:none;">adhy.chandra@live.co.uk</a>
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="fa fa-whatsapp" style="background:#e6f9ef;color:#25d366;"></i>
+                <div>
+                  <div style="font-size:12px;color:#999;margin-bottom:2px;">WhatsApp</div>
+                  <a href="https://wa.me/6281213270275" target="_blank" style="color:#1e2c5a;font-weight:600;text-decoration:none;">+62 812-1327-0275</a>
+                </div>
+              </div>
+              <div class="contact-item">
+                <i class="fa fa-globe" style="background:#e8f4ff;color:#0d6efd;"></i>
+                <div>
+                  <div style="font-size:12px;color:#999;margin-bottom:2px;">Website</div>
+                  <a href="https://leopardos.tech" target="_blank" style="color:#1e2c5a;font-weight:600;text-decoration:none;">leopardos.tech</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="last-updated">
+              <i class="fa fa-calendar me-1"></i> Terakhir diperbarui: <strong>1 Juni 2026</strong>
+            </div>
+          </div>
+
+        </div><!-- /.legal-card -->
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

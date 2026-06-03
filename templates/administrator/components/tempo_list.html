@@ -1,0 +1,160 @@
+{% load humanize %}
+<style>
+  .tempo-page { color: #4b5563; }
+  .tempo-header { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px; }
+  .tempo-title { margin:0;color:#2f3446;font-size:26px;font-weight:900;line-height:1.2; }
+  .tempo-breadcrumb { margin-top:6px;color:#8a92a6;font-size:13px;font-weight:700; }
+  .tempo-panel { background:#fff;border:1px solid #e4e8f0;border-radius:10px;box-shadow:0 6px 18px rgba(31,41,55,.05);overflow:hidden;margin-bottom:18px; }
+  .tempo-panel-header { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid #eef1f6; }
+  .tempo-panel-title { margin:0;color:#2f3446;font-size:15px;font-weight:900; }
+  .tempo-panel-sub { margin-top:2px;color:#8a92a6;font-size:12px; }
+  .tempo-table { width:100%;border-collapse:collapse; }
+  .tempo-table thead th { color:#687086;border-bottom:1px solid #dfe4ee;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.3px;padding:10px 14px;white-space:nowrap; }
+  .tempo-table tbody td { color:#4b5563;border-bottom:1px solid #eef1f6;font-size:13px;vertical-align:middle;padding:10px 14px; }
+  .tempo-table tbody tr:hover { background:#f8fafc; }
+  .tempo-money { color:#2f3446;font-weight:900;white-space:nowrap; }
+  .badge-tempo { display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:900; }
+  .badge-tempo.lewat { color:#c83228;background:#fdeceb; }
+  .badge-tempo.ok { color:#0369a1;background:#e0f2fe; }
+  .badge-tempo.hari-ini { color:#9a3412;background:#ffedd5; }
+  .tempo-empty { padding:36px 18px;text-align:center;color:#8a92a6;font-weight:800; }
+</style>
+
+<div class="tempo-page">
+  <div class="tempo-header">
+    <div>
+      <h2 class="tempo-title">Transaksi Tempo</h2>
+      <div class="tempo-breadcrumb">Transaksi &rarr; Pembayaran Tempo Belum Lunas</div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:900;color:#1e40af;">
+      <i class="fas fa-clock mr-1"></i> {{ total_tempo }} transaksi belum lunas
+    </div>
+  </div>
+
+  <!-- Bulan Berjalan -->
+  <div class="tempo-panel">
+    <div class="tempo-panel-header">
+      <div>
+        <h3 class="tempo-panel-title"><i class="fas fa-calendar-day mr-2" style="color:#1d4ed8;"></i>Tempo Bulan {{ bulan_ini }} {{ tahun_ini }}</h3>
+        <div class="tempo-panel-sub">Transaksi tempo yang dibuat bulan ini</div>
+      </div>
+      <span style="background:#dbeafe;color:#1e40af;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:900;">{{ bulan_berjalan|length }} transaksi</span>
+    </div>
+    <div style="overflow-x:auto;padding:14px 18px;">
+      {% if bulan_berjalan %}
+      <table class="tempo-table">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>No. Nota</th>
+            <th>Pembeli</th>
+            <th>Kasir</th>
+            <th>Dibuat</th>
+            <th>Jatuh Tempo</th>
+            <th>Total</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in bulan_berjalan %}
+          {% with today=t.jatuh_tempo|date:"Y-m-d" %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td style="font-weight:700;color:#1e3a47;">{{ t.no_nota }}</td>
+            <td>{{ t.customer|default:"—" }}</td>
+            <td>{{ t.user.userprofile.nama_lengkap|default:t.user.username }}</td>
+            <td style="color:#5a8090;font-size:12px;">{{ t.created_at|date:"d/m/Y" }}</td>
+            <td style="font-weight:700;">
+              {{ t.jatuh_tempo|date:"d/m/Y" }}
+            </td>
+            <td class="tempo-money">Rp {{ t.total|intcomma }}</td>
+            <td class="text-center">
+              {% now "Y-m-d" as hari_ini %}
+              {% if t.jatuh_tempo|date:"Y-m-d" < hari_ini %}
+                <span class="badge-tempo lewat"><i class="fas fa-exclamation-circle mr-1"></i>Lewat Jatuh Tempo</span>
+              {% elif t.jatuh_tempo|date:"Y-m-d" == hari_ini %}
+                <span class="badge-tempo hari-ini"><i class="fas fa-clock mr-1"></i>Hari Ini</span>
+              {% else %}
+                <span class="badge-tempo ok"><i class="fas fa-hourglass-half mr-1"></i>Belum Jatuh Tempo</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="/cms/tempo/bayar/?id={{ t.nota }}" target="_blank"
+                 class="btn btn-sm btn-primary" style="border-radius:7px;font-size:12px;font-weight:700;">
+                <i class="fas fa-money-bill-wave mr-1"></i>Bayar Tempo
+              </a>
+            </td>
+          </tr>
+          {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="tempo-empty"><i class="fas fa-check-circle" style="font-size:28px;opacity:.3;display:block;margin-bottom:8px;"></i>Tidak ada tempo di bulan ini.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Bulan Sebelumnya -->
+  <div class="tempo-panel">
+    <div class="tempo-panel-header">
+      <div>
+        <h3 class="tempo-panel-title"><i class="fas fa-history mr-2" style="color:#7c3aed;"></i>Tempo Bulan Sebelumnya</h3>
+        <div class="tempo-panel-sub">Transaksi tempo yang dibuat sebelum bulan ini</div>
+      </div>
+      <span style="background:#ede9fe;color:#7c3aed;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:900;">{{ bulan_sebelumnya|length }} transaksi</span>
+    </div>
+    <div style="overflow-x:auto;padding:14px 18px;">
+      {% if bulan_sebelumnya %}
+      <table class="tempo-table">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>No. Nota</th>
+            <th>Pembeli</th>
+            <th>Kasir</th>
+            <th>Dibuat</th>
+            <th>Jatuh Tempo</th>
+            <th>Total</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in bulan_sebelumnya %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td style="font-weight:700;color:#1e3a47;">{{ t.no_nota }}</td>
+            <td>{{ t.customer|default:"—" }}</td>
+            <td>{{ t.user.userprofile.nama_lengkap|default:t.user.username }}</td>
+            <td style="color:#5a8090;font-size:12px;">{{ t.created_at|date:"d/m/Y" }}</td>
+            <td style="font-weight:700;">{{ t.jatuh_tempo|date:"d/m/Y" }}</td>
+            <td class="tempo-money">Rp {{ t.total|intcomma }}</td>
+            <td class="text-center">
+              {% now "Y-m-d" as hari_ini %}
+              {% if t.jatuh_tempo|date:"Y-m-d" < hari_ini %}
+                <span class="badge-tempo lewat"><i class="fas fa-exclamation-circle mr-1"></i>Lewat Jatuh Tempo</span>
+              {% elif t.jatuh_tempo|date:"Y-m-d" == hari_ini %}
+                <span class="badge-tempo hari-ini"><i class="fas fa-clock mr-1"></i>Hari Ini</span>
+              {% else %}
+                <span class="badge-tempo ok"><i class="fas fa-hourglass-half mr-1"></i>Belum Jatuh Tempo</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="/cms/tempo/bayar/?id={{ t.nota }}" target="_blank"
+                 class="btn btn-sm btn-primary" style="border-radius:7px;font-size:12px;font-weight:700;">
+                <i class="fas fa-money-bill-wave mr-1"></i>Bayar Tempo
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="tempo-empty"><i class="fas fa-check-circle" style="font-size:28px;opacity:.3;display:block;margin-bottom:8px;"></i>Tidak ada tempo di bulan sebelumnya.</div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
