@@ -1218,7 +1218,8 @@ def midtransNotifikasi(request):
         fraud      = data.get('fraud_status', 'accept')
         gross      = data.get('gross_amount', '0')
 
-        raw  = f"{order_id}{trx_status}{gross}{settings.MIDTRANS_SERVER}"
+        status_code = data.get('status_code', '')
+        raw  = f"{order_id}{status_code}{gross}{settings.MIDTRANS_SERVER}"
         sign = hashlib.sha512(raw.encode()).hexdigest()
         if sign != data.get('signature_key', ''):
             return HttpResponse('Invalid signature', status=400)
