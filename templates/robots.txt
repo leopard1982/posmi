@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /$
+Allow: /tutorial/
+Allow: /syarat-ketentuan/
+Allow: /kebijakan-privasi/
+Allow: /sla/
+Disallow: /admin/
+Disallow: /cms/
+Disallow: /management/
+Disallow: /owner/
+Disallow: /payment/
+Disallow: /promo/
+Disallow: /api/
+Disallow: /login/
+Disallow: /reset-password/
+Disallow: /lupa-password/
+Disallow: /media/
+
+Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml

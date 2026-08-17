@@ -276,17 +276,26 @@ def _proses_pending_payment(pending):
 
     # ── ADD-ON ────────────────────────────────────────────────────────────────
     elif pending.tipe == PendingPayment.TIPE_ADDON:
-        addon_type = d['addon_type']
+        addon_type     = d['addon_type']
+        wallet_dipakai = int(d.get('wallet_dipakai', 0))
         if d.get('kode_toko'):
             try:
                 cabang = Cabang.objects.get(prefix=d['kode_toko'])
                 addon  = TokoAddon.objects.filter(cabang=cabang, addon_type=addon_type).first()
                 if addon:
-                    addon.status       = TokoAddon.STATUS_AKTIF
-                    addon.activated_at = datetime.datetime.now()
-                    addon.expired_at   = cabang.lisensi_expired
-                    addon.harga_dibayar = pending.harga
+                    addon.status        = TokoAddon.STATUS_AKTIF
+                    addon.activated_at  = datetime.datetime.now()
+                    addon.expired_at    = cabang.lisensi_expired
+                    addon.harga_dibayar = pending.harga + wallet_dipakai
                     addon.save()
+                if wallet_dipakai > 0:
+                    cabang.wallet = max(0, cabang.wallet - wallet_dipakai)
+                    cabang.save(update_fields=['wallet'])
+                    DetailWalet.objects.create(
+                        cabang=cabang,
+                        keterangan=f'potongan wallet aktivasi add-on {addon_type}',
+                        jumlah=wallet_dipakai,
+                    )
             except Exception:
                 pass
         elif d.get('owner_id'):
@@ -295,10 +304,10 @@ def _proses_pending_payment(pending):
                 owner = Owner.objects.get(pk=d['owner_id'])
                 addon = TokoAddon.objects.filter(owner=owner, addon_type=addon_type).first()
                 if addon:
-                    addon.status       = TokoAddon.STATUS_AKTIF
-                    addon.activated_at = datetime.datetime.now()
-                    addon.expired_at   = owner.lisensi_expired
-                    addon.harga_dibayar = pending.harga
+                    addon.status        = TokoAddon.STATUS_AKTIF
+                    addon.activated_at  = datetime.datetime.now()
+                    addon.expired_at    = owner.lisensi_expired
+                    addon.harga_dibayar = pending.harga + wallet_dipakai
                     addon.save()
             except Exception:
                 pass

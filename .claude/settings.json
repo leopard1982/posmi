@@ -44,7 +44,10 @@
       "Bash(git checkout *)",
       "Bash(git commit -m ' *)",
       "Bash(sed -n '7,15p' /home/suryo/project/kelontong_mami/owner/migrations/0006_order_barang.py)",
-      "Bash(sed -n '7,15p' /home/suryo/project/kelontong_mami/owner/migrations/0008_toko_addon.py)"
+      "Bash(sed -n '7,15p' /home/suryo/project/kelontong_mami/owner/migrations/0008_toko_addon.py)",
+      "Bash(.venv/bin/python -c \"import django; django.setup\\(\\); from cms.views import cmsAddonAktifkan; print\\('OK'\\)\")",
+      "Bash(.venv/bin/python -c ' *)",
+      "Bash(DJANGO_SETTINGS_MODULE=kelontong_mami.settings .venv/bin/python -c ' *)"
     ],
     "additionalDirectories": [
       "/home/suryo/.claude/projects/-home-suryo-project-kelontong-mami"
