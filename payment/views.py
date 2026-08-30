@@ -13,6 +13,7 @@ from django.shortcuts import render
 
 import midtransclient
 
+from kelontong_mami.recaptcha import verify_recaptcha
 from pos.models import DetailWalet, Penjualan
 from posmimail import posmiMail
 from promo.models import Promo, PromoUsed
@@ -276,17 +277,26 @@ def _proses_pending_payment(pending):
 
     # ── ADD-ON ────────────────────────────────────────────────────────────────
     elif pending.tipe == PendingPayment.TIPE_ADDON:
-        addon_type = d['addon_type']
+        addon_type     = d['addon_type']
+        wallet_dipakai = int(d.get('wallet_dipakai', 0))
         if d.get('kode_toko'):
             try:
                 cabang = Cabang.objects.get(prefix=d['kode_toko'])
                 addon  = TokoAddon.objects.filter(cabang=cabang, addon_type=addon_type).first()
                 if addon:
-                    addon.status       = TokoAddon.STATUS_AKTIF
-                    addon.activated_at = datetime.datetime.now()
-                    addon.expired_at   = cabang.lisensi_expired
-                    addon.harga_dibayar = pending.harga
+                    addon.status        = TokoAddon.STATUS_AKTIF
+                    addon.activated_at  = datetime.datetime.now()
+                    addon.expired_at    = cabang.lisensi_expired
+                    addon.harga_dibayar = pending.harga + wallet_dipakai
                     addon.save()
+                if wallet_dipakai > 0:
+                    cabang.wallet = max(0, cabang.wallet - wallet_dipakai)
+                    cabang.save(update_fields=['wallet'])
+                    DetailWalet.objects.create(
+                        cabang=cabang,
+                        keterangan=f'potongan wallet aktivasi add-on {addon_type}',
+                        jumlah=wallet_dipakai,
+                    )
             except Exception:
                 pass
         elif d.get('owner_id'):
@@ -295,10 +305,10 @@ def _proses_pending_payment(pending):
                 owner = Owner.objects.get(pk=d['owner_id'])
                 addon = TokoAddon.objects.filter(owner=owner, addon_type=addon_type).first()
                 if addon:
-                    addon.status       = TokoAddon.STATUS_AKTIF
-                    addon.activated_at = datetime.datetime.now()
-                    addon.expired_at   = owner.lisensi_expired
-                    addon.harga_dibayar = pending.harga
+                    addon.status        = TokoAddon.STATUS_AKTIF
+                    addon.activated_at  = datetime.datetime.now()
+                    addon.expired_at    = owner.lisensi_expired
+                    addon.harga_dibayar = pending.harga + wallet_dipakai
                     addon.save()
             except Exception:
                 pass
@@ -359,6 +369,10 @@ def bayarAddon(request):
         asal = '/'
 
     if request.method != 'POST':
+        return HttpResponseRedirect(asal)
+
+    if not verify_recaptcha(request, action='bayar_addon'):
+        messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
         return HttpResponseRedirect(asal)
 
     addon_type  = request.POST.get('addon_type', '').strip()
@@ -464,6 +478,10 @@ def requestAddon(request):
         asal = "/"
 
     if request.method != 'POST':
+        return HttpResponseRedirect(asal)
+
+    if not verify_recaptcha(request, action='request_addon'):
+        messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
         return HttpResponseRedirect(asal)
 
     addon_type  = request.POST.get('addon_type', '').strip()
@@ -676,6 +694,10 @@ def paymentRequest(request):
     if request.method != "POST":
         return HttpResponseRedirect('/')
 
+    if not verify_recaptcha(request, action='payment_request'):
+        messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+        return HttpResponseRedirect('/')
+
     paket = ""
     harga = None
     kode_toko   = prefixGenerator()
@@ -764,6 +786,10 @@ def requestDemoAplikasi(request):
     if request.method != "POST":
         return HttpResponseRedirect('/')
 
+    if not verify_recaptcha(request, action='request_demo'):
+        messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+        return HttpResponseRedirect(asal)
+
     nama          = request.POST.get('nama', '').strip()
     email         = request.POST.get('email', '').strip().lower()
     aplikasi_demo = request.POST.get('aplikasi_demo', '').strip()
@@ -827,6 +853,10 @@ def paymentResponse(request):
             lisensi_expired = datetime.datetime.now() + datetime.timedelta(days=dur_days.get(pkt, 30))
 
     if request.method != "POST":
+        return HttpResponseRedirect(asal)
+
+    if not verify_recaptcha(request, action='payment_response'):
+        messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
         return HttpResponseRedirect(asal)
 
     voucher = request.POST.get('voucher', '').lower()
@@ -919,6 +949,10 @@ def ajukanRefundGaransi(request):
     if request.method != "POST":
         return HttpResponseRedirect(asal)
 
+    if not verify_recaptcha(request, action='refund'):
+        messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+        return HttpResponseRedirect(asal)
+
     try:
         cabang  = request.user.userprofile.cabang
         garansi = GaransiRefund.objects.filter(cabang=cabang).order_by('-created_at').first()
@@ -976,6 +1010,10 @@ def cekLisensi(request):
         asal = "/"
 
     try:
+        if not verify_recaptcha(request, action='cek_lisensi'):
+            messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return HttpResponseRedirect(asal)
+
         kode_toko = request.POST['id']
         tipe      = request.GET['tipe']
         list_kuota = list(range(50, 1500, 50))
@@ -1061,6 +1099,10 @@ def tambahKuota(request):
         asal = '/'
 
     try:
+        if not verify_recaptcha(request, action='tambah_kuota'):
+            messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return HttpResponseRedirect(asal)
+
         kode_toko    = request.GET['id']
         jumlah_kuota = int(request.POST['jumlah_kuota'])
         voucher      = request.POST.get('voucher', '').lower()
@@ -1146,6 +1188,10 @@ def upgradeLisensi(request):
         asal = '/'
 
     try:
+        if not verify_recaptcha(request, action='upgrade_lisensi'):
+            messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return HttpResponseRedirect(asal)
+
         kode_toko = request.GET['id']
         cabang    = Cabang.objects.get(prefix=kode_toko)
         raw       = str(request.POST['list_biaya'])

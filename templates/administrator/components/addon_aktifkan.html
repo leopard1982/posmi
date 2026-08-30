@@ -44,23 +44,39 @@
 .aktifkan-info-label { color:#8a92a6; font-weight:600; }
 .aktifkan-info-value { font-weight:700; color:#1e2c5a; text-align:right; }
 
+/* Price breakdown box */
 .aktifkan-price-box {
   background:#eef3ff; border:1px solid #c7d7f5; border-radius:12px;
-  padding:20px 24px; margin-bottom:20px;
-  display:flex; align-items:center; justify-content:space-between;
-  flex-wrap:wrap; gap:12px;
+  padding:20px 24px; margin-bottom:16px;
+}
+.price-row {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:13px; color:#4b5563; padding:4px 0;
+}
+.price-row-disc { color:#059669; }
+.price-row-total {
+  border-top:2px solid #c7d7f5; margin-top:10px; padding-top:10px;
 }
 .aktifkan-price-main   { font-size:28px; font-weight:900; color:#1e2c5a; }
-.aktifkan-price-period { font-size:13px; color:#8a92a6; margin-top:2px; }
+.aktifkan-price-period { font-size:12px; color:#8a92a6; margin-top:2px; }
+
+/* Wallet checkbox card */
+.wallet-card {
+  background:#f0fdf4; border:1px solid #86efac; border-radius:12px;
+  padding:14px 18px; margin-bottom:16px; font-size:13px;
+}
+.wallet-card-disabled {
+  background:#f9fafb; border:1px solid #e4e8f0; border-radius:12px;
+  padding:14px 18px; margin-bottom:16px; font-size:13px; color:#9ca3af;
+}
+.wallet-label { display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; color:#065f46; }
+.wallet-label-disabled { display:flex; align-items:center; gap:10px; font-weight:700; color:#9ca3af; }
+.wallet-saldo { font-size:12px; font-weight:600; color:#059669; margin-top:3px; }
 
 .aktifkan-notice {
   background:#fef9ec; border:1px solid #f6d860; border-radius:10px;
   padding:14px 18px; font-size:13px; color:#7a5c0a; margin-bottom:20px;
   display:flex; gap:10px; align-items:flex-start;
-}
-.sudah-pending {
-  background:#fef3c7; border:1px solid #fde68a; border-radius:10px;
-  padding:16px 20px; font-size:13px; color:#92400e; margin-bottom:16px;
 }
 
 /* Tombol sejajar */
@@ -83,6 +99,14 @@
   transition:background .15s;
 }
 .btn-aktifkan:hover { background:#3a5fc8; }
+.btn-aktifkan-wallet {
+  flex:2; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 20px; background:#059669; color:#fff;
+  border:none; border-radius:10px;
+  font-size:14px; font-weight:800; cursor:pointer;
+  transition:background .15s;
+}
+.btn-aktifkan-wallet:hover { background:#047857; }
 
 /* Modal konfirmasi */
 .modal-overlay {
@@ -114,9 +138,6 @@
   border:none; border-radius:8px; font-size:13px; font-weight:800; cursor:pointer;
 }
 .modal-btn-confirm:hover { background:#3a5fc8; }
-
-/* Modal sukses */
-.modal-success-icon { background:#d1fae5; color:#059669; }
 </style>
 
 <div class="aktifkan-page">
@@ -166,49 +187,97 @@
     </div>
   </div>
 
-  <!-- Harga -->
-  <div class="aktifkan-price-box">
-    <div>
-      <div class="aktifkan-price-main">Rp {{ addon.harga|intcomma }}</div>
-      <div class="aktifkan-price-period">per bulan &bull; berlaku sampai akhir masa langganan</div>
-    </div>
-    <div style="background:{{ addon.color }}18;color:{{ addon.color }};font-size:12px;font-weight:800;padding:6px 14px;border-radius:50px;">
-      <i class="fa {{ addon.icon }} me-1"></i>{{ addon.nama }}
-    </div>
-  </div>
-
-  <!-- Pending notice -->
-  {% if existing and existing.status == 'nonaktif' %}
-  <div class="sudah-pending">
-    <i class="fa fa-clock-o me-2"></i>
-    <strong>Permintaan sedang diproses.</strong> Tim POSMI akan mengaktifkan add-on ini setelah pembayaran dikonfirmasi.
-  </div>
-  {% endif %}
-
-  <!-- Catatan -->
-  <div class="aktifkan-notice">
-    <i class="fa fa-info-circle" style="margin-top:1px;flex-shrink:0;"></i>
-    <div>
-      Setelah mengklik <strong>"Ajukan Permintaan"</strong>, tim POSMI akan menghubungi Anda melalui WhatsApp atau email
-      untuk konfirmasi pembayaran. Add-on akan diaktifkan segera setelah pembayaran diterima.
-    </div>
-  </div>
-
   {% if not cabang.paket and not cabang.owner_id %}
   <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:16px 20px;font-size:13px;color:#991b1b;text-align:center;">
     <i class="fa fa-exclamation-circle me-2"></i>
     <strong>Paket Gratis</strong> tidak dapat menggunakan add-on berbayar. Upgrade ke paket Bisnis terlebih dahulu.
   </div>
   {% else %}
-  <!-- Tombol sejajar: Batal kiri, Ajukan kanan -->
-  <div class="btn-row">
-    <button type="button" class="btn-batal" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
-      <i class="fa fa-times"></i> Batal
-    </button>
-    <button type="button" class="btn-aktifkan" onclick="document.getElementById('modalKonfirmasi').classList.add('active')">
-      <i class="fa fa-send"></i> Ajukan Permintaan Aktivasi
-    </button>
-  </div>
+
+  <!-- Form pembayaran -->
+  <form id="formAddon" method="post" action="{% url 'cms_addon_aktifkan' addon_type %}">
+    {% csrf_token %}
+
+    <!-- Wallet -->
+    {% if wallet > 0 %}
+    <div class="wallet-card">
+      <label class="wallet-label" for="id_gunakan_wallet">
+        <input type="checkbox" id="id_gunakan_wallet" name="gunakan_wallet"
+               {% if wallet_dipakai > 0 %}checked{% endif %}
+               onchange="hitungHarga(this.checked)">
+        <div>
+          <div>Gunakan Saldo Wallet</div>
+          <div class="wallet-saldo">Saldo tersedia: Rp {{ wallet|intcomma }}</div>
+        </div>
+      </label>
+    </div>
+    {% else %}
+    <div class="wallet-card-disabled">
+      <div class="wallet-label-disabled">
+        <i class="fa fa-wallet"></i>
+        <div>
+          <div>Saldo Wallet</div>
+          <div style="font-size:12px;margin-top:2px;">Saldo Rp 0 — tidak bisa digunakan</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Rincian harga -->
+    <div class="aktifkan-price-box" id="priceBox">
+      <div class="price-row">
+        <span style="color:#8a92a6;font-weight:600;">Harga Add-on</span>
+        <span style="font-weight:700;">Rp {{ addon.harga|intcomma }}</span>
+      </div>
+      {% if wallet > 0 %}
+      <div class="price-row price-row-disc" id="rowDisc" {% if wallet_dipakai == 0 %}style="display:none;"{% endif %}>
+        <span><i class="fa fa-tag me-1"></i>Potongan Wallet</span>
+        <span id="lblDisc">- Rp {{ wallet_dipakai|intcomma }}</span>
+      </div>
+      {% endif %}
+      <div class="price-row price-row-total">
+        <div>
+          <div class="aktifkan-price-main" id="lblTotal">Rp {{ harga_bayar|intcomma }}</div>
+          <div class="aktifkan-price-period">
+            {% if harga_bayar == 0 %}Lunas dengan wallet &bull;{% else %}dibayar via Midtrans &bull;{% endif %}
+            berlaku sampai akhir masa langganan
+          </div>
+        </div>
+        <div style="background:{{ addon.color }}18;color:{{ addon.color }};font-size:12px;font-weight:800;padding:6px 14px;border-radius:50px;">
+          <i class="fa {{ addon.icon }} me-1"></i>{{ addon.nama }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Catatan -->
+    <div class="aktifkan-notice" id="noticeBox">
+      <i class="fa fa-info-circle" style="margin-top:1px;flex-shrink:0;"></i>
+      <div id="noticeText">
+        {% if harga_bayar == 0 %}
+          Saldo wallet Anda cukup untuk mengaktifkan add-on ini. Klik <strong>"Aktifkan Sekarang"</strong> dan add-on langsung aktif tanpa perlu ke halaman pembayaran.
+        {% else %}
+          Setelah klik <strong>"Bayar via Midtrans"</strong>, Anda akan diarahkan ke halaman pembayaran Midtrans. Add-on akan otomatis aktif setelah pembayaran berhasil dikonfirmasi.
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tombol -->
+    <div class="btn-row">
+      <button type="button" class="btn-batal" hx-get="{% url 'cms_addon_status' %}" hx-target="#mainpage">
+        <i class="fa fa-times"></i> Batal
+      </button>
+      <button type="button" class="btn-aktifkan" id="btnAktifkan"
+              onclick="document.getElementById('modalKonfirmasi').classList.add('active')"
+              {% if harga_bayar == 0 %}style="background:#059669;"{% endif %}>
+        {% if harga_bayar == 0 %}
+          <i class="fa fa-check-circle"></i> Aktifkan Sekarang
+        {% else %}
+          <i class="fa fa-credit-card"></i> Bayar via Midtrans
+        {% endif %}
+      </button>
+    </div>
+
+  </form>
   {% endif %}
 
 </div>
@@ -219,70 +288,72 @@
     <div class="modal-icon" style="background:#eef3ff;color:#4e73df;">
       <i class="fa fa-puzzle-piece"></i>
     </div>
-    <div class="modal-title">Konfirmasi Aktivasi</div>
-    <div class="modal-desc">
-      Anda akan mengajukan permintaan aktivasi <strong>{{ addon.nama }}</strong>
+    <div class="modal-title">Konfirmasi Pembayaran</div>
+    <div class="modal-desc" id="modalDesc">
+      Anda akan mengaktifkan <strong>{{ addon.nama }}</strong>
       untuk toko <strong>{{ cabang.nama_toko }}</strong>.
       <br><br>
-      Tim POSMI akan menghubungi Anda untuk konfirmasi pembayaran.
+      <span id="modalDescDetail">
+        {% if harga_bayar == 0 %}
+          Saldo wallet akan dikurangi <strong>Rp {{ wallet_dipakai|intcomma }}</strong>. Add-on langsung aktif.
+        {% else %}
+          Total yang dibayar: <strong>Rp {{ harga_bayar|intcomma }}</strong> via Midtrans.
+          {% if wallet_dipakai > 0 %}Wallet berkurang Rp {{ wallet_dipakai|intcomma }}.{% endif %}
+        {% endif %}
+      </span>
     </div>
     <div class="modal-btn-row">
       <button class="modal-btn-cancel" onclick="document.getElementById('modalKonfirmasi').classList.remove('active')">
-        Tidak Jadi
+        Batal
       </button>
-      <button class="modal-btn-confirm" id="btnKonfirmasi" onclick="submitAjukan()">
-        Ya, Ajukan
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Sukses -->
-<div class="modal-overlay" id="modalSukses">
-  <div class="modal-box">
-    <div class="modal-icon modal-success-icon">
-      <i class="fa fa-check"></i>
-    </div>
-    <div class="modal-title">Permintaan Terkirim!</div>
-    <div class="modal-desc">
-      Permintaan aktivasi <strong>{{ addon.nama }}</strong> berhasil dikirim.
-      Tim POSMI akan menghubungi Anda setelah pembayaran dikonfirmasi.
-    </div>
-    <div class="modal-btn-row">
-      <button class="modal-btn-confirm" style="flex:1;" onclick="kembaliKeAddon()">
-        Oke, Kembali ke Add-ons
+      <button class="modal-btn-confirm" id="btnKonfirmasi" onclick="submitForm()">
+        Ya, Lanjutkan
       </button>
     </div>
   </div>
 </div>
 
 <script>
-function submitAjukan() {
-  const btn = document.getElementById('btnKonfirmasi');
-  btn.disabled = true;
-  btn.textContent = 'Mengirim...';
+const HARGA_ASLI    = {{ addon.harga }};
+const WALLET_SALDO  = {{ wallet }};
 
-  const csrfToken = document.cookie.match(/csrftoken=([^;]+)/);
-  fetch("{% url 'cms_addon_aktifkan' addon_type %}", {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-CSRFToken': csrfToken ? csrfToken[1] : '',
-    },
-    body: 'csrfmiddlewaretoken=' + (csrfToken ? csrfToken[1] : ''),
-  })
-  .then(function() {
-    document.getElementById('modalKonfirmasi').classList.remove('active');
-    document.getElementById('modalSukses').classList.add('active');
-  })
-  .catch(function() {
-    btn.disabled = false;
-    btn.textContent = 'Ya, Ajukan';
-  });
+function hitungHarga(gunakan) {
+  const disc   = gunakan ? Math.min(WALLET_SALDO, HARGA_ASLI) : 0;
+  const bayar  = Math.max(0, HARGA_ASLI - disc);
+
+  // tampil/sembunyikan baris diskon
+  const rowDisc = document.getElementById('rowDisc');
+  if (rowDisc) rowDisc.style.display = disc > 0 ? '' : 'none';
+  const lblDisc = document.getElementById('lblDisc');
+  if (lblDisc) lblDisc.textContent = '- Rp ' + disc.toLocaleString('id-ID');
+
+  // update total
+  document.getElementById('lblTotal').textContent = 'Rp ' + bayar.toLocaleString('id-ID');
+
+  // update tombol
+  const btn = document.getElementById('btnAktifkan');
+  if (bayar === 0) {
+    btn.innerHTML = '<i class="fa fa-check-circle"></i> Aktifkan Sekarang';
+    btn.style.background = '#059669';
+    document.getElementById('noticeText').innerHTML =
+      'Saldo wallet Anda cukup untuk mengaktifkan add-on ini. Klik <strong>"Aktifkan Sekarang"</strong> dan add-on langsung aktif tanpa perlu ke halaman pembayaran.';
+    document.getElementById('modalDescDetail').innerHTML =
+      'Saldo wallet akan dikurangi <strong>Rp ' + disc.toLocaleString('id-ID') + '</strong>. Add-on langsung aktif.';
+  } else {
+    btn.innerHTML = '<i class="fa fa-credit-card"></i> Bayar via Midtrans';
+    btn.style.background = '#4e73df';
+    let notice = 'Setelah klik <strong>"Bayar via Midtrans"</strong>, Anda akan diarahkan ke halaman pembayaran Midtrans. Add-on akan otomatis aktif setelah pembayaran berhasil dikonfirmasi.';
+    document.getElementById('noticeText').innerHTML = notice;
+    let detail = 'Total yang dibayar: <strong>Rp ' + bayar.toLocaleString('id-ID') + '</strong> via Midtrans.';
+    if (disc > 0) detail += ' Wallet berkurang Rp ' + disc.toLocaleString('id-ID') + '.';
+    document.getElementById('modalDescDetail').innerHTML = detail;
+  }
 }
 
-function kembaliKeAddon() {
-  document.getElementById('modalSukses').classList.remove('active');
-  htmx.ajax('GET', "{% url 'cms_addon_status' %}", {target: '#mainpage'});
+function submitForm() {
+  const btn = document.getElementById('btnKonfirmasi');
+  btn.disabled = true;
+  btn.textContent = 'Memproses...';
+  document.getElementById('formAddon').submit();
 }
 </script>

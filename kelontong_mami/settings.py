@@ -17,13 +17,16 @@ DEBUG = readEnv('DEBUG')
 
 
 
-# MIDTRANS_SETTINGS 
+# MIDTRANS_SETTINGS
 MIDTRANS_CLIENT = readEnv('MIDTRANS_CLIENT')
 MIDTRANS_SERVER = readEnv('MIDTRANS_SERVER')
 MIDTRANS_PRODUCTION = readEnv('MIDTRANS_PRODUCTION')
 
+
 ALLOWED_HOSTS = ['posmi.leopardos.tech','localhost','127.0.0.1','posmi.pythonanywhere.com']
 CSRF_TRUSTED_ORIGINS=['http://localhost:8000','http://127.0.0.1:8000','https://posmi.leopardos.tech','https://posmi.pythonanywhere.com']
+
+
 
 
 # Application definition

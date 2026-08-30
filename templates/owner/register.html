@@ -39,7 +39,7 @@ body { background:#eef3f6; }
         <div style="background:#fee2e2;color:#991b1b;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;">{{ msg }}</div>
       {% endfor %}
 
-      <form method="post">
+      <form method="post" id="ownerRegisterForm">
         {% csrf_token %}
 
         <div class="mb-3">
@@ -134,5 +134,9 @@ function setDur(d, btn){
   document.getElementById('durasiInput').value = d;
   update();
 }
+</script>
+{% include 'components/recaptcha_v3.html' %}
+<script>
+posmiProtectForm(document.getElementById('ownerRegisterForm'), 'owner_register');
 </script>
 {% endblock %}

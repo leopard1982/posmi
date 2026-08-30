@@ -28,7 +28,7 @@ body { background:#eef3f6; }
           <i class="fa {% if 'berhasil' in msg.message %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>{{ msg }}
         </div>
       {% endfor %}
-      <form method="post">
+      <form method="post" id="ownerLoginForm">
         {% csrf_token %}
         <div class="mb-3">
           <label class="form-label">Email</label>
@@ -46,4 +46,8 @@ body { background:#eef3f6; }
     </div>
   </div>
 </div>
+{% include 'components/recaptcha_v3.html' %}
+<script>
+posmiProtectForm(document.getElementById('ownerLoginForm'), 'owner_login');
+</script>
 {% endblock %}

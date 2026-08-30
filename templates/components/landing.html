@@ -530,7 +530,7 @@
 <div class="modal fade" id="modalRequestDemo" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow">
-      <form action="{% url 'request_demo_aplikasi' %}" method="post">
+      <form action="{% url 'request_demo_aplikasi' %}" method="post" id="formRequestDemo">
         {% csrf_token %}
         <div class="modal-header border-0 pb-0">
           <h5 class="modal-title fw-bold">Request Demo Aplikasi</h5>
@@ -702,7 +702,7 @@
             <li><i class="fa fa-times"></i>Multi kasir</li>
             <li><i class="fa fa-times"></i>Download laporan</li>
           </ul>
-          <form action="{% url 'payment_request' %}" method="post" class="mt-auto">
+          <form action="{% url 'payment_request' %}" method="post" class="mt-auto" id="formPaymentRequestFree">
             {% csrf_token %}
             <button type="submit" class="btn-price btn-price-ghost">Coba Sekarang</button>
           </form>
@@ -739,7 +739,7 @@
             {% if bisnis_kecil.is_add_ons %}<li><i class="fa fa-check"></i>Penambahan add-ons</li>{% endif %}
             <li><i class="fa fa-check"></i>Garansi 30 hari uang kembali</li>
           </ul>
-          <form action="{% url 'payment_request' %}" method="post" class="mt-auto">
+          <form action="{% url 'payment_request' %}" method="post" class="mt-auto" id="formPaymentRequestKecil">
             {% csrf_token %}
             <input type="hidden" name="bisnis_kecil" id="input-kecil" value="bulanan">
             <button type="submit" class="btn-price btn-price-primary">Berlangganan Sekarang</button>
@@ -785,7 +785,7 @@
             {% if bisnis_medium.is_add_ons %}<li><i class="fa fa-check"></i>Penambahan add-ons</li>{% endif %}
             <li><i class="fa fa-check"></i>Garansi 30 hari uang kembali</li>
           </ul>
-          <form action="{% url 'payment_request' %}" method="post" class="mt-auto">
+          <form action="{% url 'payment_request' %}" method="post" class="mt-auto" id="formPaymentRequestMedium">
             {% csrf_token %}
             <input type="hidden" name="bisnis_medium" id="input-medium" value="bulanan">
             <button type="submit" class="btn-price btn-price-outline">Berlangganan Sekarang</button>
@@ -1159,7 +1159,7 @@ function setDur(dur, btn){
           <div style="font-size:13px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;">Upgrade / Perpanjangan</div>
           <div style="font-size:18px;font-weight:800;color:#0d1b3e;margin:8px 0 4px;">Upgrade Paket</div>
           <p style="font-size:13px;color:#6b7280;line-height:1.6;">Upgrade dari Gratis ke Bisnis Kecil/Medium, atau dari Kecil ke Medium. Perpanjangan lisensi juga tersedia. Biaya dihitung dari sisa masa aktif.</p>
-          <form action="{% url 'cek_lisensi' %}?tipe=upgrade" method="post" class="mt-auto">
+          <form action="{% url 'cek_lisensi' %}?tipe=upgrade" method="post" class="mt-auto" id="formCekLisensiUpgrade">
             {% csrf_token %}
             <input type="text" name="id" class="form-control form-control-sm mb-2" placeholder="Kode toko..." required>
             <button type="submit" class="btn btn-sm w-100 fw-bold" style="background:#e8f5ee;color:#0f5132;border:1.5px solid #b7dfc8;border-radius:7px;">Cek Biaya Upgrade</button>
@@ -1175,7 +1175,7 @@ function setDur(dur, btn){
           <div style="font-size:18px;font-weight:800;color:#0d1b3e;margin:8px 0 4px;">50 Transaksi</div>
           <div style="font-size:26px;font-weight:900;color:#111;">10rb</div>
           <p style="font-size:13px;color:#6b7280;line-height:1.6;margin-top:8px;">Tambah kuota transaksi ekstra kapan saja, tanpa harus ganti paket.</p>
-          <form action="{% url 'cek_lisensi' %}?tipe=kuota" method="post" class="mt-3">
+          <form action="{% url 'cek_lisensi' %}?tipe=kuota" method="post" class="mt-3" id="formCekLisensiKuota">
             {% csrf_token %}
             <input type="text" name="id" class="form-control form-control-sm mb-2" placeholder="Kode toko..." required>
             <button type="submit" class="btn btn-sm w-100 fw-bold" style="background:#fff4d6;color:#7a4b00;border:1.5px solid #f3d27a;border-radius:7px;">Cek Kode Toko</button>
@@ -1380,7 +1380,7 @@ function setDur(dur, btn){
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
 
-      <form action="{% url 'bayar_addon' %}" method="post">
+      <form action="{% url 'bayar_addon' %}" method="post" id="formBayarAddon">
         {% csrf_token %}
         <input type="hidden" name="addon_type" id="addonTypeInput">
 
@@ -1736,6 +1736,17 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(el);
   });
 });
+</script>
+
+{% include 'components/recaptcha_v3.html' %}
+<script>
+posmiProtectForm(document.getElementById('formRequestDemo'), 'request_demo');
+posmiProtectForm(document.getElementById('formPaymentRequestFree'), 'payment_request');
+posmiProtectForm(document.getElementById('formPaymentRequestKecil'), 'payment_request');
+posmiProtectForm(document.getElementById('formPaymentRequestMedium'), 'payment_request');
+posmiProtectForm(document.getElementById('formCekLisensiUpgrade'), 'cek_lisensi');
+posmiProtectForm(document.getElementById('formCekLisensiKuota'), 'cek_lisensi');
+posmiProtectForm(document.getElementById('formBayarAddon'), 'bayar_addon');
 </script>
 
 {% endblock %}

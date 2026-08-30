@@ -15,6 +15,7 @@ from promo.models import Promo
 from cara.models import Tutorial,TutorialComment,TutorialImage
 from cms.models import Testimoni, ResetPasswordToken
 from posmimail import posmiMail
+from kelontong_mami.recaptcha import verify_recaptcha
 import uuid as uuid_module
 
 DAFTAR_PAKET = []
@@ -585,6 +586,9 @@ def loginkan(request):
         return HttpResponseRedirect('/')
     else:
         if request.method=="POST":
+            if not verify_recaptcha(request, action='login'):
+                messages.add_message(request, messages.SUCCESS, "Verifikasi keamanan gagal. Silakan coba lagi.")
+                return HttpResponseRedirect('/login/')
             username = str(request.POST['username']).lower()
             password = request.POST['password']
             user = authenticate(username=username,password=password)
@@ -1018,6 +1022,9 @@ def printKuitansi(request,nota):
 
 def lupaPassword(request):
     if request.method == 'POST':
+        if not verify_recaptcha(request, action='lupa_password'):
+            messages.error(request, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return HttpResponseRedirect('/lupa-password/')
         email = request.POST.get('email', '').strip().lower()
         try:
             user = User.objects.get(email__iexact=email)
@@ -1065,6 +1072,9 @@ def resetPassword(request, token):
         return HttpResponseRedirect('/login/')
 
     if request.method == 'POST':
+        if not verify_recaptcha(request, action='reset_password'):
+            messages.error(request, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return render(request, 'pos/reset_password.html', {'reset': reset})
         password1 = request.POST.get('password1', '')
         password2 = request.POST.get('password2', '')
         if len(password1) < 6:

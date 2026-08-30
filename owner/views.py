@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 import datetime
 
 from .models import Owner, TransferStok, KUOTA_PER_SLOT_BULANAN, HARGA_PER_SLOT_BULANAN, HARGA_PER_SLOT_3BULAN, HARGA_PER_SLOT_6BULAN, HARGA_PER_SLOT_TAHUNAN, HARGA_PER_SLOT_2TAHUN
+from kelontong_mami.recaptcha import verify_recaptcha
 from stock.models import Cabang, Barang, UploadBarang, UploadBarangList
 from pos.models import Penjualan
 from django.http import JsonResponse, FileResponse
@@ -165,6 +166,10 @@ def registerOwner(request):
     }
 
     if request.method == 'POST':
+        if not verify_recaptcha(request, action='owner_register'):
+            messages.error(request, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return render(request, 'owner/register.html', {'harga_info': harga_info})
+
         nama       = request.POST.get('nama', '').strip()
         email      = request.POST.get('email', '').strip().lower()
         password   = request.POST.get('password', '')
@@ -236,6 +241,10 @@ def loginOwner(request):
         return HttpResponseRedirect('/owner/')
 
     if request.method == 'POST':
+        if not verify_recaptcha(request, action='owner_login'):
+            messages.error(request, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return render(request, 'owner/login.html')
+
         email    = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '')
         # Coba autentikasi langsung (username = email untuk Owner)
@@ -368,6 +377,14 @@ def klaimToko(request):
         email_toko     = request.POST.get('email_toko', '').strip().lower()
         nama_admin     = request.POST.get('nama_admin', '').strip()
         password_admin = request.POST.get('password_admin', '')
+
+        if not verify_recaptcha(request, action='owner_klaim'):
+            messages.error(request, "Verifikasi keamanan gagal. Silakan coba lagi.")
+            return render(request, 'owner/klaim_toko.html', {
+                'owner': owner,
+                'kode_preview': kode_toko or kode_preview,
+                'form': request.POST,
+            })
 
         errors = []
         if not kode_toko or len(kode_toko) != 4:

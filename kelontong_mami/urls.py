@@ -19,9 +19,19 @@ from django.urls import path, include,re_path
 from django.views.static import serve
 from django.conf import settings
 from django.views.generic import TemplateView
+from django.contrib.sitemaps.views import sitemap
+
+from pos.sitemaps import StaticViewSitemap, TutorialSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'tutorial': TutorialSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots_txt'),
     path('',include('pos.urls')),
     path('cms/',include('cms.urls')),
     path('payment/',include('payment.urls')),

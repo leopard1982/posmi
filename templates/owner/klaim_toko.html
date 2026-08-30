@@ -281,13 +281,18 @@ function acakKode() {
 }
 
 document.getElementById('formDaftarToko').addEventListener('submit', function(e) {
-  const pw = this.querySelector('[name="password_admin"]').value;
+  const form = this;
+  if (form.dataset.recaptchaOk === '1') { return; }
+  e.preventDefault();
+  const pw = form.querySelector('[name="password_admin"]').value;
   const kf = document.getElementById('konfirmPassword').value;
   if (pw !== kf) {
-    e.preventDefault();
     alert('Konfirmasi password tidak cocok. Silakan periksa kembali.');
+    return;
   }
+  posmiRecaptchaSubmit(form, 'owner_klaim', function () { form.dataset.recaptchaOk = '1'; });
 });
 </script>
+{% include 'components/recaptcha_v3.html' %}
 </body>
 </html>

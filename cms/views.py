@@ -1644,7 +1644,8 @@ def cmsAddonAktifkan(request, addon_type):
         return HttpResponseRedirect('/login/')
 
     cabang = request.user.userprofile.cabang
-    from payment.models import TokoAddon
+    from payment.models import TokoAddon, PendingPayment
+    from payment.views import prosesPayment, _buat_order_id, _proses_pending_payment
 
     ALL_ADDONS = {
         TokoAddon.ADDON_BARCODE: {
@@ -1676,70 +1677,75 @@ def cmsAddonAktifkan(request, addon_type):
     addon_info = ALL_ADDONS[addon_type]
 
     if request.method == 'POST':
-        harga = addon_info['harga']
-        expired_at = cabang.lisensi_expired
+        harga_asli     = addon_info['harga']
+        gunakan_wallet = request.POST.get('gunakan_wallet') == 'on'
+        wallet_dipakai = 0
+        if gunakan_wallet and cabang.wallet > 0:
+            wallet_dipakai = min(cabang.wallet, harga_asli)
+        harga_bayar = max(0, harga_asli - wallet_dipakai)
 
-        now = datetime.datetime.now()
-        addon, created = TokoAddon.objects.get_or_create(
+        TokoAddon.objects.get_or_create(
             cabang=cabang, addon_type=addon_type,
             defaults={
-                'expired_at': expired_at,
-                'harga_dibayar': harga,
-                'status': TokoAddon.STATUS_AKTIF,
-                'activated_at': now,
+                'expired_at': cabang.lisensi_expired,
+                'harga_dibayar': harga_asli,
+                'status': TokoAddon.STATUS_NONAKTIF,
             }
         )
-        if not created:
-            addon.status = TokoAddon.STATUS_AKTIF
-            addon.activated_at = now
-            addon.expired_at = expired_at
-            addon.harga_dibayar = harga
-            addon.save(update_fields=['status', 'activated_at', 'expired_at', 'harga_dibayar', 'updated_at'])
 
-        posmiMail(
-            f"ADD-ON AKTIF: {addon_info['nama']}",
-            f"Toko: {cabang.nama_toko} ({cabang.prefix})\n"
-            f"Add-on: {addon_info['nama']}\n"
-            f"Harga: Rp {harga:,}\n"
-            f"Aktif sejak: {now.strftime('%d/%m/%Y %H:%M')}\n"
-            f"Berlaku s.d.: {expired_at}",
-            address="adhy.chandra@live.co.uk"
+        pending_data = {
+            'addon_type': addon_type,
+            'kode_toko': cabang.prefix,
+            'wallet_dipakai': wallet_dipakai,
+        }
+        order_id = _buat_order_id('ADN')
+
+        # Wallet menutup penuh → aktivasi langsung tanpa Midtrans
+        if harga_bayar == 0 and wallet_dipakai > 0:
+            p = PendingPayment.objects.create(
+                order_id=order_id, tipe=PendingPayment.TIPE_ADDON,
+                data=pending_data, harga=0,
+                status=PendingPayment.STATUS_PAID,
+            )
+            _proses_pending_payment(p)
+            messages.add_message(request, messages.SUCCESS,
+                f'Add-on {addon_info["nama"]} berhasil diaktifkan! Wallet berkurang Rp {wallet_dipakai:,}.')
+            return HttpResponseRedirect('/cms/addons/')
+
+        # Bayar via Midtrans
+        finish_url = f"{request.scheme}://{request.get_host()}/payment/finish/?order_id={order_id}"
+        PendingPayment.objects.create(
+            order_id=order_id, tipe=PendingPayment.TIPE_ADDON,
+            data=pending_data, harga=harga_bayar,
         )
-
-        # Render kembali halaman addon status setelah submit
-        addons_individual = list(TokoAddon.objects.filter(cabang=cabang))
-        addons_korporasi  = list(TokoAddon.objects.filter(owner=cabang.owner)) if cabang.owner_id else []
-        addon_map = {}
-        for a in addons_korporasi:
-            addon_map[a.addon_type] = {'addon': a, 'via': 'korporasi'}
-        for a in addons_individual:
-            addon_map[a.addon_type] = {'addon': a, 'via': 'individual'}
-        all_types = [
-            (TokoAddon.ADDON_BARCODE,  'Cetak Label Barcode',        'fa-barcode',   '#d97706', 50_000),
-            (TokoAddon.ADDON_NOTA,     'Custom Template Nota',       'fa-file-text', '#7c3aed', 75_000),
-            (TokoAddon.ADDON_AKUNTING, 'Laporan Akunting Otomatis',  'fa-calculator','#059669', 100_000),
-        ]
-        addon_display = []
-        for atype, nama, icon, color, harga_item in all_types:
-            entry = addon_map.get(atype)
-            addon_display.append({
-                'type': atype, 'nama': nama, 'icon': icon, 'color': color, 'harga': harga_item,
-                'addon': entry['addon'] if entry else None,
-                'via': entry['via'] if entry else None,
-                'aktif': entry['addon'].is_active if entry else False,
-            })
-        return render(request, 'administrator/components/addon_status.html', {
-            'cabang': cabang,
-            'addon_display': addon_display,
-        })
+        try:
+            redirect_url = prosesPayment(
+                order_id, harga_bayar,
+                nama_pembeli=cabang.nama_toko,
+                email_pembeli=cabang.email or '',
+                finish_url=finish_url,
+            )
+            return HttpResponseRedirect(redirect_url)
+        except Exception:
+            PendingPayment.objects.filter(order_id=order_id).delete()
+            messages.add_message(request, messages.SUCCESS,
+                'Gagal membuat transaksi pembayaran. Silakan coba beberapa saat lagi.')
+            return HttpResponseRedirect(f'/cms/addons/{addon_type}/')
 
     existing = TokoAddon.objects.filter(cabang=cabang, addon_type=addon_type).first()
+
+    harga_asli     = addon_info['harga']
+    wallet_dipakai = min(cabang.wallet, harga_asli)
+    harga_bayar    = max(0, harga_asli - wallet_dipakai)
 
     context = {
         'cabang': cabang,
         'addon_type': addon_type,
         'addon': addon_info,
         'existing': existing,
+        'wallet': cabang.wallet,
+        'wallet_dipakai': wallet_dipakai,
+        'harga_bayar': harga_bayar,
     }
     return render(request, 'administrator/components/addon_aktifkan.html', context)
 
