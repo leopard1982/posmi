@@ -1,0 +1,43 @@
+<script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
+<script>
+  window.RECAPTCHA_SITE_KEY = "{{ RECAPTCHA_SITE_KEY }}";
+
+  /**
+   * Jalankan reCAPTCHA v3 untuk sebuah form, sisipkan token ke field
+   * g_recaptcha_response, lalu submit form tersebut.
+   * beforeSubmit (opsional) dipanggil tepat sebelum form.submit().
+   */
+  function posmiRecaptchaSubmit(form, action, beforeSubmit) {
+    if (!form) return;
+    if (typeof grecaptcha === 'undefined') { form.submit(); return; }
+    grecaptcha.ready(function () {
+      grecaptcha.execute(window.RECAPTCHA_SITE_KEY, {action: action}).then(function (token) {
+        var input = form.querySelector('input[name="g_recaptcha_response"]');
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'g_recaptcha_response';
+          form.appendChild(input);
+        }
+        input.value = token;
+        if (typeof beforeSubmit === 'function') { beforeSubmit(); }
+        form.submit();
+      }).catch(function () {
+        form.submit();
+      });
+    });
+  }
+
+  /**
+   * Pasang proteksi reCAPTCHA standar pada sebuah form: intercept submit,
+   * generate token, lalu submit ulang. Cocok untuk form tanpa validasi JS lain.
+   */
+  function posmiProtectForm(form, action) {
+    if (!form) return;
+    form.addEventListener('submit', function (e) {
+      if (form.dataset.recaptchaOk === '1') { return; }
+      e.preventDefault();
+      posmiRecaptchaSubmit(form, action, function () { form.dataset.recaptchaOk = '1'; });
+    });
+  }
+</script>

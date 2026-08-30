@@ -528,4 +528,8 @@
 	    }
 	  })();
 </script>
+{% include 'components/recaptcha_v3.html' %}
+<script>
+posmiProtectForm(document.getElementById('registrationPaymentForm'), 'payment_response');
+</script>
 {% endblock%}

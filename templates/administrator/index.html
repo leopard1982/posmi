@@ -1210,7 +1210,7 @@
                             <div class="modal fade" id="modalRefundGaransi" tabindex="-1" aria-labelledby="modalRefundGaransiLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
-                                        <form action="{% url 'ajukan_refund_garansi'%}" method="post">
+                                        <form action="{% url 'ajukan_refund_garansi'%}" method="post" id="formAjukanRefund">
                                             {% csrf_token %}
                                             <div class="modal-header">
                                                 <h5 class="modal-title fw-bold" id="modalRefundGaransiLabel">Ajukan Garansi Refund</h5>
@@ -1398,6 +1398,11 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
+
+    {% include 'components/recaptcha_v3.html' %}
+    <script>
+    posmiProtectForm(document.getElementById('formAjukanRefund'), 'refund');
+    </script>
 
 </body>
 
