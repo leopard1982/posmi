@@ -22,8 +22,8 @@ MIDTRANS_CLIENT = readEnv('MIDTRANS_CLIENT')
 MIDTRANS_SERVER = readEnv('MIDTRANS_SERVER')
 MIDTRANS_PRODUCTION = readEnv('MIDTRANS_PRODUCTION')
 
-ALLOWED_HOSTS = ['192.168.1.50','localhost','127.0.0.1','posmi.pythonanywhere.com']
-CSRF_TRUSTED_ORIGINS=['http://localhost:8000','http://127.0.0.1:8000','http://192.168.1.50','https://posmi.pythonanywhere.com']
+ALLOWED_HOSTS = ['posmi.leopardos.tech','localhost','127.0.0.1','posmi.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS=['http://localhost:8000','http://127.0.0.1:8000','https://posmi.leopardos.tech','https://posmi.pythonanywhere.com']
 
 
 # Application definition
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
     'pos',
     'stock',
     'payment',
@@ -82,6 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'kelontong_mami.context_processors.recaptcha',
             ],
         },
     },
@@ -163,6 +165,12 @@ EMAIL_PORT = int(readEnv('EMAIL_PORT') or 587)
 EMAIL_HOST_USER = readEnv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = readEnv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = readEnv('DEFAULT_FROM_EMAIL')
+
+# reCAPTCHA v3 
+RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '6Le97J4tAAAAAHZ-JFZamrJXWse9UMr3KWylp0ft')
+RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '6Le97J4tAAAAAJbMsUWdP6R9mr5C6X-FEW0j_maz')
+RECAPTCHA_MIN_SCORE = float(os.environ.get('RECAPTCHA_MIN_SCORE', '0.5'))
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
