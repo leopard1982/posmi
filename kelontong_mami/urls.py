@@ -40,6 +40,7 @@ urlpatterns = [
     path('management/',include('management.urls')),
     path('owner/',include('owner.urls')),
     path('api/',  include('api.urls')),
+    path('api/mobile/v1/', include('posapi.urls')),
     path('syarat-ketentuan/', TemplateView.as_view(template_name='legal/tos.html'), name='tos'),
     path('kebijakan-privasi/', TemplateView.as_view(template_name='legal/privacy.html'), name='privacy'),
     path('sla/', TemplateView.as_view(template_name='legal/sla.html'), name='sla'),

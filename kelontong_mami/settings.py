@@ -27,7 +27,7 @@ RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY', '6Le97J4tAAAAAHZ-JFZam
 RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY', '6Le97J4tAAAAAJbMsUWdP6R9mr5C6X-FEW0j_maz')
 RECAPTCHA_MIN_SCORE = float(os.environ.get('RECAPTCHA_MIN_SCORE', '0.5'))
 
-ALLOWED_HOSTS = ['192.168.1.50','localhost','127.0.0.1','posmi.pythonanywhere.com']
+ALLOWED_HOSTS = ['192.168.1.50','localhost','127.0.0.1','posmi.pythonanywhere.com','posmi.leopardos.tech']
 CSRF_TRUSTED_ORIGINS=['http://localhost:8000','http://127.0.0.1:8000','http://192.168.1.50','https://posmi.pythonanywhere.com']
 
 
@@ -52,6 +52,9 @@ INSTALLED_APPS = [
     'management',
     'owner',
     'api',
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'posapi',
 ]
 
 
@@ -175,3 +178,36 @@ DEFAULT_FROM_EMAIL = readEnv('DEFAULT_FROM_EMAIL')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ── REST API untuk aplikasi mobile (posapi) ─────────────────────────────────
+from datetime import timedelta
+
+REST_FRAMEWORK = {
+    # Hanya JWT (Bearer). Tanpa SessionAuth sehingga tidak ada celah CSRF.
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_PARSER_CLASSES': ('rest_framework.parsers.JSONParser',),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '30/min',
+        'user': '240/min',
+        'login': '5/min',
+        'checkout': '60/min',
+    },
+    'EXCEPTION_HANDLER': 'posapi.exceptions.handler',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': False,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
