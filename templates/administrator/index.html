@@ -959,7 +959,7 @@
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
                                 <h6 class="dropdown-header" style="background-color:#e74a3b;border:1px solid #e74a3b;">Notifikasi</h6>
-                                <div id="notifList">
+                                <div id="notifList" style="max-height:300px;overflow-y:auto;">
                                     <div class="dropdown-item small text-gray-500 text-center">Memuat...</div>
                                 </div>
                                 <a class="dropdown-item text-center small text-gray-500" id="notifLihatSemua" href="#">Lihat Semua</a>
@@ -976,7 +976,7 @@
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
                                 <h6 class="dropdown-header">Aktivitas Toko</h6>
-                                <div id="aktivitasList">
+                                <div id="aktivitasList" style="max-height:300px;overflow-y:auto;">
                                     <div class="dropdown-item small text-gray-500 text-center">Memuat...</div>
                                 </div>
                                 <a class="dropdown-item text-center small text-gray-500" hx-get="{% url 'view_log' %}" hx-target="#mainpage" href="#">Lihat Semua</a>
