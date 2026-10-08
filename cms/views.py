@@ -1472,6 +1472,7 @@ def tambahBarangSatuan(request):
                         barang.keterangan = request.POST['keterangan']
                         barang.nama = request.POST['nama']
                         barang.satuan = request.POST['satuan']
+                        barang.stok = int(request.POST.get('stok') or 0)
                         barang.save()
                         addLog(request.user,barang.cabang,"tambah barang",f"Menambahkan barang {barang.nama} ({barang.barcode}).",
                                [{'barcode': barang.barcode, 'nama': barang.nama, 'satuan': barang.satuan, 'stok': barang.stok, 'harga_ecer': barang.harga_ecer}])
