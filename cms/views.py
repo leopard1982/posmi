@@ -9,7 +9,7 @@ from promo.models import Promo, PromoUsed
 from .forms import FormInfoToko, FormUserProfile, FormUser, FormBarang
 from stock.models import Cabang,UserProfile,DaftarPaket
 from django.urls import reverse
-from django.http import FileResponse
+from django.http import FileResponse, JsonResponse
 from django.conf import settings
 import os
 import pandas
@@ -52,7 +52,7 @@ def bulannya(bulannya):
     elif bulannya==12:
         return "Desember"
     
-def addLog(user,cabang,transaksi,keterangan):
+def addLog(user,cabang,transaksi,keterangan,detail=None):
     try:
         if(user):
             logtransaksi = LogTransaksi()
@@ -60,6 +60,7 @@ def addLog(user,cabang,transaksi,keterangan):
             logtransaksi.cabang=cabang
             logtransaksi.transaksi=transaksi
             logtransaksi.keterangan=keterangan
+            logtransaksi.detail=detail or []
             logtransaksi.save()
         else:
             logtransaksi = LogTransaksi()
@@ -265,6 +266,7 @@ def infoToko(request):
                 cabang.telpon = request.POST['telpon']
                 cabang.keterangan = request.POST['keterangan']
                 cabang.save()
+                addLog(request.user,cabang,"ubah profil toko",f"Profil toko {cabang.nama_toko} diubah.")
                 
                 messages.add_message(request,messages.SUCCESS,"Data Informasi Toko Berhasil Diubah.")
                 return HttpResponseRedirect('/cms/')
@@ -638,8 +640,11 @@ def konfirmasiUpload(request):
                 id = request.GET['id']
                 uploadbarang = UploadBarang.objects.get(id_upload=id)
                 uploadbaranglist = UploadBarangList.objects.all().filter(upload_barang=uploadbarang)
+                detail_log = []
                 
                 for baranglist in uploadbaranglist:
+                    detail_log.append({'barcode': baranglist.barcode, 'nama': baranglist.nama, 'satuan': baranglist.satuan,
+                                       'stok': baranglist.stok, 'harga_ecer': baranglist.harga_ecer})
                     try:
                         barang = Barang.objects.get(Q(cabang = request.user.userprofile.cabang) & Q(barcode=baranglist.barcode))
                         barang.satuan=baranglist.satuan
@@ -664,7 +669,7 @@ def konfirmasiUpload(request):
                         barang.harga_beli = baranglist.harga_beli
                         barang.keterangan = baranglist.keterangan
                         barang.save()
-                addLog(request.user,request.user.userprofile.cabang,"tambah barang",f"Menambahkan  {len(uploadbaranglist)} Barang Berhasil.")
+                addLog(request.user,request.user.userprofile.cabang,"tambah barang",f"Menambahkan  {len(uploadbaranglist)} Barang Berhasil.",detail_log[:500])
                 uploadbarang.delete()
                 barangs = Barang.objects.all().filter(cabang=request.user.userprofile.cabang)
                 context = {
@@ -866,6 +871,7 @@ def tambahKasir(request):
                         userprofile.nama_lengkap=nama_lengkap
                         userprofile.is_active=bisa_aktif
                         userprofile.save()
+                        addLog(request.user,cabang,"tambah user",f"Menambahkan user {nama_lengkap} ({usernya.username}){'' if bisa_aktif else ' (nonaktif)'}.")
 
                         status_msg = "sudah aktif dan bisa melakukan transaksi" if bisa_aktif else \
                             f"ditambahkan dalam kondisi NONAKTIF karena kuota kasir paket {cabang.paket.nama if cabang.paket else ''} sudah penuh ({kasir_aktif}/{max_kasir}). Aktifkan melalui menu Daftar Pengguna."
@@ -1467,6 +1473,8 @@ def tambahBarangSatuan(request):
                         barang.nama = request.POST['nama']
                         barang.satuan = request.POST['satuan']
                         barang.save()
+                        addLog(request.user,barang.cabang,"tambah barang",f"Menambahkan barang {barang.nama} ({barang.barcode}).",
+                               [{'barcode': barang.barcode, 'nama': barang.nama, 'satuan': barang.satuan, 'stok': barang.stok, 'harga_ecer': barang.harga_ecer}])
                         messages.add_message(request,messages.SUCCESS,f"Barang {barang.nama} dengan barcode [{barang.barcode}] berhasil ditambahkan.")
                         form = FormInputBarang()    
                 else:
@@ -3074,3 +3082,86 @@ def printLunasTempo(request):
     except Exception:
         messages.add_message(request, messages.SUCCESS, 'Nota tidak ditemukan.')
         return HttpResponseRedirect('/cms/tempo/')
+
+
+AKTIVITAS_ABAIKAN = ['login', 'logout', 'login-mobile', 'logout-mobile']
+
+
+def aktivitasToko(request):
+    """JSON aktivitas terbaru toko untuk dropdown surat di CMS."""
+    if not (request.user.is_authenticated and request.user.is_superuser and hasattr(request.user, 'userprofile')):
+        return JsonResponse({'items': [], 'unread': 0}, status=403)
+    cabang = request.user.userprofile.cabang
+    qs = LogTransaksi.objects.filter(cabang=cabang).exclude(transaksi__in=AKTIVITAS_ABAIKAN).order_by('-created_at')
+    seen = request.session.get('aktivitas_seen')
+    unread = qs.filter(created_at__gt=seen).count() if seen else qs.count()
+    items = [{
+        'id': l.id,
+        'ada_detail': bool(l.detail),
+        'transaksi': l.transaksi,
+        'keterangan': l.keterangan,
+        'user': l.user.username if l.user else '-',
+        'waktu': l.created_at.strftime('%d/%m/%Y %H:%M'),
+    } for l in qs[:10]]
+    if request.GET.get('seen') == '1':
+        request.session['aktivitas_seen'] = datetime.datetime.now().isoformat()
+    return JsonResponse({'items': items, 'unread': min(unread, 99)})
+
+
+def _teks_sisa(sisa_hari):
+    if sisa_hari <= 0:
+        return "berakhir hari ini"
+    if sisa_hari == 1:
+        return "berakhir 1 hari lagi"
+    return f"berakhir {sisa_hari} hari lagi"
+
+
+def notifikasiToko(request):
+    """JSON notifikasi (lonceng CMS): lisensi paket/add-on hampir expired dan kuota transaksi menipis."""
+    if not (request.user.is_authenticated and request.user.is_superuser and hasattr(request.user, 'userprofile')):
+        return JsonResponse({'items': []}, status=403)
+    from payment.models import TokoAddon
+    cabang = request.user.userprofile.cabang
+    now = datetime.datetime.now()
+    items = []
+
+    def cek_expired(label, expired):
+        if not expired:
+            return
+        sisa = (expired - now).days
+        if 0 <= sisa <= 7:
+            items.append({
+                'level': 'danger' if sisa <= 1 else 'warning',
+                'judul': f"{label} {_teks_sisa(sisa)}",
+                'keterangan': f"Berlaku s.d. {expired.strftime('%d/%m/%Y')}. Segera perpanjang.",
+            })
+
+    if cabang.paket:
+        cek_expired(f"Paket {cabang.paket.nama}", cabang.lisensi_expired)
+    for addon in TokoAddon.objects.filter(cabang=cabang, status=TokoAddon.STATUS_AKTIF):
+        cek_expired(f"Add-on {addon.get_addon_type_display()}", addon.expired_at)
+
+    if cabang.kuota_transaksi <= 10:
+        items.append({
+            'level': 'danger' if cabang.kuota_transaksi == 0 else 'warning',
+            'judul': f"Sisa kuota transaksi {cabang.kuota_transaksi}",
+            'keterangan': "Tambah kuota agar penjualan tidak terhenti.",
+        })
+    return JsonResponse({'items': items})
+
+
+def aktivitasDetail(request, id):
+    """Detail satu aktivitas (daftar barang) untuk pop up di dropdown surat."""
+    if not (request.user.is_authenticated and request.user.is_superuser and hasattr(request.user, 'userprofile')):
+        return JsonResponse({}, status=403)
+    try:
+        log = LogTransaksi.objects.get(id=id, cabang=request.user.userprofile.cabang)
+    except LogTransaksi.DoesNotExist:
+        return JsonResponse({}, status=404)
+    return JsonResponse({
+        'transaksi': log.transaksi,
+        'keterangan': log.keterangan,
+        'user': log.user.username if log.user else '-',
+        'waktu': log.created_at.strftime('%d/%m/%Y %H:%M'),
+        'detail': log.detail,
+    })

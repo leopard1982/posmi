@@ -6,6 +6,7 @@ from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin
 from .views import detailPengguna,updateFoto,updatePassword,updateNama, tambahBarangSatuan
 from .views import masterPaket, masterPromo, masterTestimoni, masterCabang, verifikasiEmail, kirimUlangVerifikasi
 from .views import transferStokCMS, daftarBarangKorporasi, penerimaanBarang, konfirmasiItemPenerimaan, orderBarang, downloadTemplateOrder, requestMasterBarang, laporanStokBarang, downloadLaporanStok, cmsAddonStatus, cmsAddonAktifkan, cmsAddonSettings, cmsCetakBarcode, cmsCetakBarcodePage, cmsLaporanAkunting, cmsLaporanAkuntingPreview, cmsLaporanAkuntingExcel, cmsLaporanAkuntingCetak, cetakRekapCMS
+from .views import aktivitasToko, notifikasiToko, aktivitasDetail
 from .views import daftarTempoTransaksi, bayarTempoTransaksi, printLunasTempo
 
 urlpatterns = [
@@ -24,6 +25,9 @@ urlpatterns = [
     path('barang/download/',downloadBarang,name='download_barang'),
     path('barang/add/',tambahBarangSatuan,name='tambah_barang_satuan'),
     path('log/',viewLog,name="view_log"),
+    path('aktivitas/',aktivitasToko,name="aktivitas_toko"),
+    path('aktivitas/<int:id>/',aktivitasDetail,name="aktivitas_detail"),
+    path('notifikasi/',notifikasiToko,name="notifikasi_toko"),
     path('kasir/',daftarKasir,name="daftar_kasir"),
     path('kasir/tambah/',tambahKasir,name="tambah_kasir"),
     path('void/',konfirmasiVoid,name='konfirmasi_void'),

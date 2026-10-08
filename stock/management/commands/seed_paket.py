@@ -2,30 +2,34 @@ from django.core.management.base import BaseCommand
 from stock.models import DaftarPaket
 
 
+def _harga(bulanan):
+    # diskon: 3 bln 10%, 6 bln 15%, 1 thn 20%, 2 thn 25%
+    return {
+        "harga_per_bulan": bulanan,
+        "harga_per_tiga_bulan": int(bulanan * 3 * 0.90),
+        "harga_per_enam_bulan": int(bulanan * 6 * 0.85),
+        "harga_per_tahun": int(bulanan * 12 * 0.80),
+        "harga_per_dua_tahun": int(bulanan * 24 * 0.75),
+    }
+
+
+# Nama harus sama persis dengan yang dipakai di cms/views.py & payment/views.py
 PAKET_DATA = [
     {
-        "nama": "Kecil",
-        "max_transaksi": 200,
-        "max_user_login": 2,
-        "harga_per_bulan": 49000,
-        "harga_per_tiga_bulan": 135000,
-        "harga_per_enam_bulan": 255000,
-        "harga_per_tahun": 480000,
-        "harga_per_dua_tahun": 900000,
+        "nama": "Bisnis Kecil",
+        "max_transaksi": 1000,
+        "max_user_login": 5,
+        **_harga(50000),
         "disc": 0,
         "is_ceklist_barang": False,
         "is_pembayaran_tempo": False,
         "is_add_ons": False,
     },
     {
-        "nama": "Medium",
-        "max_transaksi": 1000,
-        "max_user_login": 5,
-        "harga_per_bulan": 199000,
-        "harga_per_tiga_bulan": 550000,
-        "harga_per_enam_bulan": 1050000,
-        "harga_per_tahun": 1990000,
-        "harga_per_dua_tahun": 3700000,
+        "nama": "Bisnis Medium",
+        "max_transaksi": 3000,
+        "max_user_login": 10,
+        **_harga(120000),
         "disc": 0,
         "is_ceklist_barang": True,
         "is_pembayaran_tempo": True,
@@ -52,16 +56,17 @@ class Command(BaseCommand):
         created_count = 0
         updated_count = 0
 
-        existing = set(DaftarPaket.objects.values_list("nama", flat=True))
-
         for data in PAKET_DATA:
-            if data["nama"] in existing:
+            defaults = {k: v for k, v in data.items() if k != "nama"}
+            _, created = DaftarPaket.objects.update_or_create(
+                nama=data["nama"], defaults=defaults
+            )
+            if created:
+                created_count += 1
+                self.stdout.write(self.style.SUCCESS(f"  [+] {data['nama']}"))
+            else:
                 updated_count += 1
-                self.stdout.write(f"  [=] {data['nama']} (sudah ada, dilewati)")
-                continue
-            DaftarPaket.objects.create(**data)
-            created_count += 1
-            self.stdout.write(self.style.SUCCESS(f"  [+] {data['nama']}"))
+                self.stdout.write(f"  [~] {data['nama']} (diupdate)")
 
         self.stdout.write(
             self.style.SUCCESS(

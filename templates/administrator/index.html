@@ -932,120 +932,36 @@
                             </div>
                         </li>
 
-                        <!-- Nav Item - Alerts -->
+                        <!-- Nav Item - Notifikasi -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <span class="badge badge-danger badge-counter" id="notifBadge" style="display:none;"></span>
                             </a>
-                            <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                                <h6 class="dropdown-header">Notifikasi</h6>
+                                <div id="notifList">
+                                    <div class="dropdown-item small text-gray-500 text-center">Memuat...</div>
+                                </div>
                             </div>
                         </li>
 
-                        <!-- Nav Item - Messages -->
+                        <!-- Nav Item - Aktivitas Toko -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
+                                <span class="badge badge-danger badge-counter" id="aktivitasBadge" style="display:none;"></span>
                             </a>
-                            <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
-                                <h6 class="dropdown-header">
-                                    Message Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="img/undraw_profile_1.svg"
-                                            alt="...">
-                                        <div class="status-indicator bg-success"></div>
-                                    </div>
-                                    <div class="font-weight-bold">
-                                        <div class="text-truncate">Hi there! I am wondering if you can help me with a
-                                            problem I've been having.</div>
-                                        <div class="small text-gray-500">Emily Fowler · 58m</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="img/undraw_profile_2.svg"
-                                            alt="...">
-                                        <div class="status-indicator"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">I have the photos that you ordered last month, how
-                                            would you like them sent to you?</div>
-                                        <div class="small text-gray-500">Jae Chun · 1d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="img/undraw_profile_3.svg"
-                                            alt="...">
-                                        <div class="status-indicator bg-warning"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Last month's report looks great, I am very happy with
-                                            the progress so far, keep up the good work!</div>
-                                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
-                                            alt="...">
-                                        <div class="status-indicator bg-success"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone
-                                            told me that people say this to all dogs, even if they aren't good...</div>
-                                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+                                <h6 class="dropdown-header">Aktivitas Toko</h6>
+                                <div id="aktivitasList">
+                                    <div class="dropdown-item small text-gray-500 text-center">Memuat...</div>
+                                </div>
+                                <a class="dropdown-item text-center small text-gray-500" hx-get="{% url 'view_log' %}" hx-target="#mainpage" href="#">Lihat Semua</a>
                             </div>
                         </li>
 
@@ -1389,6 +1305,31 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalAktivitas" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <div>
+                        <div class="small text-uppercase font-weight-bold" style="letter-spacing:.08em;opacity:.8;">Notifikasi</div>
+                        <h5 class="modal-title font-weight-bold text-capitalize text-white" id="aktJudul"></h5>
+                        <div class="small" style="opacity:.8;" id="aktMeta"></div>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Tutup"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <p id="aktKet"></p>
+                    <div id="aktTabel" style="display:none;">
+                        <table class="table table-sm table-striped" id="aktBarang">
+                            <thead><tr><th>No.</th><th>Barcode</th><th>Nama Barang</th><th>Satuan</th><th class="text-right">Stok</th><th class="text-right">Harga Ecer</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap core JavaScript-->
     <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
@@ -1402,6 +1343,61 @@
     {% include 'components/recaptcha_v3.html' %}
     <script>
     posmiProtectForm(document.getElementById('formAjukanRefund'), 'refund');
+    </script>
+
+    <script>
+    (function(){
+        var url = "{% url 'aktivitas_toko' %}";
+        function esc(t){ return $('<div>').text(t).html(); }
+        function muat(seen){
+            $.getJSON(url + (seen ? '?seen=1' : ''), function(d){
+                var html = '';
+                $.each(d.items, function(i, it){
+                    html += '<div class="dropdown-item d-flex align-items-center item-aktivitas" data-id="' + it.id + '" style="white-space:normal;cursor:pointer;">' +
+                        '<div><div class="small text-gray-500">' + esc(it.waktu) + ' · ' + esc(it.user) + '</div>' +
+                        '<span class="font-weight-bold">' + esc(it.transaksi) + '</span><br>' +
+                        '<span class="small">' + esc(it.keterangan) + '</span></div></div>';
+                });
+                $('#aktivitasList').html(html || '<div class="dropdown-item small text-gray-500 text-center">Belum ada aktivitas.</div>');
+                if (seen || !d.unread) { $('#aktivitasBadge').hide(); }
+                else { $('#aktivitasBadge').text(d.unread >= 99 ? '99+' : d.unread).show(); }
+            });
+        }
+        function muatNotif(){
+            $.getJSON("{% url 'notifikasi_toko' %}", function(d){
+                var html = '';
+                $.each(d.items, function(i, it){
+                    html += '<div class="dropdown-item d-flex align-items-center" style="white-space:normal;">' +
+                        '<div class="mr-3"><div class="icon-circle bg-' + it.level + '"><i class="fas fa-exclamation-triangle text-white"></i></div></div>' +
+                        '<div><span class="font-weight-bold">' + esc(it.judul) + '</span><br>' +
+                        '<span class="small text-gray-500">' + esc(it.keterangan) + '</span></div></div>';
+                });
+                $('#notifList').html(html || '<div class="dropdown-item small text-gray-500 text-center">Tidak ada notifikasi.</div>');
+                if (d.items.length) { $('#notifBadge').text(d.items.length).show(); } else { $('#notifBadge').hide(); }
+            });
+        }
+        $(function(){
+            muat(false);
+            muatNotif();
+            $('#messagesDropdown').on('click', function(){ muat(true); });
+            $('#modalAktivitas [data-dismiss="modal"]').on('click', function(){ $('#modalAktivitas').modal('hide'); });
+            $('#aktivitasList').on('click', '.item-aktivitas', function(){
+                $.getJSON("{% url 'aktivitas_toko' %}" + $(this).data('id') + "/", function(d){
+                    $('#aktJudul').text(d.transaksi);
+                    $('#aktMeta').text(d.waktu + ' · ' + d.user);
+                    $('#aktKet').text(d.keterangan);
+                    var rows = '';
+                    $.each(d.detail, function(i, b){
+                        rows += '<tr><td>' + (i+1) + '</td><td>' + esc(b.barcode) + '</td><td>' + esc(b.nama) + '</td><td>' + esc(b.satuan) +
+                            '</td><td class="text-right">' + esc(b.stok) + '</td><td class="text-right">' + Number(b.harga_ecer).toLocaleString('id-ID') + '</td></tr>';
+                    });
+                    $('#aktBarang tbody').html(rows);
+                    $('#aktTabel').toggle(d.detail.length > 0);
+                    $('#modalAktivitas').modal('show');
+                });
+            });
+        });
+    })();
     </script>
 
 </body>

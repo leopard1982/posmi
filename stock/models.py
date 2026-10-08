@@ -173,4 +173,5 @@ class LogTransaksi(models.Model):
     user = models.ForeignKey(User,on_delete=models.RESTRICT,default="",null=True,blank=True)
     cabang = models.ForeignKey(Cabang,on_delete=models.RESTRICT,default="",null=True,blank=True)
     keterangan = models.CharField(max_length=200,default="")
+    detail = models.JSONField(default=list,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

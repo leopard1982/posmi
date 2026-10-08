@@ -220,6 +220,10 @@ def _proses_pending_payment(pending):
             )
 
         _sesuaikan_kasir_downgrade(cabang, paket.max_user_login)
+        LogTransaksi.objects.create(
+            cabang=cabang, transaksi="upgrade paket",
+            keterangan=f"Paket {paket.nama} aktif s.d. {tanggal_expired.strftime('%d/%m/%Y')}.",
+        )
 
     # ── TAMBAH KUOTA ──────────────────────────────────────────────────────────
     elif pending.tipe == PendingPayment.TIPE_KUOTA:
@@ -234,6 +238,10 @@ def _proses_pending_payment(pending):
         if wallet_dipakai > 0:
             cabang.wallet = max(0, cabang.wallet - wallet_dipakai)
         cabang.save()
+        LogTransaksi.objects.create(
+            cabang=cabang, transaksi="tambah kuota",
+            keterangan=f"Kuota transaksi bertambah {jumlah_kuota}.",
+        )
 
         if wallet_dipakai > 0:
             DetailWalet.objects.create(

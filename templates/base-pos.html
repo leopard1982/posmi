@@ -112,7 +112,12 @@
                 {% csrf_token %}
                 {% if user.is_authenticated %}
                     <div class="row">
-                        <div class="col-12"><input type="text" name="kode" placeholder="SCAN BARCODE/ KETIK BARCODE" autofocus id="kode" class="form-control"></div>
+                        <div class="col"><input type="text" name="kode" placeholder="SCAN BARCODE/ KETIK BARCODE" autofocus id="kode" class="form-control"></div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-light fw-bold" data-bs-toggle="modal" data-bs-target="#modalBarang">
+                                <i class="fa fa-list"></i> Barang
+                            </button>
+                        </div>
                         <!-- <div class="col-1"><button class="btn btn-success" type="submit">+</button></div> -->
                     </div>
                 
