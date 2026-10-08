@@ -209,6 +209,13 @@
         {% endfor %}
       {% endif %}
 
+      {% if belum_verifikasi %}
+      <form method="post" action="{% url 'kirim_ulang_verifikasi_login' %}" class="mb-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-link p-0">Kirim ulang email verifikasi</button>
+      </form>
+      {% endif %}
+
       <h1>Selamat Datang</h1>
       <p class="sub">Masuk ke akun POSMI Anda.</p>
 

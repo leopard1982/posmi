@@ -208,6 +208,8 @@ def bayarRegistrasi(request,midtranspayment:MidtransPayment):
         message = f"Halo Sobat {midtranspayment.pemilik_toko}!\n\nSelamat bergabung di aplikasi posmi. Informasi toko sobat adalah sebagai berikut:\nNama Toko: {midtranspayment.nama_toko}\nNama Cabang: {cabang}\nAlamat Toko: {midtranspayment.alamat_toko}\nKode Toko: {midtranspayment.kode_toko}\nEmail Toko: {midtranspayment.email_toko}\n\nUntuk user administrator bisa login menggunakan user {user} atau menggunakan email {midtranspayment.email_toko}. Password yang telah dibuat adalah [{midtranspayment.password}] dan harap disimpan baik-baik atau diganti secara berkala.\n\nUntuk login bisa melakukan akses ke: https://posmi.pythonanywhere.com/login/ \n\nTerima kasih sudah memilih POSMI sebagai aplikasi untuk penjualan di toko Sobat. Apabila ada kendala segera hubungi tim POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
 
         posmiMail("Terima Kasih Sudah Menggunakan POSMI",message=message,address=midtranspayment.email_toko)
+        from cms.verifikasi import kirim_verifikasi_email
+        kirim_verifikasi_email(cabang)
 
         messages.add_message(request,messages.SUCCESS,f"Selamat Untuk User Admin {midtranspayment.kode_toko}1 berhasil dibuat. Silakan Login.")
 

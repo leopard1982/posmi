@@ -112,6 +112,9 @@ class LoginView(APIView):
             addLog(user, profile.cabang, 'login-mobile', 'pengguna dinonaktifkan, tidak bisa login.')
             return fail('Pengguna dinonaktifkan. Hubungi pemilik toko.', status.HTTP_403_FORBIDDEN)
 
+        if not profile.cabang.is_email_verified:
+            return fail('Email toko belum diverifikasi. Cek email Anda dan klik link verifikasi.', status.HTTP_403_FORBIDDEN)
+
         addLog(user, profile.cabang, 'login-mobile', 'login mobile berhasil')
         return ok({**_tokens(user), 'user': _user_info(user)})
 

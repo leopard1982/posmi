@@ -13,6 +13,7 @@ from django.shortcuts import render
 
 import midtransclient
 
+from cms.verifikasi import kirim_verifikasi_email
 from kelontong_mami.recaptcha import verify_recaptcha
 from pos.models import DetailWalet, Penjualan
 from posmimail import posmiMail
@@ -171,11 +172,12 @@ def _proses_pending_payment(pending):
 
         posmiMail(
             "Terima Kasih Sudah Menggunakan POSMI",
-            f"Halo Sobat {pemilik_toko}!\n\nAkun POSMI toko {nama_toko} sudah aktif.\n"
+            f"Halo Sobat {pemilik_toko}!\n\nAkun POSMI toko {nama_toko} sudah dibuat. Silakan verifikasi email Anda lewat email terpisah sebelum login.\n"
             f"Username: {kode_toko}1\nKode Toko: {kode_toko}\n\n"
             f"Login: https://posmi.pythonanywhere.com/login/",
             address=email_toko,
         )
+        kirim_verifikasi_email(cabang)
 
     # ── UPGRADE / PERPANJANGAN ────────────────────────────────────────────────
     elif pending.tipe == PendingPayment.TIPE_UPGRADE:
@@ -914,7 +916,7 @@ def paymentResponse(request):
         )
         _proses_pending_payment(p)
         messages.add_message(request, messages.SUCCESS,
-            f"Akun toko {nama_toko} ({kode_toko}1) berhasil dibuat. Silakan login.")
+            f"Akun toko {nama_toko} ({kode_toko}1) berhasil dibuat. Silakan cek email {email_toko} dan klik link verifikasi sebelum login.")
         return HttpResponseRedirect('/')
 
     # Berbayar → Midtrans

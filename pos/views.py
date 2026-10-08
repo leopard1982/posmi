@@ -576,6 +576,16 @@ def hapusTransaksi(request):
         messages.add_message(request,messages.SUCCESS,'Pengguna telah dinonaktifkan. Silakan menghubungi pemilik toko untuk konfirmasi.')
         return HttpResponseRedirect(page)
         
+def _tolak_email_belum_verifikasi(request, user):
+    """True (dan set pesan) bila email toko user belum diverifikasi → login ditolak."""
+    profile = getattr(user, 'userprofile', None)
+    if profile is None or profile.cabang is None or profile.cabang.is_email_verified:
+        return False
+    request.session['verif_email'] = profile.cabang.email
+    request.session['verif_email_tampil'] = True
+    messages.add_message(request, messages.SUCCESS, f"Email toko {profile.cabang.email} belum diverifikasi. Silakan klik link verifikasi yang dikirim ke email tersebut sebelum login.")
+    return True
+
 def loginkan(request):
     if request.user.is_authenticated:
         if request.user.is_staff:
@@ -598,6 +608,8 @@ def loginkan(request):
                     _hapus_session_lain(user, request.session.session_key)
                     messages.add_message(request, messages.SUCCESS, f"Selamat datang {user.username}")
                     return HttpResponseRedirect('/management/')
+                if _tolak_email_belum_verifikasi(request, user):
+                    return HttpResponseRedirect('/login/')
                 if user.userprofile.is_active:
                     pending_dihapus = _hapus_transaksi_pending_user(user)
                     login(request,user)
@@ -618,6 +630,8 @@ def loginkan(request):
                     username=f"{cabang.prefix}1"
                     user=authenticate(username=username,password=password)
                     if(user):
+                        if _tolak_email_belum_verifikasi(request, user):
+                            return HttpResponseRedirect('/login/')
                         pending_dihapus = _hapus_transaksi_pending_user(user)
                         login(request,user)
                         _hapus_session_lain(user, request.session.session_key)
@@ -635,7 +649,8 @@ def loginkan(request):
         except:
             toko=""
         context = {
-            'toko':toko
+            'toko':toko,
+            'belum_verifikasi':request.session.pop('verif_email_tampil', False)
         }
         return render(request,'pos/login.html',context)
     

@@ -15,6 +15,7 @@ import os
 import pandas
 from stock.models import UploadBarang,UploadBarangList,LogTransaksi
 import uuid
+import re
 import random
 from posmimail import posmiMail
 from pos.models import Penjualan,PenjualanDetail
@@ -216,16 +217,31 @@ def verifikasiEmail(request, token):
     from cms.models import EmailVerificationToken
     try:
         ev = EmailVerificationToken.objects.get(token=token)
-        if ev.is_valid:
+        if ev.cabang.is_email_verified:
+            messages.success(request, "Email toko sudah terverifikasi. Selamat menggunakan POSMI.")
+        elif ev.is_valid:
             ev.cabang.is_email_verified = True
             ev.cabang.save(update_fields=['is_email_verified'])
-            ev.delete()
-            messages.success(request, "Email toko berhasil diverifikasi! Selamat menggunakan POSMI.")
+            messages.success(request, "Email toko berhasil diverifikasi! Silakan login.")
         else:
             messages.error(request, "Link verifikasi sudah kadaluarsa. Minta kirim ulang dari dashboard.")
     except EmailVerificationToken.DoesNotExist:
         messages.error(request, "Link verifikasi tidak valid.")
-    return HttpResponseRedirect('/cms/')
+    return HttpResponseRedirect('/login/')
+
+
+def kirimUlangVerifikasiLogin(request):
+    """Kirim ulang email verifikasi dari halaman login (email diambil dari sesi hasil login yang ditolak)."""
+    email = request.session.pop('verif_email', None)
+    if request.method == "POST" and email:
+        cabang = Cabang.objects.filter(email=email, is_email_verified=False).first()
+        if cabang:
+            from cms.verifikasi import kirim_verifikasi_email
+            kirim_verifikasi_email(cabang, f"{request.scheme}://{request.get_host()}")
+            messages.add_message(request, messages.SUCCESS, f"Email verifikasi sudah dikirim ke {cabang.email}. Silakan cek inbox/spam.")
+    else:
+        messages.add_message(request, messages.SUCCESS, "Silakan login terlebih dahulu untuk mengirim ulang email verifikasi.")
+    return HttpResponseRedirect('/login/')
 
 
 def kirimUlangVerifikasi(request):
@@ -236,20 +252,8 @@ def kirimUlangVerifikasi(request):
     if cabang.is_email_verified:
         messages.add_message(request, messages.SUCCESS, "Email sudah terverifikasi.")
         return HttpResponseRedirect('/cms/')
-    from cms.models import EmailVerificationToken
-    import datetime as _dt
-    EmailVerificationToken.objects.filter(cabang=cabang).delete()
-    ev_token = EmailVerificationToken.objects.create(
-        cabang=cabang,
-        expired_at=_dt.datetime.now() + _dt.timedelta(hours=48)
-    )
-    verify_url = f"{request.scheme}://{request.get_host()}/cms/verifikasi-email/{ev_token.token}/"
-    from posmimail import posmiMail
-    posmiMail(
-        "Verifikasi Email POSMI",
-        f"Klik link berikut untuk verifikasi email toko Anda (48 jam):\n{verify_url}\n\n— Tim POSMI",
-        address=cabang.email
-    )
+    from cms.verifikasi import kirim_verifikasi_email
+    kirim_verifikasi_email(cabang, f"{request.scheme}://{request.get_host()}")
     messages.success(request, f"Email verifikasi dikirim ke {cabang.email}.")
     return HttpResponseRedirect('/cms/')
 
@@ -526,18 +530,35 @@ def tambahBarang(request):
                 # print(request.POST)
                 # print(request.FILES)
                 tanggal_upload=datetime.datetime.now()
-                df = pandas.read_excel(request.FILES['file'])
+                try:
+                    df = pandas.read_excel(request.FILES['file'], dtype={'barcode':str})
+                except Exception as ex:
+                    print(ex)
+                    messages.add_message(request,messages.SUCCESS,"File tidak dapat dibaca. Pastikan file berformat Excel (.xlsx) sesuai template POSMI.")
+                    return render(request,'administrator/components/tambah_barang.html',{})
+                df.columns = [str(c).strip().lower() for c in df.columns]
+                kolom_kurang = [k for k in ('barcode','nama','satuan') if k not in df.columns]
+                if kolom_kurang:
+                    messages.add_message(request,messages.SUCCESS,f"Kolom {', '.join(kolom_kurang)} tidak ditemukan di file. Silakan gunakan template POSMI.")
+                    return render(request,'administrator/components/tambah_barang.html',{})
                 # print(df)
                 list_informasi=[]
+                baris_gagal=[]
                 uploadbarang = UploadBarang()
                 uploadbarang.cabang = request.user.userprofile.cabang
                 uploadbarang.user = request.user
                 uploadbarang.save()
                 for index,data in df.iterrows():
                     try:
-                        barcode = int(data['barcode'])
+                        barcode = str(data['barcode']).strip()
+                        if barcode.endswith('.0'):
+                            barcode = barcode[:-2]
+                        if not barcode or barcode.lower()=='nan':
+                            raise ValueError("barcode kosong")
                         nama = data['nama']
-                        satuan = str(data['satuan']).upper()
+                        if pandas.isna(nama) or not str(nama).strip():
+                            raise ValueError("nama kosong")
+                        satuan = str(data['satuan']).strip().upper()
                         try:
                             stok=int(data['stok'])
                         except Exception as ex:
@@ -596,6 +617,7 @@ def tambahBarang(request):
 
                     except Exception as ex:
                         print(ex)
+                        baris_gagal.append(str(index+2))
                         barcode = None
                     # if(barcode):
                     #     print(barcode)
@@ -603,6 +625,8 @@ def tambahBarang(request):
                 # print(header)
                 jumlah_barang = len(list_informasi)
                 messages.add_message(request,messages.SUCCESS,"Silakan Cek terlebih dahulu barang yang masuk daftar upload.")
+                if baris_gagal:
+                    messages.add_message(request,messages.SUCCESS,f"{len(baris_gagal)} baris dilewati karena barcode/nama/satuan tidak valid (baris Excel: {', '.join(baris_gagal[:20])}).")
                 context = {
                     'tanggal_upload':tanggal_upload,
                     'total_barang':jumlah_barang,
@@ -757,7 +781,9 @@ def downloadBarang(request):
                 'keterangan':keterangan
             })
 
-            lokasi_file = os.path.join(settings.BASE_DIR,f'media/download/barang/{request.user.userprofile.cabang.token}.xlsx')
+            lokasi_dir = os.path.join(settings.BASE_DIR,'media/download/barang')
+            os.makedirs(lokasi_dir,exist_ok=True)
+            lokasi_file = os.path.join(lokasi_dir,f'{request.user.userprofile.cabang.token}.xlsx')
 
             df.to_excel(lokasi_file,index=False)
 
@@ -998,7 +1024,7 @@ def gantiEmail(request):
                         gantiemail.user = request.user
                         gantiemail.save()
                         addLog(request.user,request.user.userprofile.cabang,"Ganti Email Toko",f"Request ganti email toko {request.user.userprofile.cabang.nama_toko} menjadi {email_baru}")
-                        message = f"Sobat {request.user.userprofile.nama_lengkap},\n\n\nSobat telah melakukan permintaan perubahan email pada {datetime.datetime.now().strftime('%d/%h/%Y')}.\n\nSilakan klik link berikut ini untuk melanjutkan perubahan email:\n\nhttps://posmi.pythonanywhere.com/cms/{gantiemail.id}/ \n\nSebagai catatan, untuk link ini hanya bisa diakses 1 kali saja dan akan expired dalam 1 jam.\n\nApabila ada kendala, segera hubungi kami. Terima kasih sudah mempercayakan aplikasi kasir menggunakan POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
+                        message = f"Sobat {request.user.userprofile.nama_lengkap},\n\n\nSobat telah melakukan permintaan perubahan email pada {datetime.datetime.now().strftime('%d/%h/%Y')}.\n\nSilakan klik link berikut ini untuk melanjutkan perubahan email:\n\n{request.scheme}://{request.get_host()}/cms/{gantiemail.id}/ \n\nSebagai catatan, untuk link ini hanya bisa diakses 1 kali saja dan akan expired dalam 1 jam.\n\nApabila ada kendala, segera hubungi kami. Terima kasih sudah mempercayakan aplikasi kasir menggunakan POSMI.\n\n\nSalam,\n\nSuryo Adhy Chandra\n------------------\nCreator POSMI\n\n\nEmail: adhy.chandra@live.co.uk\nWhatsapp: +6281213270275\nTelegram: @suryo_adhy"
                         posmiMail("PERUBAHAN EMAIL TOKO",message,email_baru)
                         messages.add_message(request,messages.SUCCESS,f"Permintaan perubahan email sudah berhasil. Silakan sobat cek email baru {email_baru} dan klik tautan (link) untuk konfirmasi perubahan email. Terima kasih. ")
                 else:
@@ -1021,13 +1047,19 @@ def konfirmasiEmail(request,id):
 
         cabang = gantiemail.cabang
         cabang.email = gantiemail.email_baru.lower()
+        cabang.is_email_verified = True
         cabang.save()
+        if gantiemail.user:
+            gantiemail.user.email = cabang.email
+            gantiemail.user.save(update_fields=['email'])
         print('email cabang sudah diupdate')
         
         addLog(gantiemail.user,cabang,"Ganti Email Toko","Ganti Email Toko Berhasil.")
+        pesan = f"Penggantian email sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
     except Exception as ex:
         print(ex)
-    pesan = f"Penggantian email sudah dikonfirmasi, silakan cek untuk email di halaman admin. Terima kasih kepercayaan Sobat menggunakan POSMI."
+        pesan = "Link perubahan email tidak valid, sudah dipakai, atau sudah kadaluarsa. Silakan ajukan perubahan email kembali."
+
     context = {
         'pesan':pesan
     }
@@ -3100,7 +3132,7 @@ def aktivitasToko(request):
         'id': l.id,
         'ada_detail': bool(l.detail),
         'transaksi': l.transaksi,
-        'keterangan': l.keterangan,
+        'keterangan': re.sub(r'\s*\(\d+\)', '', l.keterangan),
         'user': l.user.username if l.user else '-',
         'waktu': l.created_at.strftime('%d/%m/%Y %H:%M'),
     } for l in qs[:10]]

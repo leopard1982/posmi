@@ -173,6 +173,8 @@ EMAIL_PORT = int(readEnv('EMAIL_PORT') or 587)
 EMAIL_HOST_USER = readEnv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = readEnv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = readEnv('DEFAULT_FROM_EMAIL')
+# Dipakai untuk link di email yang dikirim tanpa request (mis. webhook pembayaran)
+SITE_URL = readEnv('SITE_URL') or 'https://posmi.pythonanywhere.com'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

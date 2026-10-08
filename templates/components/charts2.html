@@ -1,31 +1,50 @@
-<div>   
-    <canvas id="myChart2" style="width:100%;"></canvas>
-</div>
+<style>
+    .rank-list { list-style: none; margin: 0; padding: 0; }
+    .rank-item { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eef1f6; }
+    .rank-item:last-child { border-bottom: 0; }
+    .rank-no { flex: 0 0 32px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #eef1f6; color: #687086; font-weight: 900; font-size: 14px; }
+    .rank-item.rank-1 .rank-no { background: #f6c23e; color: #fff; }
+    .rank-item.rank-2 .rank-no { background: #a0a8b8; color: #fff; }
+    .rank-item.rank-3 .rank-no { background: #c98a4b; color: #fff; }
+    .rank-body { flex: 1; min-width: 0; }
+    .rank-name { color: #2f3446; font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rank-bar { height: 6px; margin-top: 5px; background: #eef1f6; border-radius: 3px; overflow: hidden; }
+    .rank-bar > span { display: block; height: 100%; background: #4e73df; border-radius: 3px; }
+    .rank-qty { flex: 0 0 auto; color: #2f3446; font-weight: 900; font-size: 14px; }
+    .rank-empty { color: #8a92a6; font-size: 13px; padding: 12px 0; }
+</style>
+<ol class="rank-list" id="rankBarangLaris"></ol>
 <script>
-    const xValues_pie = {{list_nama_barang|safe}};
-        const yValues_pie = {{list_jumlah_barang|safe}};
-        const barColors_pie = [
-        "#b91d47",
-        "#00aba9",
-        "#2b5797",
-        "#e8c3b9",
-        "#1e7145"
-    ];
-
-    new Chart("myChart2", {
-    type: "pie",
-    data: {
-        labels: xValues_pie,
-        datasets: [{
-        backgroundColor: barColors_pie,
-        data: yValues_pie
-        }]
-    },
-    options: {
-        title: {
-        display: true,
-        text: "Top 5 Barang Paling Laris"
+    (function () {
+        const namaBarang = {{list_nama_barang|safe}};
+        const jumlahBarang = {{list_jumlah_barang|safe}};
+        const el = document.getElementById("rankBarangLaris");
+        if (!namaBarang.length) {
+            el.innerHTML = '<li class="rank-empty">Belum ada data penjualan.</li>';
+            return;
         }
-    }
-    });
+        const maks = Math.max.apply(null, jumlahBarang) || 1;
+        namaBarang.forEach(function (nama, i) {
+            const li = document.createElement("li");
+            li.className = "rank-item rank-" + (i + 1);
+            const no = document.createElement("span");
+            no.className = "rank-no";
+            no.textContent = i + 1;
+            const body = document.createElement("div");
+            body.className = "rank-body";
+            const n = document.createElement("div");
+            n.className = "rank-name";
+            n.textContent = nama;
+            const bar = document.createElement("div");
+            bar.className = "rank-bar";
+            bar.innerHTML = '<span style="width:' + Math.round(jumlahBarang[i] / maks * 100) + '%"></span>';
+            body.appendChild(n);
+            body.appendChild(bar);
+            const q = document.createElement("span");
+            q.className = "rank-qty";
+            q.textContent = Number(jumlahBarang[i]).toLocaleString("id-ID") + " terjual";
+            li.appendChild(no); li.appendChild(body); li.appendChild(q);
+            el.appendChild(li);
+        });
+    })();
 </script>

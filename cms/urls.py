@@ -4,7 +4,7 @@ from .views import editBarang, tambahBarang,downloadTemplate,konfirmasiUpload, h
 from .views import viewLog,daftarKasir,tambahKasir,detailPenjualan,konfirmasiVoid,tidakVoid,okeVoid
 from .views import gantiEmail,konfirmasiEmail,tambahKuotaAdmin,upgradePaketAdmin,gantiPassword,updateStatusKasir
 from .views import detailPengguna,updateFoto,updatePassword,updateNama, tambahBarangSatuan
-from .views import masterPaket, masterPromo, masterTestimoni, masterCabang, verifikasiEmail, kirimUlangVerifikasi
+from .views import masterPaket, masterPromo, masterTestimoni, masterCabang, verifikasiEmail, kirimUlangVerifikasi, kirimUlangVerifikasiLogin
 from .views import transferStokCMS, daftarBarangKorporasi, penerimaanBarang, konfirmasiItemPenerimaan, orderBarang, downloadTemplateOrder, requestMasterBarang, laporanStokBarang, downloadLaporanStok, cmsAddonStatus, cmsAddonAktifkan, cmsAddonSettings, cmsCetakBarcode, cmsCetakBarcodePage, cmsLaporanAkunting, cmsLaporanAkuntingPreview, cmsLaporanAkuntingExcel, cmsLaporanAkuntingCetak, cetakRekapCMS
 from .views import aktivitasToko, notifikasiToko, aktivitasDetail
 from .views import daftarTempoTransaksi, bayarTempoTransaksi, printLunasTempo
@@ -70,6 +70,7 @@ urlpatterns = [
     path('stok/laporan/download/', downloadLaporanStok, name='download_laporan_stok'),
     path('verifikasi-email/<uuid:token>/', verifikasiEmail, name='verifikasi_email'),
     path('verifikasi-email/kirim-ulang/', kirimUlangVerifikasi, name='kirim_ulang_verifikasi'),
+    path('verifikasi-email/kirim-ulang-login/', kirimUlangVerifikasiLogin, name='kirim_ulang_verifikasi_login'),
     # Wildcard harus di paling bawah
     path('kuota/<str:id>/',tambahKuotaAdmin,name="tambah_kuota_admin"),
     path('paket/<str:id>/',upgradePaketAdmin,name="upgrade_paket_admin"),

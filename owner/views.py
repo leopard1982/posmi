@@ -417,6 +417,7 @@ def klaimToko(request):
         cabang = Cabang()
         cabang.owner         = owner
         cabang.paket         = None
+        cabang.is_email_verified = True
         cabang.nama_toko     = nama_toko
         cabang.nama_cabang   = nama_cabang
         cabang.alamat_toko   = alamat_toko or '-'
@@ -745,6 +746,7 @@ def get_or_create_gudang(owner):
         gudang = Cabang.objects.create(
             owner=owner,
             is_gudang=True,
+            is_email_verified=True,
             nama_toko=f"Gudang Utama",
             nama_cabang="Gudang",
             alamat_toko="-",

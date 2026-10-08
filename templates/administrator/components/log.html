@@ -35,6 +35,12 @@
     </table>
     <script>
         new DataTable('#datasetLog',{
+            layout: {
+                topStart: 'search',
+                topEnd: 'info',
+                bottomStart: 'pageLength',
+                bottomEnd: 'paging'
+            },
             language: {
                 search: "Pencarian Data: ",
             }
