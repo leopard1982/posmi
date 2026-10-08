@@ -1055,6 +1055,13 @@
                         {% block contents %}
                         {% endblock %}
 
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb bg-white shadow-sm small" id="cmsBreadcrumb" style="margin-bottom:16px;padding:8px 16px;border-radius:8px;">
+                                <li class="breadcrumb-item"><a href="/cms/"><i class="fas fa-home"></i> Beranda</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                            </ol>
+                        </nav>
+
                         <div id="mainpage">
                             {% if not user.userprofile.cabang.is_email_verified %}
                             <div style="background:#fff3cd;border-left:4px solid #f59e0b;padding:12px 18px;margin-bottom:16px;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
@@ -1421,12 +1428,31 @@
             $('#modalNotif').modal('show');
         }
         $(function(){
+            function setCrumb(parts){
+                var h = '<li class="breadcrumb-item"><a href="/cms/"><i class="fas fa-home"></i> Beranda</a></li>';
+                $.each(parts, function(i, t){
+                    h += (i === parts.length - 1)
+                        ? '<li class="breadcrumb-item active" aria-current="page">' + esc(t) + '</li>'
+                        : '<li class="breadcrumb-item">' + esc(t) + '</li>';
+                });
+                $('#cmsBreadcrumb').html(h);
+            }
+            $(document).on('click', '[hx-target="#mainpage"]', function(){
+                var $a = $(this);
+                var label = $.trim($a.text().replace(/\s+/g, ' '));
+                var parts = [];
+                var $nav = $a.closest('.collapse-inner').closest('.nav-item');
+                if ($nav.length) { parts.push($.trim($nav.children('.nav-link').find('span').first().text())); }
+                parts.push(label);
+                setCrumb(parts);
+            });
             muat(false);
             muatNotif();
             $('#notifList').on('click', '.item-notif', function(){ bukaNotif($(this).data('i')); });
             $('#modalNotif [data-dismiss="modal"]').on('click', function(){ $('#modalNotif').modal('hide'); });
             $('#notifLihatSemua').on('click', function(e){
                 e.preventDefault();
+                setCrumb(['Notifikasi']);
                 var rows = '';
                 $.each(notifItems, function(i, it){
                     rows += '<tr class="item-notif-semua" data-i="' + i + '" style="cursor:pointer;"><td>' + (i+1) + '</td><td><span class="badge badge-' + it.level + '">&nbsp;</span> ' +
