@@ -41,6 +41,18 @@
         overflow: hidden;
       }
 
+      /* Topbar tetap di atas saat konten di-scroll */
+      .topbar {
+        position: sticky !important;
+        top: 0;
+        z-index: 1030;
+      }
+
+      /* Sidebar bisa disembunyikan penuh */
+      body.sidebar-hidden #accordionSidebar {
+        display: none !important;
+      }
+
       #content-wrapper {
         height: 100vh;
         min-width: 0;
@@ -886,8 +898,13 @@
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
+                    <!-- Sembunyikan / tampilkan sidebar -->
+                    <button id="sidebarHideBtn" type="button" class="btn btn-link rounded-circle mr-3" title="Sembunyikan / tampilkan menu">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
                     <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <button id="sidebarToggleTop" class="btn btn-link d-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
 
@@ -936,15 +953,16 @@
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
+                                <i class="fas fa-bell fa-fw" style="color:#e74a3b;"></i>
                                 <span class="badge badge-danger badge-counter" id="notifBadge" style="display:none;"></span>
                             </a>
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">Notifikasi</h6>
+                                <h6 class="dropdown-header" style="background-color:#e74a3b;border:1px solid #e74a3b;">Notifikasi</h6>
                                 <div id="notifList">
                                     <div class="dropdown-item small text-gray-500 text-center">Memuat...</div>
                                 </div>
+                                <a class="dropdown-item text-center small text-gray-500" id="notifLihatSemua" href="#">Lihat Semua</a>
                             </div>
                         </li>
 
@@ -952,7 +970,7 @@
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-envelope fa-fw"></i>
+                                <i class="fas fa-envelope fa-fw" style="color:#4e73df;"></i>
                                 <span class="badge badge-danger badge-counter" id="aktivitasBadge" style="display:none;"></span>
                             </a>
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -1330,6 +1348,22 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalNotif" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <div>
+                        <div class="small text-uppercase font-weight-bold" style="letter-spacing:.08em;opacity:.8;">Notifikasi</div>
+                        <h5 class="modal-title font-weight-bold text-white" id="notifJudul"></h5>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Tutup"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body"><p class="mb-0" id="notifKet"></p></div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap core JavaScript-->
     <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
@@ -1363,22 +1397,50 @@
                 else { $('#aktivitasBadge').text(d.unread >= 99 ? '99+' : d.unread).show(); }
             });
         }
+        var notifItems = [];
+        function barisNotif(it, i){
+            return '<div class="dropdown-item d-flex align-items-center item-notif" data-i="' + i + '" style="white-space:normal;cursor:pointer;">' +
+                '<div class="mr-3"><div class="icon-circle bg-' + it.level + '"><i class="fas fa-exclamation-triangle text-white"></i></div></div>' +
+                '<div><span class="font-weight-bold">' + esc(it.judul) + '</span><br>' +
+                '<span class="small text-gray-500">' + esc(it.keterangan) + '</span></div></div>';
+        }
         function muatNotif(){
             $.getJSON("{% url 'notifikasi_toko' %}", function(d){
+                notifItems = d.items;
                 var html = '';
-                $.each(d.items, function(i, it){
-                    html += '<div class="dropdown-item d-flex align-items-center" style="white-space:normal;">' +
-                        '<div class="mr-3"><div class="icon-circle bg-' + it.level + '"><i class="fas fa-exclamation-triangle text-white"></i></div></div>' +
-                        '<div><span class="font-weight-bold">' + esc(it.judul) + '</span><br>' +
-                        '<span class="small text-gray-500">' + esc(it.keterangan) + '</span></div></div>';
-                });
+                $.each(notifItems.slice(0, 10), function(i, it){ html += barisNotif(it, i); });
                 $('#notifList').html(html || '<div class="dropdown-item small text-gray-500 text-center">Tidak ada notifikasi.</div>');
-                if (d.items.length) { $('#notifBadge').text(d.items.length).show(); } else { $('#notifBadge').hide(); }
+                if (notifItems.length) { $('#notifBadge').text(notifItems.length).show(); } else { $('#notifBadge').hide(); }
             });
+        }
+        function bukaNotif(i){
+            var it = notifItems[i];
+            if (!it) { return; }
+            $('#notifJudul').text(it.judul);
+            $('#notifKet').text(it.keterangan);
+            $('#modalNotif').modal('show');
         }
         $(function(){
             muat(false);
             muatNotif();
+            $('#notifList').on('click', '.item-notif', function(){ bukaNotif($(this).data('i')); });
+            $('#modalNotif [data-dismiss="modal"]').on('click', function(){ $('#modalNotif').modal('hide'); });
+            $('#notifLihatSemua').on('click', function(e){
+                e.preventDefault();
+                var rows = '';
+                $.each(notifItems, function(i, it){
+                    rows += '<tr class="item-notif-semua" data-i="' + i + '" style="cursor:pointer;"><td>' + (i+1) + '</td><td><span class="badge badge-' + it.level + '">&nbsp;</span> ' +
+                        esc(it.judul) + '</td><td>' + esc(it.keterangan) + '</td></tr>';
+                });
+                $('#mainpage').html('<div><div class="mt-3 h2 fw-bold">Notifikasi</div><table class="table table-hover"><thead><tr><th>No.</th><th>Notifikasi</th><th>Keterangan</th></tr></thead><tbody>' +
+                    (rows || '<tr><td colspan="3" class="text-center text-gray-500">Tidak ada notifikasi.</td></tr>') + '</tbody></table></div>');
+            });
+            $('#mainpage').on('click', '.item-notif-semua', function(){ bukaNotif($(this).data('i')); });
+            try { if (localStorage.getItem('cmsSidebarHidden') === '1') { $('body').addClass('sidebar-hidden'); } } catch (e) {}
+            $('#sidebarHideBtn').on('click', function(){
+                var hidden = $('body').toggleClass('sidebar-hidden').hasClass('sidebar-hidden');
+                try { localStorage.setItem('cmsSidebarHidden', hidden ? '1' : '0'); } catch (e) {}
+            });
             $('#messagesDropdown').on('click', function(){ muat(true); });
             $('#modalAktivitas [data-dismiss="modal"]').on('click', function(){ $('#modalAktivitas').modal('hide'); });
             $('#aktivitasList').on('click', '.item-aktivitas', function(){
